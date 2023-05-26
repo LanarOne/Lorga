@@ -17,7 +17,7 @@ export const Connection = async () => {
 
 export const Sync = async () => {
   try {
-    await sequelize.sync();
+    await sequelize.sync({ force: true });
     console.log("Sync successful");
   } catch (error) {
     return Error(error.message);

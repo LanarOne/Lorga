@@ -10,3 +10,7 @@ app.get("/", (req, res) => {
 });
 await Connection();
 Sync();
+
+app.listen(PORT, () => {
+  console.log(`le serveur tourne sur le port ${PORT}`);
+});
