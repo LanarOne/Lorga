@@ -1,6 +1,5 @@
 import { sequelize } from "../connection/connection.js";
 import { DataTypes } from "sequelize";
-import User from "./User.js";
 import Photo from "./Photo.js";
 import Lien from "./Lien.js";
 
@@ -11,6 +10,10 @@ const Artiste = sequelize.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+    },
+    nom: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
     },
     description: {
       type: DataTypes.TEXT("medium"),
@@ -30,6 +33,13 @@ const Artiste = sequelize.define(
     updatedAt: "updated",
   }
 );
-User.hasOne(Artiste, { foreignKey: { allowNull: false, name: "userId" } });
-Photo.hasOne(Artiste, { foreignKey: { allowNull: false, name: "photoId" } });
+Photo.hasOne(Artiste, {
+  foreignKey: { allowNull: false, name: "photoId" },
+  sourceKey: "id",
+});
+Artiste.hasMany(Lien, {
+  foreignKey: { allowNull: true, name: "artisteId" },
+  sourceKey: "id",
+});
+
 export default Artiste;

@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 
-export const sequelize = new Sequelize("lorga", "root", "", {
+export const sequelize = new Sequelize("lorga_project", "root", "", {
   host: "localhost",
   dialect: "mariadb",
   logging: false,
@@ -17,7 +17,7 @@ export const Connection = async () => {
 
 export const Sync = async () => {
   try {
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
     console.log("Sync successful");
   } catch (error) {
     return Error(error.message);

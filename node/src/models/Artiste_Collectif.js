@@ -14,6 +14,4 @@ const Artiste_Collectif = sequelize.define(
   },
   { timestamps: true, createdAt: "created", updatedAt: "updated" }
 );
-Artiste.belongsToMany(Collectif, { through: Artiste_Collectif });
-Collectif.belongsToMany(Artiste, { through: Artiste_Collectif });
 export default Artiste_Collectif;

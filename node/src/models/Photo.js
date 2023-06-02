@@ -11,12 +11,12 @@ const Photo = sequelize.define("photo", {
     type: DataTypes.STRING(150),
     allowNull: false,
   },
-  photoDatas: {
-    type: DataTypes.BLOB,
+  path: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
   alt: {
-    type: DataTypes.TEXT(300),
+    type: DataTypes.TEXT("medium"),
     allowNull: false,
   },
 });

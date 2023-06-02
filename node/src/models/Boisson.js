@@ -1,6 +1,5 @@
 import { sequelize } from "../connection/connection.js";
 import { DataTypes } from "sequelize";
-import Photo from "./Photo.js";
 
 const Boisson = sequelize.define(
   "boisson",

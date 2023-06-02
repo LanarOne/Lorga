@@ -1,6 +1,10 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../connection/connection.js";
 import Role from "./Role.js";
+import Booking from "./Booking.js";
+import Collectif from "./Collectif.js";
+import Admin_collectif from "./Admin_collectif.js";
+import Artiste from "./Artiste.js";
 
 const User = sequelize.define(
   "user",
@@ -21,7 +25,7 @@ const User = sequelize.define(
       },
     },
     password: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING,
       allowNull: false,
     },
     username: {
@@ -39,10 +43,18 @@ const User = sequelize.define(
     updatedAt: "updated",
   }
 );
-
+User.hasMany(Booking, {
+  foreignKey: { allowNull: false, name: "userId" },
+  sourceKey: "id",
+});
+User.hasOne(Artiste, {
+  foreignKey: { allowNull: false, name: "userId" },
+  sourceKey: "id",
+});
 Role.hasMany(User, {
   foreignKey: { allowNull: false, name: "roleId" },
   sourceKey: "id",
 });
+User.belongsToMany(Collectif, { through: Admin_collectif });
 
 export default User;

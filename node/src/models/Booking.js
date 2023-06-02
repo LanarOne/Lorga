@@ -1,6 +1,5 @@
 import { sequelize } from "../connection/connection.js";
 import { DataTypes } from "sequelize";
-import User from "./User.js";
 import Collectif from "./Collectif.js";
 
 const Booking = sequelize.define(
@@ -30,8 +29,8 @@ const Booking = sequelize.define(
     updatedAt: "updated",
   }
 );
-User.hasMany(Booking, { foreignKey: { allowNull: false, name: "userId" } });
 Collectif.hasMany(Booking, {
   foreignKey: { allowNull: true, name: "collectifId" },
+  sourceKey: "id",
 });
 export default Booking;
