@@ -67,6 +67,20 @@ const UpdateUser = async (id, data) => {
     return Error(error.message);
   }
 };
+
+const UpdateRoleId = async (id, data) => {
+  try {
+    const user = await User.findByPk(id);
+    const { roleId } = data;
+    if (!user) {
+      return;
+    }
+    User.update({ roleId }, { where: { id } });
+    return user;
+  } catch (error) {
+    return Error(error.message);
+  }
+};
 const DeleteUser = async (id) => {
   try {
     const user = await User.findByPk(id);
@@ -86,5 +100,6 @@ export const UserDAO = {
   ReadAllUsers,
   ReadUserByEmail,
   UpdateUser,
+  UpdateRoleId,
   DeleteUser,
 };

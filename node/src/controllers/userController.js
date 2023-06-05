@@ -51,7 +51,7 @@ const signIn = async (req, res) => {
   if (!stringIsFilled(email) || !stringIsFilled(password)) {
     return res
       .status(403)
-      .json({ message: `un champ obligatoire n'est pas renseigné` });
+      .json({ message: `Un champ obligatoire n'est pas renseigné` });
   }
   const user = await UserDAO.ReadUserByEmail(email);
   if (!user) {
@@ -63,12 +63,12 @@ const signIn = async (req, res) => {
   if (!isPasswordValid) {
     return res
       .status(401)
-      .json({ message: `email ou mot de passe non valide` });
+      .json({ message: `Email ou mot de passe non valide` });
   }
   if (user && isPasswordValid) {
     const token = jwtSign(user.id);
     return res.status(201).json({
-      message: `utilisateur ${user.username} connecté avec succès`,
+      message: `Utilisateur ${user.username} connecté avec succès`,
       data: user.email,
       token,
     });
@@ -107,10 +107,10 @@ const readOne = async (req, res) => {
   const id = req.params.id;
   const user = await UserDAO.ReadUserById(id);
   if (!user) {
-    return res.status(404).json({ message: `pas d'utilisateur trouvé` });
+    return res.status(404).json({ message: `Pas d'utilisateur trouvé` });
   }
   return res.status(200).json({
-    message: `utilisateur ${user.username} trouvé avec succès`,
+    message: `Utilisateur ${user.username} trouvé avec succès`,
     data: user,
   });
 };
@@ -120,15 +120,42 @@ const updateOne = async (req, res) => {
   if (!email || !password || !username || !zipCode) {
     return res
       .status(400)
-      .json({ message: `impossible de modifier les données` });
+      .json({ message: `Impossible de modifier les données` });
   }
   const data = { email, password, username, zipCode };
   const user = await UserDAO.UpdateUser(id, data);
   if (!user) {
-    return res.status(404).json({ message: `utilisateur introuvable` });
+    return res.status(404).json({ message: `Utilisateur introuvable` });
   }
   return res.status(200).json({
-    message: `utilisateur ${user.username} mis à jour avec succès`,
+    message: `Utilisateur ${user.username} mis à jour avec succès`,
+    data: user,
+  });
+};
+
+const updateRoleId = async (req, res) => {
+  const id = req.params.id;
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (!admin || admin === 1) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+  }
+  const { roleId } = req.body;
+  if (!roleId) {
+    return res
+      .status(400)
+      .json({ message: `Impossible de modifier les données` });
+  }
+  const data = roleId;
+  const user = await UserDAO.UpdateRoleId(id, data);
+  console.log(user);
+  if (!user) {
+    return res.status(404).json({ message: `Utilisateur introuvable` });
+  }
+  return res.status(200).json({
+    message: `Le role pour l'utilisateur ${user.username} a été mis à jour avec succès`,
     data: user,
   });
 };
@@ -143,7 +170,7 @@ const deleteOne = async (req, res) => {
   }
   const user = await UserDAO.DeleteUser(id);
   if (!user) {
-    return res.status(404).json({ message: `utilisateur introuvable` });
+    return res.status(404).json({ message: `Utilisateur introuvable` });
   } else {
     return res.status(200).json({
       message: `L'utilisateur a été supprimé de la base de données avec succès`,
@@ -156,5 +183,6 @@ export const UserController = {
   readAll,
   readOne,
   updateOne,
+  updateRoleId,
   deleteOne,
 };

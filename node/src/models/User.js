@@ -48,7 +48,11 @@ User.hasMany(Booking, {
   sourceKey: "id",
 });
 User.hasOne(Artiste, {
-  foreignKey: { allowNull: false, name: "userId" },
+  foreignKey: {
+    allowNull: false,
+    name: "userId",
+    unique: { message: `Utilisateur déjà lié à un compte artiste` },
+  },
   sourceKey: "id",
 });
 Role.hasMany(User, {

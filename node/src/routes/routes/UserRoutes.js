@@ -9,6 +9,7 @@ const userRoutes = (app) => {
   router.get("/getall", jwtMiddleware, UserController.readAll);
   router.get("/getone/:id", jwtMiddleware, UserController.readOne);
   router.put("/update/:id", jwtMiddleware, UserController.updateOne);
+  router.put("/updateroleid/:id", jwtMiddleware, UserController.updateRoleId);
   router.delete("/delete/:id", jwtMiddleware, UserController.deleteOne);
 
   app.use("/users", router);
