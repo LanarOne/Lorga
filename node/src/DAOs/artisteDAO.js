@@ -44,11 +44,14 @@ const ReadById = async (id) => {
 const UpdateOne = async (id, data) => {
   try {
     const artiste = await Artiste.findByPk(id);
-    const { nom, description, influences, style } = data;
+    const { nom, description, influences, style, photoId } = data;
     if (!artiste) {
       return null;
     }
-    Artiste.update({ nom, description, influences, style }, { where: { id } });
+    await Artiste.update(
+      { nom, description, influences, style, photoId },
+      { where: { id } }
+    );
     return artiste;
   } catch (error) {
     return Error(error.message);

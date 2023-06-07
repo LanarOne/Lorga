@@ -56,13 +56,13 @@ const createArtiste = async (req, res) => {
 };
 
 const readAllArtistes = async (req, res) => {
-  const token = req.headers.authorization;
-  const admin = await isAdmin(token);
-  if (!admin) {
-    return res.status(401).json({
-      message: `Veuillez vous identifiez ou vous inscrire pour accéder à ces informations`,
-    });
-  }
+  // const token = req.headers.authorization;
+  // const admin = await isAdmin(token);
+  // if (!admin) {
+  //   return res.status(401).json({
+  //     message: `Veuillez vous identifiez ou vous inscrire pour accéder à ces informations`,
+  //   });
+  // }
   const artistes = await ArtisteDAO.ReadAll();
   if (!artistes) {
     return res
@@ -76,13 +76,13 @@ const readAllArtistes = async (req, res) => {
 };
 
 const readOneArtiste = async (req, res) => {
-  const token = req.headers.authorization;
-  const admin = await isAdmin(token);
-  if (!admin || admin === 1) {
-    return res.status(401).json({
-      message: `Veuillez vous identifiez ou vous inscrire pour accéder à ces informations`,
-    });
-  }
+  // const token = req.headers.authorization;
+  // const admin = await isAdmin(token);
+  // if (!admin || admin === 1) {
+  //   return res.status(401).json({
+  //     message: `Veuillez vous identifiez ou vous inscrire pour accéder à ces informations`,
+  //   });
+  // }
   const id = req.params.id;
   const artiste = await ArtisteDAO.ReadById(id);
   if (!artiste) {
@@ -91,7 +91,7 @@ const readOneArtiste = async (req, res) => {
       .json({ message: `Artiste inexistant ou impossible à trouver` });
   }
   return res.status(200).json({
-    message: `artiste ${artiste.nom} trouvé avec succès`,
+    message: `Artiste ${artiste.nom} trouvé avec succès`,
     data: artiste,
   });
 };
@@ -105,23 +105,24 @@ const updateOneArtiste = async (req, res) => {
     });
   }
   const id = req.params.id;
-  const { nom, description, influences, style } = req.body;
+  const { nom, description, influences, style, photoId } = req.body;
   if (
     !stringIsFilled(nom) ||
     !stringIsFilled(description) ||
     !stringIsFilled(influences) ||
-    !stringIsFilled(style)
+    !stringIsFilled(style) ||
+    !photoId
   ) {
     return res.status(406).json({
       message: `Tous les champs doivent être remplis pour validation`,
     });
   }
-  const data = { nom, description, influences, style };
+  const data = { nom, description, influences, style, photoId };
   const artiste = await ArtisteDAO.UpdateOne(id, data);
   if (!artiste) {
     return res
       .status(404)
-      .json({ message: `Impossible de trouver cet artiste` });
+      .json({ message: `Artiste inexistant ou introuvable` });
   }
   return res.status(200).json({
     message: `Artiste ${artiste.nom} a été mis à jour avec succès`,
@@ -142,7 +143,7 @@ const deleteOneArtiste = async (req, res) => {
   if (!artiste) {
     return res
       .status(404)
-      .json({ message: `Impossible de trouver cet artiste` });
+      .json({ message: `Artiste introuvable ou inexistant` });
   }
   return res
     .status(200)

@@ -20,7 +20,15 @@ const Booking = sequelize.define(
     },
     description: {
       type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    nbr_invite: {
+      type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    confirmation: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
     },
   },
   {

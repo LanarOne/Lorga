@@ -150,7 +150,6 @@ const updateRoleId = async (req, res) => {
   }
   const data = roleId;
   const user = await UserDAO.UpdateRoleId(id, data);
-  console.log(user);
   if (!user) {
     return res.status(404).json({ message: `Utilisateur introuvable` });
   }
