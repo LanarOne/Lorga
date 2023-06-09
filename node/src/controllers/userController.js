@@ -88,7 +88,7 @@ const readAll = async (req, res) => {
   if (!users) {
     return res
       .status(404)
-      .json({ message: `aucun utilisateur n'a été trouvé` });
+      .json({ message: `Aucun utilisateur n'a été trouvé` });
   }
   return res.status(200).json({
     message: `Liste des utilisateurs récupéré avec succès`,
@@ -107,7 +107,9 @@ const readOne = async (req, res) => {
   const id = req.params.id;
   const user = await UserDAO.ReadUserById(id);
   if (!user) {
-    return res.status(404).json({ message: `Pas d'utilisateur trouvé` });
+    return res
+      .status(404)
+      .json({ message: `Utilisateur introuvable ou inexistant` });
   }
   return res.status(200).json({
     message: `Utilisateur ${user.username} trouvé avec succès`,
@@ -169,7 +171,9 @@ const deleteOne = async (req, res) => {
   }
   const user = await UserDAO.DeleteUser(id);
   if (!user) {
-    return res.status(404).json({ message: `Utilisateur introuvable` });
+    return res
+      .status(404)
+      .json({ message: `Utilisateur introuvable ou inexistant` });
   } else {
     return res.status(200).json({
       message: `L'utilisateur a été supprimé de la base de données avec succès`,

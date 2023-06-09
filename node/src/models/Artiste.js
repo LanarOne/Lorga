@@ -34,7 +34,7 @@ const Artiste = sequelize.define(
   }
 );
 Photo.hasOne(Artiste, {
-  foreignKey: { allowNull: false, name: "photoId" },
+  foreignKey: { allowNull: false, name: "photoId", unique: true },
   sourceKey: "id",
 });
 Artiste.hasMany(Lien, {

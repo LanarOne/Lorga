@@ -43,9 +43,8 @@ const ReadUserById = async (id) => {
       return null;
     }
     return user;
-  } catch (err) {
-    console.error(err.message);
-    return err;
+  } catch (error) {
+    return Error(error.message);
   }
 };
 

@@ -37,7 +37,7 @@ const Collectif = sequelize.define(
   }
 );
 Photo.hasOne(Collectif, {
-  foreignKey: { allowNull: false, name: "photoId" },
+  foreignKey: { allowNull: false, name: "photoId", unique: true },
   sourceKey: "id",
 });
 Collectif.hasMany(Lien, {
