@@ -56,7 +56,7 @@ const UpdateUser = async (id, data) => {
       return null;
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    User.update(
+    await User.update(
       { email, password: hashedPassword, username, zipCode },
       { where: { id } }
     );
@@ -70,11 +70,12 @@ const UpdateUser = async (id, data) => {
 const UpdateRoleId = async (id, data) => {
   try {
     const user = await User.findByPk(id);
-    const { roleId } = data;
+    const roleId = data;
     if (!user) {
-      return;
+      return null;
     }
-    User.update({ roleId }, { where: { id } });
+    await User.update({ roleId }, { where: { id } });
+    user.roleId = roleId;
     return user;
   } catch (error) {
     return Error(error.message);

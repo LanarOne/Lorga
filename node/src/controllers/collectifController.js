@@ -2,6 +2,7 @@ import { isAdmin } from "../utils/adminUtils.js";
 import { stringIsFilled } from "../utils/stringUtils.js";
 import { CollectifDAO } from "../DAOs/collectifDAO.js";
 import Collectif from "../models/Collectif.js";
+import { UserDAO } from "../DAOs/userDAO.js";
 
 const createCollectif = async (req, res) => {
   const userId = req.params.id;
@@ -12,7 +13,7 @@ const createCollectif = async (req, res) => {
       .json({ message: `Veuillez vous enregistrer ou vous connecter` });
   }
   const admin = await isAdmin(token);
-  if (admin === 1) {
+  if (!admin) {
     return res
       .status(403)
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
@@ -45,6 +46,8 @@ const createCollectif = async (req, res) => {
       photoId,
       userId
     );
+    let id = userId;
+    await UserDAO.UpdateRoleId(id, 3);
     return res.status(201).json({
       message: `Collectif ${collectif.nom} créé avec succès`,
       data: collectif,

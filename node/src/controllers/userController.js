@@ -91,7 +91,7 @@ const readAll = async (req, res) => {
       .json({ message: `Aucun utilisateur n'a été trouvé` });
   }
   return res.status(200).json({
-    message: `Liste des utilisateurs récupéré avec succès`,
+    message: `Liste des utilisateurs récupérée avec succès`,
     data: users,
   });
 };
@@ -117,9 +117,22 @@ const readOne = async (req, res) => {
   });
 };
 const updateOne = async (req, res) => {
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+
+  if (admin === 1) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
+  }
   const id = req.params.id;
   const { email, password, username, zipCode } = req.body;
-  if (!email || !password || !username || !zipCode) {
+  if (
+    !stringIsFilled(email) ||
+    !stringIsFilled(password) ||
+    !stringIsFilled(username) ||
+    !stringIsFilled(zipCode)
+  ) {
     return res
       .status(400)
       .json({ message: `Impossible de modifier les données` });
@@ -139,7 +152,7 @@ const updateRoleId = async (req, res) => {
   const id = req.params.id;
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
-  if (!admin || admin === 1) {
+  if (!admin || admin <= 4) {
     return res
       .status(401)
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
@@ -153,7 +166,9 @@ const updateRoleId = async (req, res) => {
   const data = roleId;
   const user = await UserDAO.UpdateRoleId(id, data);
   if (!user) {
-    return res.status(404).json({ message: `Utilisateur introuvable` });
+    return res
+      .status(404)
+      .json({ message: `Utilisateur introuvable ou inexistant` });
   }
   return res.status(200).json({
     message: `Le role pour l'utilisateur ${user.username} a été mis à jour avec succès`,

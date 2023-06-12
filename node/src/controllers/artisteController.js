@@ -2,6 +2,7 @@ import { stringIsFilled } from "../utils/stringUtils.js";
 import { isAdmin } from "../utils/adminUtils.js";
 import { ArtisteDAO } from "../DAOs/artisteDAO.js";
 import Artiste from "../models/Artiste.js";
+import { UserDAO } from "../DAOs/userDAO.js";
 
 const createArtiste = async (req, res) => {
   const userId = req.params.id;
@@ -46,6 +47,8 @@ const createArtiste = async (req, res) => {
       photoId,
       userId
     );
+    let id = userId;
+    await UserDAO.UpdateRoleId(id, 2);
     return res.status(201).json({
       message: `Artiste ${artiste.nom} créé avec succès`,
       data: artiste,
