@@ -33,6 +33,28 @@ const ReadById = async (id) => {
   }
 };
 
+const ReadByArtisteId = async function lienById(artisteId) {
+  let result = null;
+  try {
+    result = await Lien.findAll({ where: { artisteId } });
+    return result;
+  } catch (error) {
+    console.error(error);
+    return Error(error.message);
+  }
+};
+
+const ReadByCollectifId = async function lienByCoId(collectifId) {
+  let result = null;
+  try {
+    result = await Lien.findAll({ where: { collectifId } });
+    return result;
+  } catch (error) {
+    console.error(error);
+    return Error(error.message);
+  }
+};
+
 const UpdateOne = async (id, data) => {
   let result = null;
   try {
@@ -61,4 +83,12 @@ const DeleteOne = async (id) => {
   }
 };
 
-export const LienDAO = { Create, ReadAll, ReadById, UpdateOne, DeleteOne };
+export const LienDAO = {
+  Create,
+  ReadAll,
+  ReadById,
+  ReadByArtisteId,
+  ReadByCollectifId,
+  UpdateOne,
+  DeleteOne,
+};

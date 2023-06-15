@@ -1,5 +1,6 @@
 import { sequelize } from "../connection/connection.js";
 import { DataTypes } from "sequelize";
+import Boisson from "./Boisson.js";
 
 const Photo = sequelize.define("photo", {
   id: {
@@ -19,5 +20,10 @@ const Photo = sequelize.define("photo", {
     type: DataTypes.TEXT("medium"),
     allowNull: false,
   },
+});
+
+Photo.hasMany(Boisson, {
+  foreignKey: { allowNull: false, name: "photoId" },
+  sourceKey: "id",
 });
 export default Photo;

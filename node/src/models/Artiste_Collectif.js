@@ -1,7 +1,5 @@
 import { sequelize } from "../connection/connection.js";
 import { DataTypes } from "sequelize";
-import Artiste from "./Artiste.js";
-import Collectif from "./Collectif.js";
 
 const Artiste_Collectif = sequelize.define(
   "artiste_collectif",
