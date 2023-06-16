@@ -41,5 +41,4 @@ const Boisson = sequelize.define(
     updatedAt: "updated",
   }
 );
-
 export default Boisson;

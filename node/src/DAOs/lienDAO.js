@@ -58,7 +58,7 @@ const ReadByCollectifId = async function lienByCoId(collectifId) {
 const UpdateOne = async (id, data) => {
   let result = null;
   try {
-    result = Lien.findByPk(id);
+    result = await Lien.findByPk(id);
     const { url, artisteId, collectifId } = data;
     await Lien.update({ url, artisteId, collectifId }, { where: { id } });
     return result;
@@ -72,9 +72,6 @@ const DeleteOne = async (id) => {
   let result = null;
   try {
     result = await Lien.findByPk(id);
-    if (!result) {
-      return null;
-    }
     await result.destroy();
     return `Le lien a été effacé de la base de données avec succès`;
   } catch (error) {
