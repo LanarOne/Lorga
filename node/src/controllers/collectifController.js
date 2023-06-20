@@ -13,7 +13,7 @@ const createCollectif = async (req, res) => {
       .json({ message: `Veuillez vous enregistrer ou vous connecter` });
   }
   const admin = await isAdmin(token);
-  if (!admin) {
+  if (!admin || admin === 1) {
     return res
       .status(403)
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
@@ -47,10 +47,17 @@ const createCollectif = async (req, res) => {
       userId
     );
     let id = userId;
-    await UserDAO.UpdateRoleId(id, 3);
+    if (admin >= 4) {
+      return res.status(201).json({
+        message: `Collectif ${collectif.nom} créé avec succès`,
+        data: collectif,
+      });
+    }
+    const updateRoleId = await UserDAO.UpdateRoleId(id, 4);
     return res.status(201).json({
       message: `Collectif ${collectif.nom} créé avec succès`,
       data: collectif,
+      updateRoleId,
     });
   } catch (error) {
     return Error(error.message);
@@ -71,13 +78,6 @@ const readAllCollectifs = async (req, res) => {
 };
 
 const readOneCollectif = async (req, res) => {
-  // const token = req.headers.authorization;
-  // const admin = await isAdmin(token);
-  // if (!admin || admin === 1) {
-  //   return res.status(401).json({
-  //     message: `Veuillez vous identifiez ou vous inscrire pour accéder à ces informations`,
-  //   });
-  // }
   const id = req.params.id;
   const collectif = await CollectifDAO.ReadById(id);
   if (!collectif) {

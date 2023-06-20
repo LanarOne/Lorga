@@ -11,7 +11,7 @@ const createArtiste = async (req, res) => {
     return res.status(401).json({ message: `Veuillez vous enregistrer` });
   }
   const admin = await isAdmin(token);
-  if (admin === 1) {
+  if (!admin || admin === 1) {
     return res
       .status(403)
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
@@ -47,11 +47,17 @@ const createArtiste = async (req, res) => {
       photoId,
       userId
     );
-    let id = userId;
-    await UserDAO.UpdateRoleId(id, 2);
+    if (admin >= 4) {
+      return res.status(201).json({
+        message: `Artiste ${artiste.nom} créé avec succès`,
+        data: artiste,
+      });
+    }
+    const updateRoleId = await UserDAO.UpdateRoleId(userId, 2);
     return res.status(201).json({
       message: `Artiste ${artiste.nom} créé avec succès`,
       data: artiste,
+      updateRoleId,
     });
   } catch (error) {
     return Error(error.message);
@@ -79,13 +85,6 @@ const readAllArtistes = async (req, res) => {
 };
 
 const readOneArtiste = async (req, res) => {
-  // const token = req.headers.authorization;
-  // const admin = await isAdmin(token);
-  // if (!admin || admin === 1) {
-  //   return res.status(401).json({
-  //     message: `Veuillez vous identifiez ou vous inscrire pour accéder à ces informations`,
-  //   });
-  // }
   const id = req.params.id;
   const artiste = await ArtisteDAO.ReadById(id);
   if (!artiste) {
@@ -97,6 +96,34 @@ const readOneArtiste = async (req, res) => {
     message: `Artiste ${artiste.nom} trouvé avec succès`,
     data: artiste,
   });
+};
+
+const readByUserId = async (req, res) => {
+  let result = null;
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (!admin || admin === 1) {
+    return res.status(401).json({
+      message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
+    });
+  }
+  const userId = req.params.id;
+  let id = userId;
+  const user = await UserDAO.ReadUserById(id);
+  if (!user) {
+    return res
+      .status(404)
+      .json({ message: `Utilisateur introuvable ou inexistant` });
+  }
+  try {
+    result = await ArtisteDAO.ReadByUserId(userId);
+    return res
+      .status(200)
+      .json({ message: `Artiste récupéré avec succès`, data: result });
+  } catch (error) {
+    console.error(error);
+    return Error(error.message);
+  }
 };
 
 const updateOneArtiste = async (req, res) => {
@@ -142,20 +169,20 @@ const deleteOneArtiste = async (req, res) => {
     });
   }
   const id = req.params.id;
-  const artiste = await ArtisteDAO.DeleteOne(id);
-  if (!artiste) {
+  const existingArtiste = await ArtisteDAO.ReadById(id);
+  if (!existingArtiste) {
     return res
       .status(404)
       .json({ message: `Artiste introuvable ou inexistant` });
   }
-  return res
-    .status(200)
-    .json({ message: `Artiste supprimé avec succès de la base de données` });
+  const artiste = await ArtisteDAO.DeleteOne(id);
+  return res.status(200).json({ data: artiste });
 };
 export const ArtisteController = {
   createArtiste,
   readAllArtistes,
   readOneArtiste,
+  readByUserId,
   updateOneArtiste,
   deleteOneArtiste,
 };

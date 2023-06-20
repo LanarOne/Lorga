@@ -17,54 +17,53 @@ const Create = async (nom, description, influences, style, photoId, userId) => {
   }
 };
 const ReadAll = async () => {
+  let result = null;
   try {
-    const collectifs = await Collectif.findAll();
-    if (!collectifs) {
-      return null;
-    }
-    return collectifs;
+    result = await Collectif.findAll();
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const ReadById = async (id) => {
+  let result = null;
   try {
-    const collectif = await Collectif.findByPk(id);
-    if (!collectif) {
-      return;
-    }
-    return collectif;
+    result = await Collectif.findByPk(id);
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const UpdateOne = async (id, data) => {
+  let result = null;
   try {
-    const collectif = await Collectif.findByPk(id);
+    result = await Collectif.findByPk(id);
     const { nom, description, influences, style, photoId } = data;
-    if (!collectif) {
+    if (!result) {
       return;
     }
     await Collectif.update(
       { nom, description, influences, style, photoId },
       { where: { id } }
     );
-    return collectif;
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const DeleteOne = async (id) => {
+  let result = null;
+  let message = `Le collectif a été retiré de la base de donnée`;
   try {
-    const collectif = await Collectif.findByPk(id);
-    if (!collectif) {
+    result = await Collectif.findByPk(id);
+    if (!result) {
       return;
     }
-    await collectif.destroy();
-    return `Le collectif a été retiré de la base de donnée`;
+    await result.destroy();
+    return message;
   } catch (error) {
     return Error(error.message);
   }

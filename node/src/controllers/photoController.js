@@ -1,9 +1,10 @@
 import { PhotoDAO } from "../DAOs/photoDAO.js";
+import { stringIsFilled } from "../utils/stringUtils.js";
 
 const create = async (req, res) => {
   try {
     const { nom, path, alt } = req.body;
-    if (!nom || !path || !alt) {
+    if (!stringIsFilled(nom) || !stringIsFilled(path) || !stringIsFilled(alt)) {
       return res
         .status(400)
         .json({ message: `Veuillez remplir tous les champs` });

@@ -5,6 +5,7 @@ import bookingRoutes from "./routes/BookingRoutes.js";
 import photoRoutes from "./routes/PhotoRoutes.js";
 import lienRoutes from "./routes/LienRoutes.js";
 import BoissonRoutes from "./routes/BoissonRoutes.js";
+import Admin_CollectifRoutes from "./routes/Admin_CollectifRoutes.js";
 
 const initRoutes = (app) => {
   userRoutes(app);
@@ -14,6 +15,7 @@ const initRoutes = (app) => {
   photoRoutes(app);
   lienRoutes(app);
   BoissonRoutes(app);
+  Admin_CollectifRoutes(app);
 };
 
 export default initRoutes;

@@ -12,14 +12,15 @@ const Create = async (email, password, username, zipCode, roleId) => {
   }
 };
 const ReadUserByEmail = async (email) => {
+  let result = null;
   try {
-    const user = await User.findOne({
+    result = await User.findOne({
       where: { email: email },
     });
-    if (!user) {
-      return null;
+    if (!result) {
+      return;
     }
-    return user;
+    return result;
   } catch (err) {
     console.error(err.message);
     return err;
@@ -27,9 +28,10 @@ const ReadUserByEmail = async (email) => {
 };
 
 const ReadAllUsers = async () => {
+  let result = null;
   try {
-    const users = await User.findAll();
-    return users;
+    result = await User.findAll();
+    return result;
   } catch (err) {
     console.error(err.message);
     return err;
@@ -37,30 +39,32 @@ const ReadAllUsers = async () => {
 };
 
 const ReadUserById = async (id) => {
+  let result = null;
   try {
-    const user = await User.findByPk(id);
-    if (!user) {
-      return null;
+    result = await User.findByPk(id);
+    if (!result) {
+      return;
     }
-    return user;
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const UpdateUser = async (id, data) => {
+  let result = null;
   try {
-    const user = await User.findByPk(id);
+    result = await User.findByPk(id);
     const { email, password, username, zipCode } = data;
-    if (!user) {
-      return null;
+    if (!result) {
+      return;
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.update(
       { email, password: hashedPassword, username, zipCode },
       { where: { id } }
     );
-    return user;
+    return result;
   } catch (error) {
     console.error(error.message);
     return Error(error.message);
@@ -68,27 +72,30 @@ const UpdateUser = async (id, data) => {
 };
 
 const UpdateRoleId = async (id, data) => {
+  let result = null;
   try {
-    const user = await User.findByPk(id);
+    result = await User.findByPk(id);
     const roleId = data;
-    if (!user) {
-      return null;
+    if (!result) {
+      return;
     }
     await User.update({ roleId }, { where: { id } });
-    user.roleId = roleId;
-    return user;
+    result.roleId = roleId;
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 const DeleteUser = async (id) => {
+  let result = null;
+  let message = `Utilisateur supprimé de la base de donnée`;
   try {
-    const user = await User.findByPk(id);
-    if (!user) {
-      return null;
+    result = await User.findByPk(id);
+    if (!result) {
+      return;
     }
-    user.destroy();
-    return `Utilisateur supprimé de la base de donnée`;
+    result.destroy();
+    return message;
   } catch (err) {
     console.error(err.message);
     return err;

@@ -95,17 +95,20 @@ async function ReadBySaveurs(saveurs) {
 async function UpdateOne(id, data) {
   let result = null;
   try {
-    result = await Boisson.findByPk(id);
+    // result = await Boisson.findByPk(id);
     const { nom, famille, type, description, recette, saveurs, photoId } = data;
-    await Boisson.update({
-      nom,
-      famille,
-      type,
-      description,
-      recette,
-      saveurs,
-      photoId,
-    });
+    result = await Boisson.update(
+      {
+        nom,
+        famille,
+        type,
+        description,
+        recette,
+        saveurs,
+        photoId,
+      },
+      { where: { id } }
+    );
     return result;
   } catch (error) {
     console.error(error);

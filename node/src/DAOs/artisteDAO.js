@@ -3,7 +3,7 @@ import Artiste from "../models/Artiste.js";
 const Create = async (nom, description, influences, style, photoId, userId) => {
   let result = null;
   try {
-    result = Artiste.create({
+    result = await Artiste.create({
       nom,
       description,
       influences,
@@ -13,30 +13,38 @@ const Create = async (nom, description, influences, style, photoId, userId) => {
     });
     return result;
   } catch (error) {
+    console.error(error);
     return Error(error.message);
   }
 };
 
 const ReadAll = async () => {
+  let result = null;
   try {
-    const artistes = await Artiste.findAll();
-    if (!artistes) {
-      return null;
-    }
-    return artistes;
+    result = await Artiste.findAll();
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const ReadById = async (id) => {
+  let result = null;
   try {
-    const artiste = await Artiste.findByPk(id);
-    if (!artiste) {
-      return null;
-    }
-    return artiste;
+    result = await Artiste.findByPk(id);
+    return result;
   } catch (error) {
+    return Error(error.message);
+  }
+};
+
+const ReadByUserId = async (userId) => {
+  let result = null;
+  try {
+    result = await Artiste.findOne({ where: { userId } });
+    return result;
+  } catch (error) {
+    console.error(error);
     return Error(error.message);
   }
 };
@@ -46,7 +54,7 @@ const UpdateOne = async (id, data) => {
     const artiste = await Artiste.findByPk(id);
     const { nom, description, influences, style, photoId } = data;
     if (!artiste) {
-      return null;
+      return;
     }
     await Artiste.update(
       { nom, description, influences, style, photoId },
@@ -69,4 +77,11 @@ const DeleteOne = async (id) => {
     return Error(error.message);
   }
 };
-export const ArtisteDAO = { Create, ReadAll, ReadById, UpdateOne, DeleteOne };
+export const ArtisteDAO = {
+  Create,
+  ReadAll,
+  ReadById,
+  ReadByUserId,
+  UpdateOne,
+  DeleteOne,
+};

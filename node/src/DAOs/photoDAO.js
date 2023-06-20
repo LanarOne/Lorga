@@ -1,9 +1,10 @@
 import Photo from "../models/Photo.js";
 
 const Create = async (nom, path, alt) => {
+  let result = null;
   try {
-    const photo = await Photo.create({ nom, path, alt });
-    return photo;
+    result = await Photo.create({ nom, path, alt });
+    return result;
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -11,9 +12,10 @@ const Create = async (nom, path, alt) => {
 };
 
 const ReadAllPhotos = async () => {
+  let result = null;
   try {
-    const photos = await Photo.findAll();
-    return photos;
+    result = await Photo.findAll();
+    return result;
   } catch (err) {
     console.error(err.message);
     return err;
@@ -21,26 +23,28 @@ const ReadAllPhotos = async () => {
 };
 
 const ReadPhotoById = async (id) => {
+  let result = null;
   try {
-    const photo = await Photo.findByPk(id);
-    if (!photo) {
-      return null;
+    result = await Photo.findByPk(id);
+    if (!result) {
+      return;
     }
-    return photo;
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const UpdatePhoto = async (id, data) => {
+  let result = null;
   try {
-    const photo = await Photo.findByPk(id);
+    result = await Photo.findByPk(id);
     const { nom, path, alt } = data;
-    if (!photo) {
-      return null;
+    if (!result) {
+      return;
     }
     await Photo.update({ nom, path, alt }, { where: { id } });
-    return photo;
+    return result;
   } catch (error) {
     console.error(error.message);
     return Error(error.message);
@@ -48,13 +52,15 @@ const UpdatePhoto = async (id, data) => {
 };
 
 const DeletePhoto = async (id) => {
+  let result = null;
+  let message = `Photo deleted from the database`;
   try {
-    const photo = await Photo.findByPk(id);
-    if (!photo) {
-      return null;
+    result = await Photo.findByPk(id);
+    if (!result) {
+      return;
     }
-    await photo.destroy();
-    return `Photo deleted from the database`;
+    await result.destroy();
+    return message;
   } catch (err) {
     console.error(err.message);
     return err;

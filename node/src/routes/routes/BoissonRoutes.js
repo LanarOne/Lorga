@@ -15,6 +15,8 @@ const BoissonRoutes = (app) => {
     "/readbysaveurs/:saveurs",
     BoissonController.readBoissonsBySaveurs
   );
+  router.put("/update/:id", BoissonController.updateOneBoisson);
+  router.delete("/deleteone/:id", BoissonController.deleteOneBoisson);
 
   app.use("/boisson", router);
 };

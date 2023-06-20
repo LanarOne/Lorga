@@ -109,7 +109,7 @@ const readBookingsByUserId = async (req, res) => {
   }
   const userId = req.params.id;
   const bookings = await BookingDAO.ReadBookingsByUserId(userId);
-  if (bookings.length === 0) {
+  if (!bookings || !bookings.length) {
     return res
       .status(404)
       .json({ message: `Il n'y a pas de réservation pour cet utilisateur` });
@@ -169,6 +169,12 @@ const updateOneBooking = async (req, res) => {
 
 const deleteOneBooking = async (req, res) => {
   const id = req.params.id;
+  const existingBooking = await BookingDAO.ReadBookingById(id);
+  if (!existingBooking) {
+    return res
+      .status(404)
+      .json({ message: `Booking introuvable ou inexistant` });
+  }
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
   if (!admin) {
@@ -177,15 +183,10 @@ const deleteOneBooking = async (req, res) => {
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
   }
   const booking = await BookingDAO.DeleteOneBooking(id);
-  if (!booking) {
-    return res
-      .status(404)
-      .json({ message: `Réservation introuvable ou inexistante` });
-  } else {
-    return res.status(200).json({
-      message: `La réservation a été supprimé de la base de données avec succès`,
-    });
-  }
+  return res.status(200).json({
+    message: `La réservation a été supprimé de la base de données avec succès`,
+    data: booking,
+  });
 };
 export const BookingController = {
   createBooking,

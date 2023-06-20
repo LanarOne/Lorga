@@ -24,71 +24,68 @@ const Create = async (
   }
 };
 const Confirm = async (id, confirmation) => {
+  let result = null;
   try {
     const booking = await Booking.findByPk(id);
     if (!booking || !confirmation) {
-      return;
+      return result;
     }
-    Booking.update(confirmation, { where: { id } });
-    return booking;
+    result = await Booking.update(confirmation, { where: { id } });
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const ReadAllBookings = async () => {
+  let result = null;
   try {
-    const bookings = await Booking.findAll();
-    return bookings;
+    result = await Booking.findAll();
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const ReadBookingById = async (id) => {
+  let result = null;
   try {
-    const booking = await Booking.findByPk(id);
-    if (!booking) {
-      return;
-    }
-    return booking;
+    result = await Booking.findByPk(id);
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const ReadBookingsByUserId = async (userId) => {
+  let result = null;
   try {
-    const bookings = await Booking.findAll({ where: { userId } });
-    if (!bookings) {
-      return;
-    }
-    return bookings;
+    result = await Booking.findAll({ where: { userId } });
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const ReadBookingsByCollectifId = async (collectifId) => {
+  let result = null;
   try {
-    const bookings = await Booking.findAll({ where: { collectifId } });
-    if (!bookings) {
-      return;
-    }
-    return bookings;
+    result = await Booking.findAll({ where: { collectifId } });
+    return result;
   } catch (error) {
     return Error(error.message);
   }
 };
 
 const UpdateOneBooking = async (id, data) => {
+  let result = null;
   try {
-    const booking = await Booking.findByPk(id);
+    result = await Booking.findByPk(id);
     const { date, time, description, nbr_invite, collectifId } = data;
-    if (!booking) {
+    if (!result) {
       return;
     }
-    const updatedBooking = Booking.update(
+    const updatedBooking = await Booking.update(
       { date, time, description, nbr_invite, collectifId },
       { where: { id } }
     );
@@ -99,13 +96,14 @@ const UpdateOneBooking = async (id, data) => {
 };
 
 const DeleteOneBooking = async (id) => {
+  let result = null;
   try {
     const booking = await Booking.findByPk(id);
     if (!booking) {
-      return;
+      return result;
     }
-    const destroyTarget = booking.destroy();
-    return destroyTarget;
+    result = await booking.destroy();
+    return result;
   } catch (error) {
     return Error(error.message);
   }

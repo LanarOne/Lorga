@@ -70,10 +70,11 @@ const UpdateOne = async (id, data) => {
 
 const DeleteOne = async (id) => {
   let result = null;
+  let message = `Le lien a été effacé de la base de données avec succès`;
   try {
     result = await Lien.findByPk(id);
     await result.destroy();
-    return `Le lien a été effacé de la base de données avec succès`;
+    return message;
   } catch (error) {
     console.error(error);
     return Error(error.message);

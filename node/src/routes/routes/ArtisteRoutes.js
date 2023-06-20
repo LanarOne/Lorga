@@ -6,6 +6,7 @@ const ArtisteRoutes = (app) => {
   router.post("/create/:id", ArtisteController.createArtiste);
   router.get("/readall", ArtisteController.readAllArtistes);
   router.get("/readone/:id", ArtisteController.readOneArtiste);
+  router.get("/readbyuserid/:id", ArtisteController.readByUserId);
   router.put("/updateone/:id", ArtisteController.updateOneArtiste);
   router.delete("/deleteone/:id", ArtisteController.deleteOneArtiste);
 

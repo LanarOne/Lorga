@@ -2,21 +2,34 @@ import { stringIsFilled } from "../utils/stringUtils.js";
 import Lien from "../models/Lien.js";
 import { LienDAO } from "../DAOs/lienDAO.js";
 import { isAdmin } from "../utils/adminUtils.js";
+import { ArtisteDAO } from "../DAOs/artisteDAO.js";
+import { CollectifDAO } from "../DAOs/collectifDAO.js";
 
 const createLien = async (req, res) => {
   let result = null;
   try {
     const { url, artisteId, collectifId } = req.body;
+    console.log(artisteId);
     if (!stringIsFilled(url)) {
       return res
         .status(400)
         .json({ message: `Tous les champs sont obligatoires` });
     }
-    const existingLien = await Lien.findOne({ where: { url } });
-    if (existingLien) {
-      return res
-        .status(409)
-        .json({ message: `Ce lien est déjà présent en base de données` });
+    if (artisteId) {
+      const existingArtiste = await ArtisteDAO.ReadById(artisteId);
+      if (!existingArtiste) {
+        return res
+          .status(404)
+          .json({ message: `Artiste introuvable ou inexistant` });
+      }
+    }
+    if (collectifId) {
+      const existingCollectif = await CollectifDAO.ReadById(collectifId);
+      if (!existingCollectif) {
+        return res
+          .status(404)
+          .json({ message: `Collectif introuvable ou inexistant` });
+      }
     }
     result = await LienDAO.Create(url, artisteId, collectifId);
     return res
@@ -117,6 +130,10 @@ const updateOneLien = async function updateone(req, res) {
       .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
   }
   const id = req.params.id;
+  const existingLien = await LienDAO.ReadById(id);
+  if (!existingLien) {
+    return res.status(404).json({ message: `Lien introuvable ou inexistant` });
+  }
   const { url, artisteId, collectifId } = req.body;
   if (!stringIsFilled(url)) {
     return res
@@ -126,11 +143,24 @@ const updateOneLien = async function updateone(req, res) {
   if (!artisteId && !collectifId) {
     return res.status(406).json({ message: `ID manquant` });
   }
+  if (artisteId) {
+    const existingArtiste = await ArtisteDAO.ReadById(artisteId);
+    if (!existingArtiste) {
+      return res
+        .status(404)
+        .json({ message: `Artiste introuvable ou inexistant` });
+    }
+  }
+  if (collectifId) {
+    const existingCollectif = await CollectifDAO.ReadById(collectifId);
+    if (!existingCollectif) {
+      return res
+        .status(404)
+        .json({ message: `Collectif introuvable ou inexistant` });
+    }
+  }
   const data = { url, artisteId, collectifId };
   result = await LienDAO.UpdateOne(id, data);
-  if (!result) {
-    return res.status(404).json({ message: `Lien introuvable ou inexistant` });
-  }
   return res
     .status(200)
     .json({ message: `Lien mis à jour avec succès`, data: result });
@@ -139,6 +169,10 @@ const updateOneLien = async function updateone(req, res) {
 const deleteOneLien = async function deleteOne(req, res) {
   let result = null;
   const id = req.params.id;
+  const existingLien = await LienDAO.ReadById(id);
+  if (!existingLien) {
+    return res.status(404).json({ message: `Lien introuvable ou inexistant` });
+  }
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
   if (admin === 1) {
@@ -147,12 +181,9 @@ const deleteOneLien = async function deleteOne(req, res) {
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
   }
   result = await LienDAO.DeleteOne(id);
-  if (!result || !id) {
-    return res.status(404).json({ message: `Lien introuvable ou inexistant` });
-  }
-  return res
-    .status(200)
-    .json({ message: `Le lien a bien été supprimé de la base de données` });
+  return res.status(200).json({
+    data: result,
+  });
 };
 export const LienController = {
   createLien,

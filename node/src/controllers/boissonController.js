@@ -1,6 +1,7 @@
 import { stringIsFilled } from "../utils/stringUtils.js";
 import Boisson from "../models/Boisson.js";
 import { BoissonDAO } from "../DAOs/boissonDAO.js";
+import { isAdmin } from "../utils/adminUtils.js";
 
 let result = null;
 async function createBoisson(req, res) {
@@ -111,6 +112,63 @@ async function readBoissonsBySaveurs(req, res) {
     data: result,
   });
 }
+
+async function updateOneBoisson(req, res) {
+  const id = req.params.id;
+  const existingBoisson = await BoissonDAO.ReadById(id);
+  if (!existingBoisson) {
+    return res
+      .status(404)
+      .json({ message: `Boisson introuvable ou inexistante` });
+  }
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (admin === 1) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
+  }
+  const { nom, famille, type, description, recette, saveurs, photoId } =
+    req.body;
+  if (
+    !stringIsFilled(nom) ||
+    !stringIsFilled(famille) ||
+    !stringIsFilled(type) ||
+    !stringIsFilled(description) ||
+    !stringIsFilled(recette) ||
+    !stringIsFilled(saveurs) ||
+    !photoId
+  ) {
+    return res
+      .status(406)
+      .json({ message: `Tous les champs doivent être remplis correctement` });
+  }
+  const data = { nom, famille, type, description, recette, saveurs, photoId };
+  result = await BoissonDAO.UpdateOne(id, data);
+  return res
+    .status(200)
+    .json({ message: `Boisson mis à jour avec succès`, data: result });
+}
+async function deleteOneBoisson(req, res) {
+  const id = req.params.id;
+  const existingBoisson = await BoissonDAO.ReadById(id);
+  if (!existingBoisson) {
+    return res
+      .status(404)
+      .json({ message: `Boisson introuvable ou inexistante` });
+  }
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (admin === 1) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+  }
+  result = await BoissonDAO.DeleteOne(id);
+  return res.status(200).json({
+    data: result,
+  });
+}
 export const BoissonController = {
   createBoisson,
   readAllBoissons,
@@ -118,4 +176,6 @@ export const BoissonController = {
   readBoissonsByFamille,
   readBoissonsByType,
   readBoissonsBySaveurs,
+  updateOneBoisson,
+  deleteOneBoisson,
 };
