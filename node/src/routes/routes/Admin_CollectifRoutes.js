@@ -10,6 +10,7 @@ const Admin_CollectifRoutes = (app) => {
     "/readbycollectifid/:id",
     Admin_CollectifController.readByCollectifId
   );
+  router.delete("/deleteone/:id", Admin_CollectifController.deleteOne);
 
   app.use("/admin_collectif", router);
 };

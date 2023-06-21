@@ -3,6 +3,7 @@ import { stringIsFilled } from "../utils/stringUtils.js";
 import { CollectifDAO } from "../DAOs/collectifDAO.js";
 import Collectif from "../models/Collectif.js";
 import { UserDAO } from "../DAOs/userDAO.js";
+import { Admin_CollectifDAO } from "../DAOs/admin_collectifDAO.js";
 
 const createCollectif = async (req, res) => {
   const userId = req.params.id;
@@ -13,7 +14,7 @@ const createCollectif = async (req, res) => {
       .json({ message: `Veuillez vous enregistrer ou vous connecter` });
   }
   const admin = await isAdmin(token);
-  if (!admin || admin === 1) {
+  if (!admin) {
     return res
       .status(403)
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
@@ -48,16 +49,28 @@ const createCollectif = async (req, res) => {
     );
     let id = userId;
     if (admin >= 4) {
+      const collectifId = collectif.id;
+      const admin_collectif = await Admin_CollectifDAO.Create(
+        userId,
+        collectifId
+      );
       return res.status(201).json({
         message: `Collectif ${collectif.nom} créé avec succès`,
         data: collectif,
+        admin_collectif,
       });
     }
+    const collectifId = collectif.id;
+    const admin_collectif = await Admin_CollectifDAO.Create(
+      userId,
+      collectifId
+    );
     const updateRoleId = await UserDAO.UpdateRoleId(id, 4);
     return res.status(201).json({
       message: `Collectif ${collectif.nom} créé avec succès`,
       data: collectif,
       updateRoleId,
+      admin_collectif,
     });
   } catch (error) {
     return Error(error.message);

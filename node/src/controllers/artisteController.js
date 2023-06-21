@@ -47,7 +47,7 @@ const createArtiste = async (req, res) => {
       photoId,
       userId
     );
-    if (admin >= 4) {
+    if (admin >= 3) {
       return res.status(201).json({
         message: `Artiste ${artiste.nom} créé avec succès`,
         data: artiste,

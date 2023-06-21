@@ -2,11 +2,12 @@ import { isAdmin } from "../utils/adminUtils.js";
 import { Admin_CollectifDAO } from "../DAOs/admin_collectifDAO.js";
 import { UserDAO } from "../DAOs/userDAO.js";
 import { ArtisteDAO } from "../DAOs/artisteDAO.js";
+import { CollectifDAO } from "../DAOs/collectifDAO.js";
+
 async function createAdmin_collectif(req, res) {
   let result = null;
   const userId = req.params.id;
-  let id = userId;
-  const user = await UserDAO.ReadUserById(id);
+  const user = await UserDAO.ReadUserById(userId);
   if (!user) {
     return res
       .status(404)
@@ -28,19 +29,20 @@ async function createAdmin_collectif(req, res) {
   }
   try {
     const { collectifId } = req.body;
-    if (!userId || !collectifId) {
-      return res.status(406).json({ message: `informations manquante` });
+    const existingCollectif = await CollectifDAO.ReadById(collectifId);
+    if (!existingCollectif) {
+      return res
+        .status(404)
+        .json({ message: `Collectif introuvable ou inexistant` });
     }
     result = await Admin_CollectifDAO.Create(userId, collectifId);
     let id = user.id;
     const changeRoleId = UserDAO.UpdateRoleId(id, 3);
-    return res
-      .status(201)
-      .json({
-        message: `Admin_collectif créé avec succès`,
-        data: result,
-        changeRoleId,
-      });
+    return res.status(201).json({
+      message: `Admin_collectif créé avec succès`,
+      data: result,
+      changeRoleId,
+    });
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -137,16 +139,17 @@ async function deleteOne(req, res) {
         .json({ message: `Admins introuvable ou inexistant` });
     }
     let userId = existingAdmin.userId;
-    console.log(existingAdmin, userId);
+    result = await Admin_CollectifDAO.DeleteOne(id);
     const isStillAdmin = await Admin_CollectifDAO.ReadByUserId(userId);
     if (!isStillAdmin || isStillAdmin.length === 0) {
       const changeRoleId = await UserDAO.UpdateRoleId(userId, 1);
       result = await Admin_CollectifDAO.DeleteOne(id);
-      return res
-        .status(200)
-        .json({ message: `Admin supprimé avec succès`, data: result });
+      return res.status(200).json({
+        message: `Admin supprimé avec succès`,
+        data: result,
+        changeRoleId,
+      });
     }
-    result = await Admin_CollectifDAO.DeleteOne(id);
     return res
       .status(200)
       .json({ message: `Admin supprimé avec succès`, data: result });
@@ -160,4 +163,5 @@ export const Admin_CollectifController = {
   readAllAdmins,
   readAdminByUserId,
   readByCollectifId,
+  deleteOne,
 };
