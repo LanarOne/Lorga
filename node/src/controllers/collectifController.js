@@ -6,20 +6,20 @@ import { UserDAO } from "../DAOs/userDAO.js";
 import { Admin_CollectifDAO } from "../DAOs/admin_collectifDAO.js";
 
 const createCollectif = async (req, res) => {
-  const userId = req.params.id;
-  const token = req.headers.authorization;
-  if (!token) {
-    return res
-      .status(401)
-      .json({ message: `Veuillez vous enregistrer ou vous connecter` });
-  }
-  const admin = await isAdmin(token);
-  if (!admin) {
-    return res
-      .status(403)
-      .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
-  }
   try {
+    const userId = req.params.id;
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: `Veuillez vous enregistrer ou vous connecter` });
+    }
+    const admin = await isAdmin(token);
+    if (!admin) {
+      return res
+        .status(403)
+        .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+    }
     const { nom, description, influences, style, photoId } = req.body;
     const existingNomDeCollectif = await Collectif.findOne({ where: { nom } });
     if (existingNomDeCollectif) {
@@ -73,89 +73,112 @@ const createCollectif = async (req, res) => {
       admin_collectif,
     });
   } catch (error) {
-    return Error(error.message);
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 };
 
 const readAllCollectifs = async (req, res) => {
-  const collectifs = await CollectifDAO.ReadAll();
-  if (!collectifs) {
-    return res
-      .status(404)
-      .json({ message: `Impossible de récupérer la liste des collectifs` });
+  try {
+    const collectifs = await CollectifDAO.ReadAll();
+    if (!collectifs) {
+      return res
+        .status(404)
+        .json({ message: `Impossible de récupérer la liste des collectifs` });
+    }
+    return res.status(200).json({
+      message: `Liste des collectifs récupérée avec succès`,
+      data: collectifs,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  return res.status(200).json({
-    message: `Liste des collectifs récupérée avec succès`,
-    data: collectifs,
-  });
 };
 
 const readOneCollectif = async (req, res) => {
-  const id = req.params.id;
-  const collectif = await CollectifDAO.ReadById(id);
-  if (!collectif) {
-    return res
-      .status(404)
-      .json({ message: `Collectif inexistant ou introuvable` });
+  try {
+    const id = req.params.id;
+    const collectif = await CollectifDAO.ReadById(id);
+    if (!collectif) {
+      return res
+        .status(404)
+        .json({ message: `Collectif inexistant ou introuvable` });
+    }
+    return res.status(200).json({
+      message: `Collectif ${collectif.nom} trouvé avec succès`,
+      data: collectif,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  return res.status(200).json({
-    message: `Collectif ${collectif.nom} trouvé avec succès`,
-    data: collectif,
-  });
 };
 
 const updateOneCollectif = async (req, res) => {
-  const token = req.headers.authorization;
-  const admin = await isAdmin(token);
-  if (!admin || admin === 1) {
-    return res.status(401).json({
-      message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
+  try {
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (!admin || admin === 1) {
+      return res.status(401).json({
+        message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
+      });
+    }
+    const id = req.params.id;
+    const { nom, description, influences, style, photoId } = req.body;
+    if (
+      !stringIsFilled(nom) ||
+      !stringIsFilled(description) ||
+      !stringIsFilled(influences) ||
+      !stringIsFilled(style) ||
+      !photoId
+    ) {
+      return res.status(406).json({
+        message: `Tous les champs doivent être remplis pour validation`,
+      });
+    }
+    const data = { nom, description, influences, style, photoId };
+    const collectif = await CollectifDAO.UpdateOne(id, data);
+    if (!collectif) {
+      return res
+        .status(404)
+        .json({ message: `Collectif inexistant ou introuvable` });
+    }
+    return res.status(200).json({
+      message: `Collectif ${collectif.nom} mis à jour avec succès`,
+      data: collectif,
     });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  const id = req.params.id;
-  const { nom, description, influences, style, photoId } = req.body;
-  if (
-    !stringIsFilled(nom) ||
-    !stringIsFilled(description) ||
-    !stringIsFilled(influences) ||
-    !stringIsFilled(style) ||
-    !photoId
-  ) {
-    return res.status(406).json({
-      message: `Tous les champs doivent être remplis pour validation`,
-    });
-  }
-  const data = { nom, description, influences, style, photoId };
-  const collectif = await CollectifDAO.UpdateOne(id, data);
-  if (!collectif) {
-    return res
-      .status(404)
-      .json({ message: `Collectif inexistant ou introuvable` });
-  }
-  return res.status(200).json({
-    message: `Collectif ${collectif.nom} mis à jour avec succès`,
-    data: collectif,
-  });
 };
 
 const deleteOneCollectif = async (req, res) => {
-  const token = req.headers.authorization;
-  const admin = await isAdmin(token);
-  if (!admin || admin === 1) {
-    return res.status(401).json({
-      message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
-    });
-  }
-  const id = req.params.id;
-  const collectif = await CollectifDAO.DeleteOne(id);
-  if (!collectif) {
+  try {
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (!admin || admin === 1) {
+      return res.status(401).json({
+        message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
+      });
+    }
+    const id = req.params.id;
+    const collectif = await CollectifDAO.DeleteOne(id);
+    if (!collectif) {
+      return res
+        .status(404)
+        .json({ message: `Collectif introuvable ou inexistant` });
+    }
     return res
-      .status(404)
-      .json({ message: `Collectif introuvable ou inexistant` });
+      .status(200)
+      .json({
+        message: `Collectif supprimé avec succès de la base de données`,
+      });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  return res
-    .status(200)
-    .json({ message: `Collectif supprimé avec succès de la base de données` });
 };
 export const CollectifController = {
   createCollectif,

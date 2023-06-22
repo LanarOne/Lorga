@@ -41,133 +41,168 @@ async function createBoisson(req, res) {
       .json({ message: `Boisson créée avec succès`, data: result });
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 }
 
 async function readAllBoissons(req, res) {
-  result = await BoissonDAO.ReadAll();
-  if (!result) {
-    return res
-      .status(404)
-      .json({ message: `Liste des boissons introuvables ou inexistante` });
+  try {
+    result = await BoissonDAO.ReadAll();
+    if (!result) {
+      return res
+        .status(404)
+        .json({ message: `Liste des boissons introuvables ou inexistante` });
+    }
+    return res.status(200).json({
+      message: `Liste des boissons récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  return res.status(200).json({
-    message: `Liste des boissons récupérée avec succès`,
-    data: result,
-  });
 }
 
 async function readOneBoissonById(req, res) {
-  const id = req.params.id;
-  result = await BoissonDAO.ReadById(id);
-  if (!result) {
+  try {
+    const id = req.params.id;
+    result = await BoissonDAO.ReadById(id);
+    if (!result) {
+      return res
+        .status(404)
+        .json({ message: `Boisson introuvable ou inexistante` });
+    }
     return res
-      .status(404)
-      .json({ message: `Boisson introuvable ou inexistante` });
+      .status(200)
+      .json({ message: `Boisson récupérée avec succès`, data: result });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  return res
-    .status(200)
-    .json({ message: `Boisson récupérée avec succès`, data: result });
 }
 
 async function readBoissonsByFamille(req, res) {
-  const famille = req.params.famille;
-  result = await BoissonDAO.ReadByFamille(famille);
-  if (!result || result.length === 0) {
-    return res
-      .status(404)
-      .json({ message: `Famille introuvable ou inexistante` });
+  try {
+    const famille = req.params.famille;
+    result = await BoissonDAO.ReadByFamille(famille);
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Famille introuvable ou inexistante` });
+    }
+    return res.status(200).json({
+      message: `Liste de boisson triées par famille récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  return res.status(200).json({
-    message: `Liste de boisson triées par famille récupérée avec succès`,
-    data: result,
-  });
 }
 
 async function readBoissonsByType(req, res) {
-  const type = req.params.type;
-  result = await BoissonDAO.ReadByType(type);
-  if (!result || result.length === 0) {
-    return res
-      .status(404)
-      .json({ message: `Type de boisson introuvable ou inexistante` });
+  try {
+    const type = req.params.type;
+    result = await BoissonDAO.ReadByType(type);
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Type de boisson introuvable ou inexistante` });
+    }
+    return res.status(200).json({
+      message: `Liste de boisson triées par type récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  return res.status(200).json({
-    message: `Liste de boisson triées par type récupérée avec succès`,
-    data: result,
-  });
 }
 
 async function readBoissonsBySaveurs(req, res) {
-  const saveurs = req.params.saveurs;
-  result = await BoissonDAO.ReadBySaveurs(saveurs);
-  if (!result || result.length === 0) {
-    return res
-      .status(404)
-      .json({ message: `Type de saveur introuvable ou inexistante` });
+  try {
+    const saveurs = req.params.saveurs;
+    result = await BoissonDAO.ReadBySaveurs(saveurs);
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Type de saveur introuvable ou inexistante` });
+    }
+    return res.status(200).json({
+      message: `Liste de boisson triées par saveurs récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  return res.status(200).json({
-    message: `Liste de boisson triées par saveurs récupérée avec succès`,
-    data: result,
-  });
 }
 
 async function updateOneBoisson(req, res) {
-  const id = req.params.id;
-  const existingBoisson = await BoissonDAO.ReadById(id);
-  if (!existingBoisson) {
+  try {
+    const id = req.params.id;
+    const existingBoisson = await BoissonDAO.ReadById(id);
+    if (!existingBoisson) {
+      return res
+        .status(404)
+        .json({ message: `Boisson introuvable ou inexistante` });
+    }
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (admin === 1) {
+      return res
+        .status(401)
+        .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
+    }
+    const { nom, famille, type, description, recette, saveurs, photoId } =
+      req.body;
+    if (
+      !stringIsFilled(nom) ||
+      !stringIsFilled(famille) ||
+      !stringIsFilled(type) ||
+      !stringIsFilled(description) ||
+      !stringIsFilled(recette) ||
+      !stringIsFilled(saveurs) ||
+      !photoId
+    ) {
+      return res
+        .status(406)
+        .json({ message: `Tous les champs doivent être remplis correctement` });
+    }
+    const data = { nom, famille, type, description, recette, saveurs, photoId };
+    result = await BoissonDAO.UpdateOne(id, data);
     return res
-      .status(404)
-      .json({ message: `Boisson introuvable ou inexistante` });
+      .status(200)
+      .json({ message: `Boisson mis à jour avec succès`, data: result });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  const token = req.headers.authorization;
-  const admin = await isAdmin(token);
-  if (admin === 1) {
-    return res
-      .status(401)
-      .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
-  }
-  const { nom, famille, type, description, recette, saveurs, photoId } =
-    req.body;
-  if (
-    !stringIsFilled(nom) ||
-    !stringIsFilled(famille) ||
-    !stringIsFilled(type) ||
-    !stringIsFilled(description) ||
-    !stringIsFilled(recette) ||
-    !stringIsFilled(saveurs) ||
-    !photoId
-  ) {
-    return res
-      .status(406)
-      .json({ message: `Tous les champs doivent être remplis correctement` });
-  }
-  const data = { nom, famille, type, description, recette, saveurs, photoId };
-  result = await BoissonDAO.UpdateOne(id, data);
-  return res
-    .status(200)
-    .json({ message: `Boisson mis à jour avec succès`, data: result });
 }
 async function deleteOneBoisson(req, res) {
-  const id = req.params.id;
-  const existingBoisson = await BoissonDAO.ReadById(id);
-  if (!existingBoisson) {
-    return res
-      .status(404)
-      .json({ message: `Boisson introuvable ou inexistante` });
+  try {
+    const id = req.params.id;
+    const existingBoisson = await BoissonDAO.ReadById(id);
+    if (!existingBoisson) {
+      return res
+        .status(404)
+        .json({ message: `Boisson introuvable ou inexistante` });
+    }
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (admin === 1) {
+      return res
+        .status(401)
+        .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+    }
+    result = await BoissonDAO.DeleteOne(id);
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  const token = req.headers.authorization;
-  const admin = await isAdmin(token);
-  if (admin === 1) {
-    return res
-      .status(401)
-      .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
-  }
-  result = await BoissonDAO.DeleteOne(id);
-  return res.status(200).json({
-    data: result,
-  });
 }
 export const BoissonController = {
   createBoisson,

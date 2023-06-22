@@ -60,69 +60,72 @@ const createArtiste = async (req, res) => {
       updateRoleId,
     });
   } catch (error) {
-    return Error(error.message);
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 };
 
 const readAllArtistes = async (req, res) => {
-  // const token = req.headers.authorization;
-  // const admin = await isAdmin(token);
-  // if (!admin) {
-  //   return res.status(401).json({
-  //     message: `Veuillez vous identifiez ou vous inscrire pour accéder à ces informations`,
-  //   });
-  // }
-  const artistes = await ArtisteDAO.ReadAll();
-  if (!artistes) {
-    return res
-      .status(404)
-      .json({ message: `Impossible de récupérer la liste des artistes` });
+  try {
+    const artistes = await ArtisteDAO.ReadAll();
+    if (!artistes) {
+      return res
+        .status(404)
+        .json({ message: `Impossible de récupérer la liste des artistes` });
+    }
+    return res.status(200).json({
+      message: `Liste des artistes récupérée avec succès`,
+      data: artistes,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  return res.status(200).json({
-    message: `Liste des artistes récupérée avec succès`,
-    data: artistes,
-  });
 };
 
 const readOneArtiste = async (req, res) => {
-  const id = req.params.id;
-  const artiste = await ArtisteDAO.ReadById(id);
-  if (!artiste) {
-    return res
-      .status(404)
-      .json({ message: `Artiste inexistant ou impossible à trouver` });
+  try {
+    const id = req.params.id;
+    const artiste = await ArtisteDAO.ReadById(id);
+    if (!artiste) {
+      return res
+        .status(404)
+        .json({ message: `Artiste inexistant ou impossible à trouver` });
+    }
+    return res.status(200).json({
+      message: `Artiste ${artiste.nom} trouvé avec succès`,
+      data: artiste,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  return res.status(200).json({
-    message: `Artiste ${artiste.nom} trouvé avec succès`,
-    data: artiste,
-  });
 };
 
 const readByUserId = async (req, res) => {
   let result = null;
-  const token = req.headers.authorization;
-  const admin = await isAdmin(token);
-  if (!admin || admin === 1) {
-    return res.status(401).json({
-      message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
-    });
-  }
-  const userId = req.params.id;
-  let id = userId;
-  const user = await UserDAO.ReadUserById(id);
-  if (!user) {
-    return res
-      .status(404)
-      .json({ message: `Utilisateur introuvable ou inexistant` });
-  }
   try {
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (!admin || admin === 1) {
+      return res.status(401).json({
+        message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
+      });
+    }
+    const userId = req.params.id;
+    const user = await UserDAO.ReadUserById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: `Utilisateur introuvable ou inexistant` });
+    }
     result = await ArtisteDAO.ReadByUserId(userId);
     return res
       .status(200)
       .json({ message: `Artiste récupéré avec succès`, data: result });
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 };
 
@@ -134,30 +137,35 @@ const updateOneArtiste = async (req, res) => {
       message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
     });
   }
-  const id = req.params.id;
-  const { nom, description, influences, style, photoId } = req.body;
-  if (
-    !stringIsFilled(nom) ||
-    !stringIsFilled(description) ||
-    !stringIsFilled(influences) ||
-    !stringIsFilled(style) ||
-    !photoId
-  ) {
-    return res.status(406).json({
-      message: `Tous les champs doivent être remplis pour validation`,
+  try {
+    const id = req.params.id;
+    const { nom, description, influences, style, photoId } = req.body;
+    if (
+      !stringIsFilled(nom) ||
+      !stringIsFilled(description) ||
+      !stringIsFilled(influences) ||
+      !stringIsFilled(style) ||
+      !photoId
+    ) {
+      return res.status(406).json({
+        message: `Tous les champs doivent être remplis pour validation`,
+      });
+    }
+    const data = { nom, description, influences, style, photoId };
+    const artiste = await ArtisteDAO.UpdateOne(id, data);
+    if (!artiste) {
+      return res
+        .status(404)
+        .json({ message: `Artiste inexistant ou introuvable` });
+    }
+    return res.status(200).json({
+      message: `Artiste ${artiste.nom} a été mis à jour avec succès`,
+      data: artiste,
     });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  const data = { nom, description, influences, style, photoId };
-  const artiste = await ArtisteDAO.UpdateOne(id, data);
-  if (!artiste) {
-    return res
-      .status(404)
-      .json({ message: `Artiste inexistant ou introuvable` });
-  }
-  return res.status(200).json({
-    message: `Artiste ${artiste.nom} a été mis à jour avec succès`,
-    data: artiste,
-  });
 };
 
 const deleteOneArtiste = async (req, res) => {
@@ -168,15 +176,20 @@ const deleteOneArtiste = async (req, res) => {
       message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
     });
   }
-  const id = req.params.id;
-  const existingArtiste = await ArtisteDAO.ReadById(id);
-  if (!existingArtiste) {
-    return res
-      .status(404)
-      .json({ message: `Artiste introuvable ou inexistant` });
+  try {
+    const id = req.params.id;
+    const existingArtiste = await ArtisteDAO.ReadById(id);
+    if (!existingArtiste) {
+      return res
+        .status(404)
+        .json({ message: `Artiste introuvable ou inexistant` });
+    }
+    const artiste = await ArtisteDAO.DeleteOne(id);
+    return res.status(200).json({ data: artiste });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
-  const artiste = await ArtisteDAO.DeleteOne(id);
-  return res.status(200).json({ data: artiste });
 };
 export const ArtisteController = {
   createArtiste,

@@ -11,7 +11,7 @@ export const Connection = async () => {
     await sequelize.authenticate();
     console.log("Connection established successfully");
   } catch (error) {
-    return Error(error.message);
+    throw new Error(error.message);
   }
 };
 
@@ -20,7 +20,7 @@ export const Sync = async () => {
     await sequelize.sync();
     console.log("Sync successful");
   } catch (error) {
-    return Error(error.message);
+    throw new Error(error.message);
   }
 };
 export default { sequelize };

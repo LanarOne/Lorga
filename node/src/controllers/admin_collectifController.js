@@ -61,7 +61,7 @@ async function readAllAdmins(req, res) {
   try {
     result = await Admin_CollectifDAO.ReadAll();
     if (!result || result.length === 0) {
-      return res.status(404)({
+      return res.status(404).json({
         message: `Liste des admins introuvables ou inexistante`,
       });
     }
