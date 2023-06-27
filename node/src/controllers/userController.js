@@ -10,7 +10,8 @@ const signUp = async (req, res) => {
   try {
     const roleId = 1;
     const password = await bcrypt.hash(req.body.password, 10);
-    const { email, username, zipCode } = req.body;
+    let { email, username, zipCode } = req.body;
+    email = decodeURIComponent(email);
     if (!emailIsValid(email)) {
       return res
         .status(400)
@@ -24,9 +25,9 @@ const signUp = async (req, res) => {
     }
     if (
       !stringIsFilled(email) ||
-      !stringIsFilled(password) ||
       !stringIsFilled(username) ||
-      !stringIsFilled(zipCode)
+      !stringIsFilled(password) ||
+      !zipCode
     ) {
       return res
         .status(400)
@@ -53,7 +54,8 @@ const signUp = async (req, res) => {
 };
 const signIn = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    email = decodeURIComponent(email);
 
     if (!stringIsFilled(email) || !stringIsFilled(password)) {
       return res
@@ -148,12 +150,13 @@ const updateOne = async (req, res) => {
         .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
     }
     const id = req.params.id;
-    const { email, password, username, zipCode } = req.body;
+    let { email, password, username, zipCode } = req.body;
+    email = decodeURIComponent(email);
     if (
       !stringIsFilled(email) ||
       !stringIsFilled(password) ||
       !stringIsFilled(username) ||
-      !stringIsFilled(zipCode)
+      !zipCode
     ) {
       return res
         .status(400)
@@ -162,7 +165,9 @@ const updateOne = async (req, res) => {
     const data = { email, password, username, zipCode };
     const user = await UserDAO.UpdateUser(id, data);
     if (!user) {
-      return res.status(404).json({ message: `Utilisateur introuvable` });
+      return res
+        .status(404)
+        .json({ message: `Utilisateur introuvable ou inexistant` });
     }
     return res.status(200).json({
       message: `Utilisateur ${user.username} mis à jour avec succès`,

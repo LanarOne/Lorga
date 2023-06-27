@@ -2,15 +2,20 @@ import { Router } from "express";
 import { UserController } from "../../controllers/userController.js";
 import { jwtMiddleware } from "../../jwt/jwt.js";
 
-const userRoutes = (app) => {
+const userRoutes = (app, sm) => {
   const router = Router();
-  router.post("/signup", UserController.signUp);
-  router.post("/signin", UserController.signIn);
-  router.get("/getall", jwtMiddleware, UserController.readAll);
-  router.get("/getone/:id", jwtMiddleware, UserController.readOne);
-  router.put("/update/:id", jwtMiddleware, UserController.updateOne);
-  router.put("/updateroleid/:id", jwtMiddleware, UserController.updateRoleId);
-  router.delete("/delete/:id", jwtMiddleware, UserController.deleteOne);
+  router.post("/signup", sm, UserController.signUp);
+  router.post("/signin", sm, UserController.signIn);
+  router.get("/getall", sm, jwtMiddleware, UserController.readAll);
+  router.get("/getone/:id", sm, jwtMiddleware, UserController.readOne);
+  router.put("/update/:id", sm, jwtMiddleware, UserController.updateOne);
+  router.put(
+    "/updateroleid/:id",
+    sm,
+    jwtMiddleware,
+    UserController.updateRoleId
+  );
+  router.delete("/delete/:id", sm, jwtMiddleware, UserController.deleteOne);
 
   app.use("/users", router);
 };

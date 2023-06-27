@@ -20,9 +20,6 @@ const User = sequelize.define(
       unique: {
         message: "email already registered",
       },
-      validate: {
-        isEmail: true,
-      },
     },
     password: {
       type: DataTypes.STRING,

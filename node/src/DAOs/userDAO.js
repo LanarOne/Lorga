@@ -54,16 +54,18 @@ const ReadUserById = async (id) => {
 const UpdateUser = async (id, data) => {
   let result = null;
   try {
-    result = await User.findByPk(id);
+    const user = await User.findByPk(id);
     const { email, password, username, zipCode } = data;
-    if (!result) {
+    if (!user) {
       return;
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.update(
-      { email, password: hashedPassword, username, zipCode },
-      { where: { id } }
-    );
+    result = await user.update({
+      email,
+      password: hashedPassword,
+      username,
+      zipCode,
+    });
     return result;
   } catch (error) {
     console.error(error.message);

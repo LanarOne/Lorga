@@ -80,16 +80,16 @@ const ReadBookingsByCollectifId = async (collectifId) => {
 const UpdateOneBooking = async (id, data) => {
   let result = null;
   try {
-    result = await Booking.findByPk(id);
+    let booking = await Booking.findByPk(id);
     const { date, time, description, nbr_invite, collectifId } = data;
-    if (!result) {
+    if (!booking) {
       return;
     }
-    const updatedBooking = await Booking.update(
+    result = await Booking.update(
       { date, time, description, nbr_invite, collectifId },
       { where: { id } }
     );
-    return updatedBooking;
+    return result;
   } catch (error) {
     return Error(error.message);
   }

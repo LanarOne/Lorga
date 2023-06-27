@@ -28,7 +28,7 @@ const Booking = sequelize.define(
     },
     confirmation: {
       type: DataTypes.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
     },
   },
   {

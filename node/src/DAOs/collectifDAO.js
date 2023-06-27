@@ -39,15 +39,18 @@ const ReadById = async (id) => {
 const UpdateOne = async (id, data) => {
   let result = null;
   try {
-    result = await Collectif.findByPk(id);
+    let collectif = await Collectif.findByPk(id);
     const { nom, description, influences, style, photoId } = data;
-    if (!result) {
+    if (!collectif) {
       return;
     }
-    await Collectif.update(
-      { nom, description, influences, style, photoId },
-      { where: { id } }
-    );
+    result = await collectif.update({
+      nom,
+      description,
+      influences,
+      style,
+      photoId,
+    });
     return result;
   } catch (error) {
     return Error(error.message);

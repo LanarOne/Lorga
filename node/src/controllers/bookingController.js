@@ -1,5 +1,6 @@
 import { isAdmin } from "../utils/adminUtils.js";
 import { BookingDAO } from "../DAOs/bookingDAO.js";
+import { isString } from "../utils/stringUtils.js";
 
 const createBooking = async (req, res) => {
   try {
@@ -15,6 +16,7 @@ const createBooking = async (req, res) => {
         .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
     }
     const { date, time, description, nbr_invite, collectifId } = req.body;
+    const confirmation = false;
     if (!date || !time || !nbr_invite || !userId) {
       return res
         .status(406)
@@ -25,6 +27,7 @@ const createBooking = async (req, res) => {
       time,
       description,
       nbr_invite,
+      confirmation,
       collectifId,
       userId
     );
@@ -39,24 +42,32 @@ const createBooking = async (req, res) => {
 
 const confirmBooking = async (req, res) => {
   try {
+    let result = null;
     const id = req.params.id;
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
-    if (!admin || admin <= 3) {
+    if (!admin || admin <= 5) {
       return res
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
     }
-    const confirmation = req.body;
-    const booking = await BookingDAO.Confirm(id, confirmation);
+    const booking = await BookingDAO.ReadBookingById(id);
+
     if (!booking) {
       return res
         .status(404)
         .json({ message: `Réservation inexistante ou introuvable` });
     }
+    let { confirmation } = !booking.confirmation;
+    if (typeof confirmation !== "boolean") {
+      return res.status(406).json({
+        message: `Cette valeur n'est pas acceptable pour cette données`,
+      });
+    }
+    result = await BookingDAO.Confirm(id, confirmation);
     return res
       .status(200)
-      .json({ message: `Réservation confirmée avec succès`, data: booking });
+      .json({ message: `Réservation confirmée avec succès`, data: result });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: `Erreur interne`, data: error });

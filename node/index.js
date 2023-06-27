@@ -24,4 +24,10 @@ const LaunchServer = async () => {
     return Error(error.message);
   }
 };
-LaunchServer();
+LaunchServer()
+  .then(() => {
+    console.log(`Le serveur tourne`);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
