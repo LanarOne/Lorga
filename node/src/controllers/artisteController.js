@@ -47,7 +47,8 @@ const createArtiste = async (req, res) => {
       photoId,
       userId
     );
-    if (admin >= 3) {
+    const user = await UserDAO.ReadUserById(userId);
+    if (user.roleId >= 2) {
       return res.status(201).json({
         message: `Artiste ${artiste.nom} créé avec succès`,
         data: artiste,
@@ -84,17 +85,19 @@ const readAllArtistes = async (req, res) => {
 };
 
 const readOneArtiste = async (req, res) => {
+  let result = null;
   try {
     const id = req.params.id;
-    const artiste = await ArtisteDAO.ReadById(id);
-    if (!artiste) {
+    result = await ArtisteDAO.ReadById(id);
+    console.log(result);
+    if (!result || result.length === 0) {
       return res
         .status(404)
         .json({ message: `Artiste inexistant ou impossible à trouver` });
     }
     return res.status(200).json({
-      message: `Artiste ${artiste.nom} trouvé avec succès`,
-      data: artiste,
+      message: `Artiste ${result.nom} trouvé avec succès`,
+      data: result,
     });
   } catch (error) {
     console.error(error);

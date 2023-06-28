@@ -22,7 +22,16 @@ const ReadAll = async () => {
   let result = null;
   try {
     result = await Artiste.findAll();
-    return result;
+    return result.map((artiste) => {
+      const decodedData = {
+        nom: decodeURIComponent(artiste.nom),
+        description: decodeURIComponent(artiste.description),
+        influences: decodeURIComponent(artiste.influences),
+        style: decodeURIComponent(artiste.style),
+        photoId: artiste.photoId,
+      };
+      return decodedData;
+    });
   } catch (error) {
     return Error(error.message);
   }
@@ -32,7 +41,16 @@ const ReadById = async (id) => {
   let result = null;
   try {
     result = await Artiste.findByPk(id);
-    return result;
+    if (!result || result.length === 0) {
+      return;
+    }
+    return {
+      nom: decodeURIComponent(result.nom),
+      description: decodeURIComponent(result.description),
+      influences: decodeURIComponent(result.influences),
+      style: decodeURIComponent(result.style),
+      photoId: result.photoId,
+    };
   } catch (error) {
     return Error(error.message);
   }
@@ -42,7 +60,13 @@ const ReadByUserId = async (userId) => {
   let result = null;
   try {
     result = await Artiste.findOne({ where: { userId } });
-    return result;
+    return {
+      nom: decodeURIComponent(result.nom),
+      description: decodeURIComponent(result.description),
+      influences: decodeURIComponent(result.influences),
+      style: decodeURIComponent(result.style),
+      photoId: result.photoId,
+    };
   } catch (error) {
     console.error(error);
     return Error(error.message);

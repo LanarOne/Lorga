@@ -20,7 +20,17 @@ const ReadAll = async () => {
   let result = null;
   try {
     result = await Collectif.findAll();
-    return result;
+
+    return result.map((collectif) => {
+      const decodedData = {
+        nom: decodeURIComponent(collectif.nom),
+        description: decodeURIComponent(collectif.description),
+        influences: decodeURIComponent(collectif.influences),
+        style: decodeURIComponent(collectif.style),
+        photoId: collectif.photoId,
+      };
+      return decodedData;
+    });
   } catch (error) {
     return Error(error.message);
   }
@@ -30,7 +40,16 @@ const ReadById = async (id) => {
   let result = null;
   try {
     result = await Collectif.findByPk(id);
-    return result;
+    if (!result || result.length === 0) {
+      return;
+    }
+    return {
+      nom: decodeURIComponent(result.nom),
+      description: decodeURIComponent(result.description),
+      influences: decodeURIComponent(result.influences),
+      style: decodeURIComponent(result.style),
+      photoId: result.photoId,
+    };
   } catch (error) {
     return Error(error.message);
   }

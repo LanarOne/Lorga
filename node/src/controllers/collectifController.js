@@ -48,7 +48,8 @@ const createCollectif = async (req, res) => {
       userId
     );
     let id = userId;
-    if (admin >= 4) {
+    const user = await UserDAO.ReadUserById(id);
+    if (user.roleId >= 4) {
       const collectifId = collectif.id;
       const admin_collectif = await Admin_CollectifDAO.Create(
         userId,
@@ -79,16 +80,17 @@ const createCollectif = async (req, res) => {
 };
 
 const readAllCollectifs = async (req, res) => {
+  let result = null;
   try {
-    const collectifs = await CollectifDAO.ReadAll();
-    if (!collectifs) {
+    result = await CollectifDAO.ReadAll();
+    if (!result || result.length === 0) {
       return res
         .status(404)
         .json({ message: `Impossible de récupérer la liste des collectifs` });
     }
     return res.status(200).json({
       message: `Liste des collectifs récupérée avec succès`,
-      data: collectifs,
+      data: result,
     });
   } catch (error) {
     console.error(error);
@@ -97,17 +99,18 @@ const readAllCollectifs = async (req, res) => {
 };
 
 const readOneCollectif = async (req, res) => {
+  let result = null;
   try {
     const id = req.params.id;
-    const collectif = await CollectifDAO.ReadById(id);
-    if (!collectif) {
+    result = await CollectifDAO.ReadById(id);
+    if (!result || result.length === 0) {
       return res
         .status(404)
         .json({ message: `Collectif inexistant ou introuvable` });
     }
     return res.status(200).json({
-      message: `Collectif ${collectif.nom} trouvé avec succès`,
-      data: collectif,
+      message: `Collectif ${result.nom} trouvé avec succès`,
+      data: result,
     });
   } catch (error) {
     console.error(error);

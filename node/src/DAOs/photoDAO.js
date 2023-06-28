@@ -15,7 +15,14 @@ const ReadAllPhotos = async () => {
   let result = null;
   try {
     result = await Photo.findAll();
-    return result;
+    return result.map((photo) => {
+      const decodedData = {
+        nom: decodeURIComponent(photo.nom),
+        path: decodeURIComponent(photo.path),
+        alt: decodeURIComponent(photo.alt),
+      };
+      return decodedData;
+    });
   } catch (err) {
     console.error(err.message);
     return err;
@@ -26,10 +33,11 @@ const ReadPhotoById = async (id) => {
   let result = null;
   try {
     result = await Photo.findByPk(id);
-    if (!result) {
-      return;
-    }
-    return result;
+    return {
+      nom: decodeURIComponent(result.nom),
+      path: decodeURIComponent(result.path),
+      alt: decodeURIComponent(result.alt),
+    };
   } catch (error) {
     return Error(error.message);
   }

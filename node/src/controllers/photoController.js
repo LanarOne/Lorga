@@ -3,7 +3,7 @@ import { stringIsFilled } from "../utils/stringUtils.js";
 
 const create = async (req, res) => {
   try {
-    const { nom, path, alt } = req.body;
+    let { nom, path, alt } = req.body;
     if (!stringIsFilled(nom) || !stringIsFilled(path) || !stringIsFilled(alt)) {
       return res
         .status(400)
@@ -23,23 +23,23 @@ const create = async (req, res) => {
 };
 
 const readAll = async (req, res) => {
+  let result = null;
   try {
-    const photos = await PhotoDAO.ReadAllPhotos();
-    if (!photos) {
+    result = await PhotoDAO.ReadAllPhotos();
+    if (!result || result.length === 0) {
       return res
         .status(404)
         .json({ message: `Impossible de charger la liste des photos` });
     }
     return res.status(200).json({
       message: `Liste des photos récupérée avec succès`,
-      data: photos,
+      data: result,
     });
   } catch (err) {
     console.error(err.message);
     return res.status(500).json({ message: `Erreur interne` });
   }
 };
-// ... previous code ...
 
 const readById = async (req, res) => {
   try {
@@ -63,7 +63,7 @@ const readById = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nom, path, alt } = req.body;
+    let { nom, path, alt } = req.body;
     const data = { nom, path, alt };
     const updatedPhoto = await PhotoDAO.UpdatePhoto(id, data);
     if (!updatedPhoto) {

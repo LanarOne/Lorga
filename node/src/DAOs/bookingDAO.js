@@ -5,6 +5,7 @@ const Create = async (
   time,
   description,
   nbr_invite,
+  confirmation,
   collectifId,
   userId
 ) => {
@@ -15,6 +16,7 @@ const Create = async (
       time,
       description,
       nbr_invite,
+      confirmation,
       collectifId,
       userId,
     });
@@ -27,7 +29,7 @@ const Confirm = async (id, confirmation) => {
   let result = null;
   try {
     const booking = await Booking.findByPk(id);
-    if (!booking || !confirmation) {
+    if (!booking) {
       return result;
     }
     result = await Booking.update(confirmation, { where: { id } });
@@ -41,7 +43,16 @@ const ReadAllBookings = async () => {
   let result = null;
   try {
     result = await Booking.findAll();
-    return result;
+    return result.map((booking) => {
+      const decodedData = {
+        date: booking.date,
+        time: booking.time,
+        description: decodeURIComponent(booking.description),
+        nbr_invite: booking.nbr_invite,
+        collectifId: booking.collectifId,
+      };
+      return decodedData;
+    });
   } catch (error) {
     return Error(error.message);
   }

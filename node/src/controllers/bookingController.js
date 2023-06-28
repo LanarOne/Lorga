@@ -1,10 +1,11 @@
 import { isAdmin } from "../utils/adminUtils.js";
 import { BookingDAO } from "../DAOs/bookingDAO.js";
-import { isString } from "../utils/stringUtils.js";
 
 const createBooking = async (req, res) => {
+  let result = null;
   try {
     const userId = req.params.id;
+    console.log(userId);
     const token = req.headers.authorization;
     if (!token) {
       return res.status(401).json({ message: `Veuillez vous enregistrer` });
@@ -22,7 +23,7 @@ const createBooking = async (req, res) => {
         .status(406)
         .json({ message: `Tous les champs doivent être remplis` });
     }
-    const booking = await BookingDAO.Create(
+    result = await BookingDAO.Create(
       date,
       time,
       description,
@@ -31,9 +32,10 @@ const createBooking = async (req, res) => {
       collectifId,
       userId
     );
+    console.log(result);
     return res
       .status(201)
-      .json({ message: `Réservation passée avec succès`, data: booking });
+      .json({ message: `Réservation passée avec succès`, data: result });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: `Erreur interne`, data: error });
@@ -75,6 +77,7 @@ const confirmBooking = async (req, res) => {
 };
 
 const readAllBookings = async (req, res) => {
+  let result = null;
   try {
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
@@ -83,15 +86,15 @@ const readAllBookings = async (req, res) => {
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
     }
-    const bookings = await BookingDAO.ReadAllBookings();
-    if (!bookings) {
+    result = await BookingDAO.ReadAllBookings();
+    if (!result || result.length === 0) {
       return res
         .status(404)
         .json({ message: `Aucune réservation n'a été trouvée` });
     }
     return res.status(200).json({
       message: `Liste des réservations récupérée avec succès`,
-      data: bookings,
+      data: result,
     });
   } catch (error) {
     console.error(error);
