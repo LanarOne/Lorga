@@ -171,6 +171,7 @@ async function updateOneBoisson(req, res) {
     }
     const data = { nom, famille, type, description, recette, saveurs, photoId };
     result = await BoissonDAO.UpdateOne(id, data);
+    console.log(existingBoisson);
     return res
       .status(200)
       .json({ message: `Boisson mis à jour avec succès`, data: result });

@@ -8,6 +8,7 @@ export const isAdmin = async (token) => {
   }
   const decoded = jwt.verify(token, secret);
   const userId = decoded.data;
+  console.log(userId);
   const user = await UserDAO.ReadUserById(userId);
   return user.roleId;
 };

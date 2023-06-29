@@ -15,7 +15,14 @@ const ReadAll = async () => {
   let result = null;
   try {
     result = await Lien.findAll();
-    return result;
+    if (!result || result.length === 0)
+      return result.map((lien) => {
+        return {
+          url: decodeURIComponent(lien.url),
+          artisteId: lien.artisteId,
+          collectifId: lien.collectifId,
+        };
+      });
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -26,7 +33,11 @@ const ReadById = async (id) => {
   let result = null;
   try {
     result = await Lien.findByPk(id);
-    return result;
+    return {
+      url: decodeURIComponent(result.url),
+      artisteId: result.artisteId,
+      collectifId: result.collectifId,
+    };
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -37,7 +48,13 @@ const ReadByArtisteId = async function lienById(artisteId) {
   let result = null;
   try {
     result = await Lien.findAll({ where: { artisteId } });
-    return result;
+    return result.map((lien) => {
+      return {
+        url: decodeURIComponent(lien.url),
+        artisteId: lien.artisteId,
+        collectifId: lien.collectifId,
+      };
+    });
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -48,7 +65,13 @@ const ReadByCollectifId = async function lienByCoId(collectifId) {
   let result = null;
   try {
     result = await Lien.findAll({ where: { collectifId } });
-    return result;
+    return result.map((lien) => {
+      return {
+        url: decodeURIComponent(lien.url),
+        artisteId: lien.artisteId,
+        collectifId: lien.collectifId,
+      };
+    });
   } catch (error) {
     console.error(error);
     return Error(error.message);

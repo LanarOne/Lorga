@@ -8,7 +8,6 @@ const createLien = async (req, res) => {
   let result = null;
   try {
     const { url, artisteId, collectifId } = req.body;
-    console.log(artisteId);
     if (!stringIsFilled(url)) {
       return res
         .status(400)

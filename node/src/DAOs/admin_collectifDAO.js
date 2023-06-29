@@ -15,7 +15,9 @@ async function ReadAll() {
   let result = null;
   try {
     result = await Admin_collectif.findAll();
-    return result;
+    return result.map((adm_co) => {
+      return { userId: adm_co.userId, collectifId: adm_co.collectifId };
+    });
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -26,7 +28,7 @@ async function ReadById(id) {
   let result = null;
   try {
     result = await Admin_collectif.findByPk(id);
-    return result;
+    return { userId: result.userId, collectifId: result.collectifId };
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -37,7 +39,12 @@ async function ReadByUserId(userId) {
   let result = null;
   try {
     result = await Admin_collectif.findAll({ where: { userId } });
-    return result;
+    if (!result || result.length === 0) {
+      return;
+    }
+    return result.map((adm_co) => {
+      return { userId: adm_co.userId, collectifId: adm_co.collectifId };
+    });
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -48,7 +55,12 @@ async function ReadByCollectifId(collectifId) {
   let result = null;
   try {
     result = await Admin_collectif.findAll({ where: { collectifId } });
-    return result;
+    if (!result || result.length === 0) {
+      return;
+    }
+    return result.map((adm_co) => {
+      return { userId: adm_co.userId, collectifId: adm_co.collectifId };
+    });
   } catch (error) {
     console.error(error);
     return Error(error.message);

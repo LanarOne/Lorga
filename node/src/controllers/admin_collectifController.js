@@ -15,7 +15,9 @@ async function createAdmin_collectif(req, res) {
   }
   const artiste = await ArtisteDAO.ReadByUserId(userId);
   if (artiste) {
-    return res.status(406).json({ message: `wrong path` });
+    return res
+      .status(406)
+      .json({ message: `Page artiste existante pour ce profil` });
   }
   const token = req.headers.authorization;
   if (!token) {
@@ -36,12 +38,16 @@ async function createAdmin_collectif(req, res) {
         .json({ message: `Collectif introuvable ou inexistant` });
     }
     result = await Admin_CollectifDAO.Create(userId, collectifId);
-    let id = user.id;
-    const changeRoleId = UserDAO.UpdateRoleId(id, 3);
+    if (user.roleId >= 3) {
+      return res.status(201).json({
+        message: `Admin_collectif créé avec succès`,
+        data: result,
+      });
+    }
+    const changeRoleId = UserDAO.UpdateRoleId(userId, 3);
     return res.status(201).json({
       message: `Admin_collectif créé avec succès`,
       data: result,
-      changeRoleId,
     });
   } catch (error) {
     console.error(error);

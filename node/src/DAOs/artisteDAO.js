@@ -59,7 +59,11 @@ const ReadById = async (id) => {
 const ReadByUserId = async (userId) => {
   let result = null;
   try {
-    result = await Artiste.findOne({ where: { userId } });
+    result = await Artiste.findAll({ where: { userId } });
+    if (!result || result.length === 0) {
+      return;
+    }
+    console.log(result);
     return {
       nom: decodeURIComponent(result.nom),
       description: decodeURIComponent(result.description),

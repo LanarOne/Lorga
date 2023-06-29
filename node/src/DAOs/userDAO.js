@@ -20,7 +20,12 @@ const ReadUserByEmail = async (email) => {
     if (!result) {
       return;
     }
-    return result;
+    return {
+      id: result.id,
+      email: result.email,
+      password: result.password,
+      username: decodeURIComponent(result.username),
+    };
   } catch (err) {
     console.error(err.message);
     return err;
@@ -31,7 +36,14 @@ const ReadAllUsers = async () => {
   let result = null;
   try {
     result = await User.findAll();
-    return result;
+    return result.map((user) => {
+      return {
+        email: user.email,
+        username: decodeURIComponent(user.username),
+        zipcode: user.zipCode,
+        roleId: user.roleId,
+      };
+    });
   } catch (err) {
     console.error(err.message);
     return err;
@@ -45,7 +57,12 @@ const ReadUserById = async (id) => {
     if (!result) {
       return;
     }
-    return result;
+    return {
+      email: result.email,
+      username: decodeURIComponent(result.username),
+      zipcode: result.zipCode,
+      roleId: result.roleId,
+    };
   } catch (error) {
     return Error(error.message);
   }

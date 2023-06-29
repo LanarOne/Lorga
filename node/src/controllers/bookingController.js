@@ -193,8 +193,7 @@ const updateOneBooking = async (req, res) => {
     }
     const id = req.params.id;
     const { date, time, description, nbr_invite, collectifId } = req.body;
-    console.log(date, time, description, nbr_invite, collectifId);
-    if (!date || !time || !description || !nbr_invite || !collectifId) {
+    if (!date || !time || !description || !nbr_invite) {
       return res
         .status(400)
         .json({ message: `Tous les champs doivent être remplis` });

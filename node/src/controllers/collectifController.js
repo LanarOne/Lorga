@@ -8,7 +8,8 @@ import { Admin_CollectifDAO } from "../DAOs/admin_collectifDAO.js";
 const createCollectif = async (req, res) => {
   try {
     const userId = req.params.id;
-    const token = req.headers.authorization;
+    const token = decodeURIComponent(req.headers.authorization);
+    console.log(token);
     if (!token) {
       return res
         .status(401)
@@ -19,6 +20,11 @@ const createCollectif = async (req, res) => {
       return res
         .status(403)
         .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+    }
+    if (admin === 4) {
+      return res
+        .status(400)
+        .json({ message: `Vous ne pouvez créer qu'un seul collectif` });
     }
     const { nom, description, influences, style, photoId } = req.body;
     const existingNomDeCollectif = await Collectif.findOne({ where: { nom } });

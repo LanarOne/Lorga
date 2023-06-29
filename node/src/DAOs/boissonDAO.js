@@ -32,7 +32,17 @@ async function ReadAll() {
   let result = null;
   try {
     result = await Boisson.findAll();
-    return result;
+    return result.map((boisson) => {
+      return {
+        nom: decodeURIComponent(boisson.nom),
+        famille: decodeURIComponent(boisson.famille),
+        type: decodeURIComponent(boisson.type),
+        description: decodeURIComponent(boisson.description),
+        recette: decodeURIComponent(boisson.recette),
+        saveurs: decodeURIComponent(boisson.saveurs),
+        photoId: boisson.photoId,
+      };
+    });
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -43,7 +53,18 @@ async function ReadById(id) {
   let result = null;
   try {
     result = await Boisson.findByPk(id);
-    return result;
+    if (!result || result.length === 0) {
+      return;
+    }
+    return {
+      nom: decodeURIComponent(result.nom),
+      famille: decodeURIComponent(result.famille),
+      type: decodeURIComponent(result.type),
+      description: decodeURIComponent(result.description),
+      recette: decodeURIComponent(result.recette),
+      saveurs: decodeURIComponent(result.saveurs),
+      photoId: result.photoId,
+    };
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -54,7 +75,17 @@ async function ReadByFamille(famille) {
   let result = null;
   try {
     result = await Boisson.findAll({ where: { famille } });
-    return result;
+    return result.map((boisson) => {
+      return {
+        nom: decodeURIComponent(boisson.nom),
+        famille: decodeURIComponent(boisson.famille),
+        type: decodeURIComponent(boisson.type),
+        description: decodeURIComponent(boisson.description),
+        recette: decodeURIComponent(boisson.recette),
+        saveurs: decodeURIComponent(boisson.saveurs),
+        photoId: boisson.photoId,
+      };
+    });
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -65,7 +96,17 @@ async function ReadByType(type) {
   let result = null;
   try {
     result = await Boisson.findAll({ where: { type } });
-    return result;
+    return result.map((boisson) => {
+      return {
+        nom: decodeURIComponent(boisson.nom),
+        famille: decodeURIComponent(boisson.famille),
+        type: decodeURIComponent(boisson.type),
+        description: decodeURIComponent(boisson.description),
+        recette: decodeURIComponent(boisson.recette),
+        saveurs: decodeURIComponent(boisson.saveurs),
+        photoId: boisson.photoId,
+      };
+    });
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -85,7 +126,17 @@ async function ReadBySaveurs(saveurs) {
         where: { saveurs: { [Op.like]: `%${saveursArray[0]}%` } },
       });
     }
-    return result;
+    return result.map((boisson) => {
+      return {
+        nom: decodeURIComponent(boisson.nom),
+        famille: decodeURIComponent(boisson.famille),
+        type: decodeURIComponent(boisson.type),
+        description: decodeURIComponent(boisson.description),
+        recette: decodeURIComponent(boisson.recette),
+        saveurs: decodeURIComponent(boisson.saveurs),
+        photoId: boisson.photoId,
+      };
+    });
   } catch (error) {
     console.error(error);
     return Error(error.message);
@@ -95,7 +146,6 @@ async function ReadBySaveurs(saveurs) {
 async function UpdateOne(id, data) {
   let result = null;
   try {
-    // result = await Boisson.findByPk(id);
     const { nom, famille, type, description, recette, saveurs, photoId } = data;
     result = await Boisson.update(
       {

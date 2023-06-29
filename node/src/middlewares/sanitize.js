@@ -1,6 +1,6 @@
 import { isString } from "../utils/stringUtils.js";
 
-const excludedFields = ["date", "time"];
+const excludedFields = ["date", "time", "token"];
 const sanitize = (obj) => {
   const keys = Object.keys(obj);
   const sanitized = keys.reduce((toBuild, key) => {

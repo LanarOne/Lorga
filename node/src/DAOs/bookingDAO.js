@@ -62,7 +62,16 @@ const ReadBookingById = async (id) => {
   let result = null;
   try {
     result = await Booking.findByPk(id);
-    return result;
+    if (!result || result.length === 0) {
+      return;
+    }
+    return {
+      date: result.date,
+      time: result.time,
+      description: decodeURIComponent(result.description),
+      nbr_invite: result.nbr_invite,
+      collectifId: result.collectifId,
+    };
   } catch (error) {
     return Error(error.message);
   }
@@ -72,7 +81,16 @@ const ReadBookingsByUserId = async (userId) => {
   let result = null;
   try {
     result = await Booking.findAll({ where: { userId } });
-    return result;
+    return result.map((booking) => {
+      const decodedData = {
+        date: booking.date,
+        time: booking.time,
+        description: decodeURIComponent(booking.description),
+        nbr_invite: booking.nbr_invite,
+        collectifId: booking.collectifId,
+      };
+      return decodedData;
+    });
   } catch (error) {
     return Error(error.message);
   }
@@ -82,7 +100,16 @@ const ReadBookingsByCollectifId = async (collectifId) => {
   let result = null;
   try {
     result = await Booking.findAll({ where: { collectifId } });
-    return result;
+    return result.map((booking) => {
+      const decodedData = {
+        date: booking.date,
+        time: booking.time,
+        description: decodeURIComponent(booking.description),
+        nbr_invite: booking.nbr_invite,
+        collectifId: booking.collectifId,
+      };
+      return decodedData;
+    });
   } catch (error) {
     return Error(error.message);
   }
