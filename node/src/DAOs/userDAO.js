@@ -58,6 +58,7 @@ const ReadUserById = async (id) => {
       return;
     }
     return {
+      id: result.id,
       email: result.email,
       username: decodeURIComponent(result.username),
       zipcode: result.zipCode,

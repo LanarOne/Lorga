@@ -9,7 +9,6 @@ const createCollectif = async (req, res) => {
   try {
     const userId = req.params.id;
     const token = decodeURIComponent(req.headers.authorization);
-    console.log(token);
     if (!token) {
       return res
         .status(401)
