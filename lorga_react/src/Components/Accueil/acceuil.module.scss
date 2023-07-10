@@ -1,0 +1,14 @@
+@use "src/Style/variables";
+
+.main {
+  z-index: 10;
+  font-size: var(--title1-fs);
+  color: var(--body-color);
+  position: relative;
+  background-color: var(--background-color);
+  color: var(--body-color);
+  & .ntm {
+    //position: absolute;
+    //bottom: -150px;
+  }
+}

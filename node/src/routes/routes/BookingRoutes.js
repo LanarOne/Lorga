@@ -16,7 +16,7 @@ const bookingRoutes = (app, sm) => {
     jwtMiddleware,
     BookingController.confirmBooking
   );
-  router.get("/readall", sm, jwtMiddleware, BookingController.readAllBookings);
+  router.get("/readall", sm, BookingController.readAllBookings);
   router.get(
     "/readonebyid/:id",
     sm,

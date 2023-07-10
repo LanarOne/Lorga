@@ -32,7 +32,7 @@ const Confirm = async (id, confirmation) => {
     if (!booking) {
       return result;
     }
-    result = await Booking.update(confirmation, { where: { id } });
+    result = await Booking.update({ confirmation }, { where: { id } });
     return result;
   } catch (error) {
     return Error(error.message);
@@ -70,6 +70,7 @@ const ReadBookingById = async (id) => {
       time: result.time,
       description: decodeURIComponent(result.description),
       nbr_invite: result.nbr_invite,
+      confirmation: result.confirmation,
       collectifId: result.collectifId,
     };
   } catch (error) {

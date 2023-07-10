@@ -23,6 +23,7 @@ const ReadAll = async () => {
 
     return result.map((collectif) => {
       const decodedData = {
+        collectifId: collectif.id,
         nom: decodeURIComponent(collectif.nom),
         description: decodeURIComponent(collectif.description),
         influences: decodeURIComponent(collectif.influences),

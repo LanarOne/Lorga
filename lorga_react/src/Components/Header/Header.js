@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import logo from "../../public/medias/lorgaLogo.jpg";
+import logo2 from "../../public/medias/lorgaLogo2.jpg";
 import mc from "./header.module.scss";
 import photoPda from "../../public/medias/photoPda.jpg";
 const Header = () => {
@@ -28,7 +29,7 @@ const Header = () => {
         />
       </div>
       <div className={`${mc.blocLogo}`}>
-        <img src={logo} alt="Logo de Lorga" />
+        <img src={logo2} alt="Logo de Lorga" />
       </div>
     </header>
   );

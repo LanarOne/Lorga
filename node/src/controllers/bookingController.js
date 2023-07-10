@@ -60,12 +60,7 @@ const confirmBooking = async (req, res) => {
         .status(404)
         .json({ message: `Réservation inexistante ou introuvable` });
     }
-    let { confirmation } = !booking.confirmation;
-    if (typeof confirmation !== "boolean") {
-      return res.status(406).json({
-        message: `Cette valeur n'est pas acceptable pour cette données`,
-      });
-    }
+    let confirmation = true;
     result = await BookingDAO.Confirm(id, confirmation);
     return res
       .status(200)
@@ -79,13 +74,13 @@ const confirmBooking = async (req, res) => {
 const readAllBookings = async (req, res) => {
   let result = null;
   try {
-    const token = req.headers.authorization;
-    const admin = await isAdmin(token);
-    if (admin === 1) {
-      return res
-        .status(401)
-        .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
-    }
+    // const token = req.headers.authorization;
+    // const admin = await isAdmin(token);
+    // if (admin === 1) {
+    //   return res
+    //     .status(401)
+    //     .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
+    // }
     result = await BookingDAO.ReadAllBookings();
     if (!result || result.length === 0) {
       return res

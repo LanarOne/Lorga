@@ -13,7 +13,7 @@ const CollectifRoutes = (app, sm) => {
   router.get(
     "/readall",
     sm,
-    jwtMiddleware,
+    // jwtMiddleware,
     CollectifController.readAllCollectifs
   );
   router.get(

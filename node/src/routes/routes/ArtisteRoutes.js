@@ -10,7 +10,7 @@ const ArtisteRoutes = (app, sm) => {
     jwtMiddleware,
     ArtisteController.createArtiste
   );
-  router.get("/readall", sm, jwtMiddleware, ArtisteController.readAllArtistes);
+  router.get("/readall", sm, ArtisteController.readAllArtistes);
   router.get(
     "/readone/:id",
     sm,
