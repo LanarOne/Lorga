@@ -10,18 +10,8 @@ const CollectifRoutes = (app, sm) => {
     jwtMiddleware,
     CollectifController.createCollectif
   );
-  router.get(
-    "/readall",
-    sm,
-    // jwtMiddleware,
-    CollectifController.readAllCollectifs
-  );
-  router.get(
-    "/readone/:id",
-    sm,
-    jwtMiddleware,
-    CollectifController.readOneCollectif
-  );
+  router.get("/readall", sm, CollectifController.readAllCollectifs);
+  router.get("/readone/:id", sm, CollectifController.readOneCollectif);
   router.put(
     "/updateone/:id",
     sm,

@@ -27,7 +27,7 @@ function handleResponse(result, status, error) {
 async function getRequest(url, token = null) {
   const config = {
     method: "GET",
-    headers: { "Content-type": "application/json; charset=UTF-8" },
+    headers: { "Content-type": "application/json;" },
   };
   if (token) config.headers.Authorization = token;
 

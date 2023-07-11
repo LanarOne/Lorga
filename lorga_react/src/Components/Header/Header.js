@@ -21,17 +21,19 @@ const Header = () => {
     };
   }, []);
   return (
-    <header>
-      <div className={`${mc.headerPhoto}`} style={{ opacity }}>
-        <img
-          src={photoPda}
-          alt="Photo de la devanture du bar Lorganiq à bordeaux"
-        />
-      </div>
-      <div className={`${mc.blocLogo}`}>
-        <img src={logo2} alt="Logo de Lorga" />
-      </div>
-    </header>
+    <div className="container">
+      <header>
+        <div className={`${mc.headerPhoto}`} style={{ opacity }}>
+          <img
+            src={photoPda}
+            alt="Photo de la devanture du bar Lorganiq à bordeaux"
+          />
+        </div>
+        <div className={`${mc.blocLogo}`}>
+          <img src={logo2} alt="Logo de Lorga" />
+        </div>
+      </header>
+    </div>
   );
 };
 
