@@ -2,8 +2,8 @@ import { jwtVerify } from "./jwtUtils.js";
 
 export const jwtMiddleware = async (req, res, next) => {
   const token = req.headers.authorization;
-  console.log(`middleware`);
   if (!token) {
+    console.log(`middleware`);
     return res.status(403).json({ message: `no header found` });
   }
   const userId = await jwtVerify(token);

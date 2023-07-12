@@ -1,0 +1,16 @@
+.button {
+background-color: var(--body2-color);
+  color: var(--body-color);
+  font-family: var(--body2-ff);
+  border: 1px solid var(--body-color);
+  padding: 0 2rem;
+  font-size: 1.8rem;
+  width: 20%;
+  margin: .5rem;
+  border-radius: 2rem;
+  &:hover {
+    background-color: var(--body-color);
+    color: var(--background-color);
+    border: 1px solid transparent;
+  }
+}

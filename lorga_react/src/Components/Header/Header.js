@@ -2,38 +2,83 @@ import React, { useEffect, useState } from "react";
 import logo from "../../public/medias/lorgaLogo.jpg";
 import logo2 from "../../public/medias/lorgaLogo2.jpg";
 import mc from "./header.module.scss";
-import photoPda from "../../public/medias/photoPda.jpg";
+// import photoPda from "../../public/medias/photoPda.jpg";
+import { NavLink } from "react-router-dom";
+import { manageDisplayDate } from "../../Helpers/dates";
+import { getUser } from "../../Helpers/usersHelper";
 const Header = () => {
-  const [opacity, setOpacity] = useState(1);
+  // const [opacity, setOpacity] = useState(1);
+  const [displayDate, setDisplayDate] = useState("");
+  const [user, setUser] = useState({});
+  const [userName, setUserName] = useState("");
+  const token = window.localStorage.getItem("token");
 
-  function handleScroll() {
-    const scrollPosition = window.scrollY;
-    const threshold = 300;
-
-    const newOpacity = 1 - scrollPosition / threshold;
-    const clampedOpacity = Math.max(0, Math.min(1, newOpacity));
-    setOpacity(clampedOpacity);
-  }
+  // function handleScroll() {
+  //   const scrollPosition = window.scrollY;
+  //   const threshold = 500;
+  //
+  //   const newOpacity = 1 - scrollPosition / threshold;
+  //   const clampedOpacity = Math.max(0, Math.min(1, newOpacity));
+  //   setOpacity(clampedOpacity);
+  // }
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    setDisplayDate(manageDisplayDate());
+    // window.addEventListener("scroll", handleScroll);
+    // return () => {
+    //   window.removeEventListener("scroll", handleScroll);
+    // };
   }, []);
+  useEffect(() => {
+    getUser(token)
+      .then((userData) => {
+        setUser(userData);
+      })
+      .catch((error) => {
+        throw new Error(error.message);
+      });
+  }, [token]);
   return (
-    <div className="container">
-      <header>
-        <div className={`${mc.headerPhoto}`} style={{ opacity }}>
-          <img
-            src={photoPda}
-            alt="Photo de la devanture du bar Lorganiq à bordeaux"
-          />
+    <header>
+      {/*<section className={`${mc.headerPhoto}`} style={{ opacity }}>*/}
+      {/*  <img*/}
+      {/*    src={photoPda}*/}
+      {/*    alt="Photo de la devanture du bar Lorganiq à bordeaux"*/}
+      {/*  />*/}
+      {/*</section>*/}
+      <section className={`${mc.blocLogo}`}>
+        <div>
+          <ul>
+            <li>
+              <NavLink>Accueil/Programmation</NavLink>
+            </li>
+            <li>
+              <NavLink>Carte des boissons</NavLink>
+            </li>
+            <li>
+              <NavLink>À propos de nous</NavLink>
+            </li>
+            <li>
+              <NavLink>Galerie</NavLink>
+            </li>
+          </ul>
         </div>
-        <div className={`${mc.blocLogo}`}>
-          <img src={logo2} alt="Logo de Lorga" />
+        <img src={logo2} alt="Logo de Lorga" />
+        <div>
+          {" "}
+          <p>{displayDate}</p>
+          {!token ? (
+            <p>
+              <NavLink to={"/login"}>Inscription/connexion</NavLink>
+            </p>
+          ) : (
+            <>
+              <p>Bienvenue</p>
+              <p>{user.username}</p>
+            </>
+          )}
         </div>
-      </header>
-    </div>
+      </section>
+    </header>
   );
 };
 

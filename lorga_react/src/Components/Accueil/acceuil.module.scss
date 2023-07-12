@@ -1,14 +1,19 @@
 @use "src/Style/variables";
 
 .main {
-  z-index: 10;
+  //z-index: 0;
   font-size: var(--body-fs);
   color: var(--body-color);
   position: relative;
   background-color: var(--background-color);
-  color: var(--body-color);
-  & .ntm {
-    //position: absolute;
-    //bottom: -150px;
+}
+.headerPhoto {
+  width: 100%;
+  z-index: 2;
+  height: 100vh;
+  position: relative;
+  & img {
+    width: 100%;
+    position: absolute;
   }
 }

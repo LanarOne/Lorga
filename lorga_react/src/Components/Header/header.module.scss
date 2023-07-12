@@ -10,22 +10,21 @@ header {
   justify-content: center;
   align-items: center;
   background-color: var(--background-color);
-  & .headerPhoto {
-    width: 100%;
-    z-index: 2;
-    height: 100vh;
-    position: relative;
-    & img {
-      width: 100%;
-      position: absolute;
-    }
-  }
   & .blocLogo {
+    padding: 1rem;
+    background-color: var(--background-color);
+    z-index: 1;
+    position: fixed;
+    top: 0;
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    & div {
+      padding: 1rem;
+    }
     img {
-      width: 15%;
+      max-width: 20rem;
     }
   }
 }

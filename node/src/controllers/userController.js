@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { emailIsValid } from "../utils/regexUtils.js";
 import User from "../models/User.js";
 import { UserDAO } from "../DAOs/userDAO.js";
-import { jwtSign } from "../jwt/jwtUtils.js";
+import { jwtSign, jwtVerify } from "../jwt/jwtUtils.js";
 import { stringIsFilled } from "../utils/stringUtils.js";
 import { isAdmin } from "../utils/adminUtils.js";
 
@@ -118,7 +118,7 @@ const readOne = async (req, res) => {
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
 
-    if (admin === 1) {
+    if (!admin) {
       return res
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
@@ -138,6 +138,22 @@ const readOne = async (req, res) => {
     console.error(error.message);
     return res.status(500).json({ message: `erreur interne`, data: error });
   }
+};
+const getUser = async (req, res) => {
+  const token = req.headers.authorization;
+  if (!token) {
+    return res
+      .status(403)
+      .json({ message: `lacking authorization, please log-in` });
+  }
+  const id = await jwtVerify(token);
+  const user = await UserDAO.ReadUserById(id);
+  if (!user) {
+    return res.status(404).json({ message: `cannot find user` });
+  }
+  return res
+    .status(200)
+    .json({ message: `user successfully retrieved`, data: user });
 };
 const updateOne = async (req, res) => {
   try {
@@ -240,6 +256,7 @@ export const UserController = {
   signIn,
   readAll,
   readOne,
+  getUser,
   updateOne,
   updateRoleId,
   deleteOne,
