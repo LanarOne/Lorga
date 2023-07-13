@@ -13,20 +13,8 @@ const Header = () => {
   const [userName, setUserName] = useState("");
   const token = window.localStorage.getItem("token");
 
-  // function handleScroll() {
-  //   const scrollPosition = window.scrollY;
-  //   const threshold = 500;
-  //
-  //   const newOpacity = 1 - scrollPosition / threshold;
-  //   const clampedOpacity = Math.max(0, Math.min(1, newOpacity));
-  //   setOpacity(clampedOpacity);
-  // }
   useEffect(() => {
     setDisplayDate(manageDisplayDate());
-    // window.addEventListener("scroll", handleScroll);
-    // return () => {
-    //   window.removeEventListener("scroll", handleScroll);
-    // };
   }, []);
   useEffect(() => {
     getUser(token)
@@ -39,12 +27,6 @@ const Header = () => {
   }, [token]);
   return (
     <header>
-      {/*<section className={`${mc.headerPhoto}`} style={{ opacity }}>*/}
-      {/*  <img*/}
-      {/*    src={photoPda}*/}
-      {/*    alt="Photo de la devanture du bar Lorganiq à bordeaux"*/}
-      {/*  />*/}
-      {/*</section>*/}
       <section className={`${mc.blocLogo}`}>
         <div>
           <ul>

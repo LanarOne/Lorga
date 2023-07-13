@@ -1,6 +1,19 @@
-.loginForm {
+.formSection {
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  top: 25rem;
+  .loginForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  & a{
+    border-bottom: 1px solid transparent;
+    &:hover{
+      border-bottom: 1px solid var(--body-color);
+    }
+  }
 }

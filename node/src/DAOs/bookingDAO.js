@@ -49,6 +49,7 @@ const ReadAllBookings = async () => {
         time: booking.time,
         description: decodeURIComponent(booking.description),
         nbr_invite: booking.nbr_invite,
+        confirmation: booking.confirmation,
         collectifId: booking.collectifId,
       };
       return decodedData;

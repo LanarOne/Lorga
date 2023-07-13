@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import Header from "../Header/Header";
 import { postRequest } from "../../api/api";
 import { LOGIN } from "../../constants/constants";
-import Button from "../smallElts/Button";
+import Button from "../smallElts/Button/Button";
 import mc from "./login.module.scss";
+import { NavLink } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -33,7 +34,7 @@ const Login = () => {
     <>
       <Header />
       <main>
-        <section>
+        <section className={`${mc.formSection}`}>
           <form
             className={`${mc.loginForm}`}
             action=""
@@ -63,6 +64,9 @@ const Login = () => {
             </div>
             <Button message={"Je me connecte"} />
           </form>
+          <NavLink to={"/signup"}>
+            <h2>Je ne suis pas encore membre, je m'inscris!</h2>
+          </NavLink>
         </section>
       </main>
     </>
