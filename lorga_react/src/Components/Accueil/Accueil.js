@@ -125,7 +125,7 @@ const Accueil = () => {
     return bookings.filter(
       (booking) =>
         booking.collectifId &&
-        booking.date.trim("T")[0] <= dateDuJour &&
+        booking.date >= dateDuJour &&
         booking.confirmation === true
     );
   }

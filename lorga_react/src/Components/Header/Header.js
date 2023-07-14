@@ -7,7 +7,6 @@ import { NavLink } from "react-router-dom";
 import { manageDisplayDate } from "../../Helpers/dates";
 import { getUser } from "../../Helpers/usersHelper";
 const Header = () => {
-  // const [opacity, setOpacity] = useState(1);
   const [displayDate, setDisplayDate] = useState("");
   const [user, setUser] = useState({});
   const [userName, setUserName] = useState("");
@@ -17,13 +16,15 @@ const Header = () => {
     setDisplayDate(manageDisplayDate());
   }, []);
   useEffect(() => {
-    getUser(token)
-      .then((userData) => {
-        setUser(userData);
-      })
-      .catch((error) => {
-        throw new Error(error.message);
-      });
+    if (token) {
+      getUser(token)
+        .then((userData) => {
+          setUser(userData);
+        })
+        .catch((error) => {
+          return new Error(error.message);
+        });
+    }
   }, [token]);
   return (
     <header>
