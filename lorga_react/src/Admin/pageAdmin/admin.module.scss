@@ -1,0 +1,13 @@
+
+main{
+  position: relative;
+  top: 25rem;
+  display: flex;
+  justify-content: space-around;
+  & .blocArticle {
+    width: 80%;
+  }
+  & aside {
+    width: 20%;
+  }
+}

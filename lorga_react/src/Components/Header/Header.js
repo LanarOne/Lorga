@@ -6,11 +6,18 @@ import mc from "./header.module.scss";
 import { NavLink } from "react-router-dom";
 import { manageDisplayDate } from "../../Helpers/dates";
 import { getUser } from "../../Helpers/usersHelper";
+import IcomoonReact, { iconList } from "icomoon-react";
+import iconSet from "../../Style/IcoMoon/selection.json";
+import Button from "../smallElts/Button/Button";
 const Header = () => {
   const [displayDate, setDisplayDate] = useState("");
   const [user, setUser] = useState({});
-  const [userName, setUserName] = useState("");
   const token = window.localStorage.getItem("token");
+
+  function deconexion() {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  }
 
   useEffect(() => {
     setDisplayDate(manageDisplayDate());
@@ -57,6 +64,17 @@ const Header = () => {
             <>
               <p>Bienvenue</p>
               <p>{user.username}</p>
+              <Button
+                message={
+                  <IcomoonReact
+                    icon={"switch"}
+                    iconSet={iconSet}
+                    color={"Crimson"}
+                    size={20}
+                    onClick={deconexion}
+                  />
+                }
+              />
             </>
           )}
         </div>

@@ -1,4 +1,5 @@
 import Booking from "../models/Booking.js";
+import booking from "../models/Booking.js";
 
 const Create = async (
   date,
@@ -44,7 +45,7 @@ const ReadAllBookings = async () => {
   try {
     result = await Booking.findAll();
     return result.map((booking) => {
-      const decodedData = {
+      return {
         date: booking.date,
         time: booking.time,
         description: decodeURIComponent(booking.description),
@@ -52,7 +53,6 @@ const ReadAllBookings = async () => {
         confirmation: booking.confirmation,
         collectifId: booking.collectifId,
       };
-      return decodedData;
     });
   } catch (error) {
     return Error(error.message);
@@ -84,14 +84,13 @@ const ReadBookingsByUserId = async (userId) => {
   try {
     result = await Booking.findAll({ where: { userId } });
     return result.map((booking) => {
-      const decodedData = {
+      return {
         date: booking.date,
         time: booking.time,
         description: decodeURIComponent(booking.description),
         nbr_invite: booking.nbr_invite,
         collectifId: booking.collectifId,
       };
-      return decodedData;
     });
   } catch (error) {
     return Error(error.message);
@@ -103,17 +102,34 @@ const ReadBookingsByCollectifId = async (collectifId) => {
   try {
     result = await Booking.findAll({ where: { collectifId } });
     return result.map((booking) => {
-      const decodedData = {
+      return {
         date: booking.date,
         time: booking.time,
         description: decodeURIComponent(booking.description),
         nbr_invite: booking.nbr_invite,
         collectifId: booking.collectifId,
       };
-      return decodedData;
     });
   } catch (error) {
     return Error(error.message);
+  }
+};
+
+const ReadBookingsByDate = async (date) => {
+  let result = null;
+  try {
+    result = await booking.findAll({ where: { date } });
+    return result.map((booking) => {
+      return {
+        date: booking.date,
+        time: booking.time,
+        description: decodeURIComponent(booking.description),
+        nbr_invite: booking.nbr_invite,
+        collectifId: booking.collectifId,
+      };
+    });
+  } catch (error) {
+    throw new Error(error.message);
   }
 };
 
@@ -155,6 +171,7 @@ export const BookingDAO = {
   ReadBookingById,
   ReadBookingsByUserId,
   ReadBookingsByCollectifId,
+  ReadBookingsByDate,
   UpdateOneBooking,
   DeleteOneBooking,
 };

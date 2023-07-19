@@ -35,6 +35,12 @@ const bookingRoutes = (app, sm) => {
     jwtMiddleware,
     BookingController.readBookingsByCollectifId
   );
+  router.get(
+    "/readbookingsbydate/",
+    sm,
+    jwtMiddleware,
+    BookingController.readBookingByDate
+  );
   router.put(
     "/updatebooking/:id",
     sm,

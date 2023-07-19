@@ -177,6 +177,34 @@ const readBookingsByCollectifId = async (req, res) => {
   }
 };
 
+const readBookingByDate = async (req, res) => {
+  let result = null;
+  try {
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+
+    if (admin === 1) {
+      return res
+        .status(401)
+        .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
+    }
+    const { date } = req.body;
+    result = await BookingDAO.ReadBookingsByDate(date);
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `il n'y a pas d'évènements pour cette date` });
+    }
+    return res.status(200).json({
+      message: `évènements trouvés par date avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
+
 const updateOneBooking = async (req, res) => {
   try {
     const token = req.headers.authorization;
@@ -241,6 +269,7 @@ export const BookingController = {
   readOneBookingById,
   readBookingsByUserId,
   readBookingsByCollectifId,
+  readBookingByDate,
   updateOneBooking,
   deleteOneBooking,
 };

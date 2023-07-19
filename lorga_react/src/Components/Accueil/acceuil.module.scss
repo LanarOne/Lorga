@@ -1,11 +1,13 @@
 @use "src/Style/variables";
 
 .main {
-  //z-index: 0;
   font-size: var(--body-fs);
   color: var(--body-color);
   position: relative;
   background-color: var(--background-color);
+  & .article{
+    margin: 5rem;
+  }
 }
 .headerPhoto {
   width: 100%;

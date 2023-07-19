@@ -3,7 +3,9 @@ import { stringIsFilled } from "../utils/stringUtils.js";
 
 const create = async (req, res) => {
   try {
-    let { nom, path, alt } = req.body;
+    let { alt } = req.body;
+    const { nom } = req.file.name;
+    const { path } = req.file.path;
     if (!stringIsFilled(nom) || !stringIsFilled(path) || !stringIsFilled(alt)) {
       return res
         .status(400)

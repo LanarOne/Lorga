@@ -1,0 +1,1 @@
+async function getEvents(date) {}

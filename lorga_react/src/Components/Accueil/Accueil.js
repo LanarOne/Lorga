@@ -148,7 +148,10 @@ const Accueil = () => {
             articles.map((article) => {
               return (
                 <>
-                  <article key={`${article.id}${article.nom}`}>
+                  <article
+                    key={`${article.id}${article.nom}`}
+                    className={`${mc.article}`}
+                  >
                     <h2>{article.nom}</h2>
                     <h3>
                       le {article.date} à {article.time}
