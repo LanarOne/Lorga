@@ -10,6 +10,12 @@ const Admin_CollectifRoutes = (app, sm) => {
     jwtMiddleware,
     Admin_CollectifController.createAdmin_collectif
   );
+  router.put(
+    "/confirmation/:id",
+    sm,
+    jwtMiddleware,
+    Admin_CollectifController.confirmAdminCol
+  );
   router.get(
     "/readall",
     sm,

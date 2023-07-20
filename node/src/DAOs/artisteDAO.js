@@ -1,6 +1,13 @@
 import Artiste from "../models/Artiste.js";
-
-const Create = async (nom, description, influences, style, photoId, userId) => {
+const Create = async (
+  nom,
+  description,
+  influences,
+  style,
+  confirmation,
+  photoId,
+  userId
+) => {
   let result = null;
   try {
     result = await Artiste.create({
@@ -8,13 +15,29 @@ const Create = async (nom, description, influences, style, photoId, userId) => {
       description,
       influences,
       style,
+      confirmation,
       photoId,
       userId,
     });
     return result;
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    throw new Error(error.message);
+  }
+};
+
+const Confirm = async (id, confirmation) => {
+  let result = null;
+  try {
+    const artiste = await Artiste.findByPk(id);
+    if (!artiste || artiste.length === 0) {
+      return result;
+    }
+    result = await Artiste.update({ confirmation }, { where: { id } });
+    return result;
+  } catch (error) {
+    console.error(error.message);
+    throw new Error(error.message);
   }
 };
 
@@ -23,17 +46,59 @@ const ReadAll = async () => {
   try {
     result = await Artiste.findAll();
     return result.map((artiste) => {
-      const decodedData = {
+      return {
         nom: decodeURIComponent(artiste.nom),
         description: decodeURIComponent(artiste.description),
         influences: decodeURIComponent(artiste.influences),
         style: decodeURIComponent(artiste.style),
+        confirmation: artiste.confirmation,
         photoId: artiste.photoId,
       };
-      return decodedData;
     });
   } catch (error) {
-    return Error(error.message);
+    throw new Error(error.message);
+  }
+};
+
+const ReadConfirmedArtistes = async () => {
+  let result = null;
+  let confirmation = true;
+  try {
+    result = await Artiste.findAll({ where: { confirmation } });
+    return result.map((artiste) => {
+      return {
+        nom: decodeURIComponent(artiste.nom),
+        description: decodeURIComponent(artiste.description),
+        influences: decodeURIComponent(artiste.influences),
+        style: decodeURIComponent(artiste.style),
+        confirmation: artiste.confirmation,
+        photoId: artiste.photoId,
+      };
+    });
+  } catch (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
+};
+
+const ReadUnconfirmedArtistes = async () => {
+  let result = null;
+  let confirmation = false;
+  try {
+    result = await Artiste.findAll({ where: { confirmation } });
+    return result.map((artiste) => {
+      return {
+        nom: decodeURIComponent(artiste.nom),
+        description: decodeURIComponent(artiste.description),
+        influences: decodeURIComponent(artiste.influences),
+        style: decodeURIComponent(artiste.style),
+        confirmation: artiste.confirmation,
+        photoId: artiste.photoId,
+      };
+    });
+  } catch (error) {
+    console.error(error.message);
+    throw new Error(error.message);
   }
 };
 
@@ -45,52 +110,56 @@ const ReadById = async (id) => {
       return;
     }
     return {
+      id: result.id,
       nom: decodeURIComponent(result.nom),
       description: decodeURIComponent(result.description),
       influences: decodeURIComponent(result.influences),
       style: decodeURIComponent(result.style),
+      confirmation: result.confirmation,
       photoId: result.photoId,
     };
   } catch (error) {
-    return Error(error.message);
+    throw new Error(error.message);
   }
 };
 
 const ReadByUserId = async (userId) => {
   let result = null;
   try {
-    result = await Artiste.findAll({ where: { userId } });
+    result = await Artiste.findOne({ where: { userId } });
     if (!result || result.length === 0) {
       return;
     }
     console.log(result);
     return {
+      id: result.id,
       nom: decodeURIComponent(result.nom),
       description: decodeURIComponent(result.description),
       influences: decodeURIComponent(result.influences),
       style: decodeURIComponent(result.style),
+      confirmation: result.confirmation,
       photoId: result.photoId,
     };
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    throw new Error(error.message);
   }
 };
 
 const UpdateOne = async (id, data) => {
   try {
     const artiste = await Artiste.findByPk(id);
-    const { nom, description, influences, style, photoId } = data;
+    const { nom, description, influences, style, confirmation, photoId } = data;
     if (!artiste) {
       return;
     }
     await Artiste.update(
-      { nom, description, influences, style, photoId },
+      { nom, description, influences, style, confirmation, photoId },
       { where: { id } }
     );
     return artiste;
   } catch (error) {
-    return Error(error.message);
+    throw new Error(error.message);
   }
 };
 const DeleteOne = async (id) => {
@@ -102,12 +171,15 @@ const DeleteOne = async (id) => {
     await artiste.destroy();
     return `L'artiste a été retiré de la base de données`;
   } catch (error) {
-    return Error(error.message);
+    throw new Error(error.message);
   }
 };
 export const ArtisteDAO = {
   Create,
+  Confirm,
   ReadAll,
+  ReadConfirmedArtistes,
+  ReadUnconfirmedArtistes,
   ReadById,
   ReadByUserId,
   UpdateOne,

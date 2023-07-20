@@ -4,32 +4,34 @@ import { UserDAO } from "../DAOs/userDAO.js";
 import { ArtisteDAO } from "../DAOs/artisteDAO.js";
 import { CollectifDAO } from "../DAOs/collectifDAO.js";
 
-async function createAdmin_collectif(req, res) {
+const createAdmin_collectif = async (req, res) => {
   let result = null;
-  const userId = req.params.id;
-  const user = await UserDAO.ReadUserById(userId);
-  if (!user) {
-    return res
-      .status(404)
-      .json({ message: `Utilisateur introuvable ou inexistant` });
-  }
-  const artiste = await ArtisteDAO.ReadByUserId(userId);
-  if (artiste) {
-    return res
-      .status(406)
-      .json({ message: `Page artiste existante pour ce profil` });
-  }
-  const token = req.headers.authorization;
-  if (!token) {
-    return res.status(401).json({ message: `Veuillez vous enregistrer` });
-  }
-  const admin = await isAdmin(token);
-  if (!admin || admin <= 2) {
-    return res
-      .status(403)
-      .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
-  }
+  let confirmation = false;
   try {
+    const userId = req.params.id;
+    const user = await UserDAO.ReadUserById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: `Utilisateur introuvable ou inexistant` });
+    }
+    const artiste = await ArtisteDAO.ReadByUserId(userId);
+    if (artiste) {
+      return res
+        .status(406)
+        .json({ message: `Page artiste existante pour ce profil` });
+    }
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ message: `Veuillez vous enregistrer` });
+    }
+    const admin = await isAdmin(token);
+    if (!admin || admin <= 2) {
+      return res
+        .status(403)
+        .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+    }
+
     const { collectifId } = req.body;
     const existingCollectif = await CollectifDAO.ReadById(collectifId);
     if (!existingCollectif) {
@@ -37,25 +39,53 @@ async function createAdmin_collectif(req, res) {
         .status(404)
         .json({ message: `Collectif introuvable ou inexistant` });
     }
-    result = await Admin_CollectifDAO.Create(userId, collectifId);
+    result = await Admin_CollectifDAO.Create(confirmation, userId, collectifId);
     if (user.roleId >= 3) {
       return res.status(201).json({
         message: `Admin_collectif créé avec succès`,
         data: result,
       });
     }
-    const changeRoleId = UserDAO.UpdateRoleId(userId, 3);
+    const changeRoleId = await UserDAO.UpdateRoleId(userId, 3);
     return res.status(201).json({
       message: `Admin_collectif créé avec succès`,
       data: result,
+      changeRoleId,
     });
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    throw new Error(error.message);
   }
-}
+};
 
-async function readAllAdmins(req, res) {
+const confirmAdminCol = async (req, res) => {
+  let result = null;
+  try {
+    const id = req.params.id;
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (!admin || admin <= 4) {
+      return res
+        .status(401)
+        .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+    }
+    const adminCol = await Admin_CollectifDAO.ReadById(id);
+    if (!adminCol || adminCol.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Admin du collectif introuvable ou inexistant` });
+    }
+    let confirmation = !adminCol.confirmation;
+    result = await Admin_CollectifDAO.Confirm(id, confirmation);
+    return res
+      .status(200)
+      .json({ message: `Admin confirmé avec succès`, data: result });
+  } catch (error) {
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
+
+const readAllAdmins = async (req, res) => {
   let result = null;
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
@@ -79,9 +109,9 @@ async function readAllAdmins(req, res) {
     console.error(error);
     return Error(error.message);
   }
-}
+};
 
-async function readAdminByUserId(req, res) {
+const readAdminByUserId = async (req, res) => {
   let result = null;
   const userId = req.params.id;
   const token = req.headers.authorization;
@@ -105,9 +135,9 @@ async function readAdminByUserId(req, res) {
     console.error(error);
     return Error(error.message);
   }
-}
+};
 
-async function readByCollectifId(req, res) {
+const readByCollectifId = async (req, res) => {
   let result = null;
   const collectifId = req.params.id;
   try {
@@ -125,9 +155,9 @@ async function readByCollectifId(req, res) {
     console.error(error);
     return Error(error.message);
   }
-}
+};
 
-async function deleteOne(req, res) {
+const deleteOne = async (req, res) => {
   let result = null;
   const id = req.params.id;
   const token = req.headers.authorization;
@@ -163,9 +193,10 @@ async function deleteOne(req, res) {
     console.error(error);
     return Error(error.message);
   }
-}
+};
 export const Admin_CollectifController = {
   createAdmin_collectif,
+  confirmAdminCol,
   readAllAdmins,
   readAdminByUserId,
   readByCollectifId,

@@ -10,12 +10,29 @@ const ArtisteRoutes = (app, sm) => {
     jwtMiddleware,
     ArtisteController.createArtiste
   );
+  router.put(
+    "/confirmation/:id",
+    sm,
+    jwtMiddleware,
+    ArtisteController.confirmArtiste
+  );
   router.get("/readall", sm, ArtisteController.readAllArtistes);
   router.get(
     "/readone/:id",
     sm,
     jwtMiddleware,
     ArtisteController.readOneArtiste
+  );
+  router.get(
+    "/readconfirmedartistes",
+    sm,
+    ArtisteController.readConfirmedArtistes
+  );
+  router.get(
+    "/readunconfirmedartistes",
+    sm,
+    jwtMiddleware,
+    ArtisteController.readUnconfirmedArtistes
   );
   router.get(
     "/readbyuserid/:id",

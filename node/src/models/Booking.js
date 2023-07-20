@@ -11,7 +11,7 @@ const Booking = sequelize.define(
       autoIncrement: true,
     },
     date: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
     },
     time: {

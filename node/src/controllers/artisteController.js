@@ -18,6 +18,7 @@ const createArtiste = async (req, res) => {
   }
   try {
     const { nom, description, influences, style, photoId } = req.body;
+    const confirmation = false;
     const existingNomArtiste = await Artiste.findOne({ where: { nom } });
     const existingArtiste = await Artiste.findOne({ where: { userId } });
     if (existingNomArtiste) {
@@ -44,6 +45,7 @@ const createArtiste = async (req, res) => {
       description,
       influences,
       style,
+      confirmation,
       photoId,
       userId
     );
@@ -66,6 +68,33 @@ const createArtiste = async (req, res) => {
   }
 };
 
+const confirmArtiste = async (req, res) => {
+  let result = null;
+  try {
+    const id = req.params.id;
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (!admin || admin <= 4) {
+      return res
+        .status(401)
+        .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+    }
+    const artiste = await ArtisteDAO.ReadById(id);
+    if (!artiste || artiste.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Artiste inexistant ou introuvable` });
+    }
+    let confirmation = !artiste.confirmation;
+    result = await ArtisteDAO.Confirm(id, confirmation);
+    return res
+      .status(200)
+      .json({ message: `Artiste confirmé avec succès`, data: result });
+  } catch (error) {
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
+
 const readAllArtistes = async (req, res) => {
   try {
     const artistes = await ArtisteDAO.ReadAll();
@@ -84,6 +113,43 @@ const readAllArtistes = async (req, res) => {
   }
 };
 
+const readConfirmedArtistes = async (req, res) => {
+  let result = null;
+  try {
+    result = await ArtisteDAO.ReadConfirmedArtistes();
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Impossible de récupérer la liste` });
+    }
+    return res.status(200).json({
+      message: `Liste des artistes triés par confirmation positive récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
+
+const readUnconfirmedArtistes = async (req, res) => {
+  let result = null;
+  try {
+    result = await ArtisteDAO.ReadUnconfirmedArtistes();
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Impossible de récupérer la liste` });
+    }
+    return res.status(200).json({
+      message: `Liste des artistes triés par absence de confirmation récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
 const readOneArtiste = async (req, res) => {
   let result = null;
   try {
@@ -196,7 +262,10 @@ const deleteOneArtiste = async (req, res) => {
 };
 export const ArtisteController = {
   createArtiste,
+  confirmArtiste,
   readAllArtistes,
+  readConfirmedArtistes,
+  readUnconfirmedArtistes,
   readOneArtiste,
   readByUserId,
   updateOneArtiste,

@@ -9,6 +9,10 @@ const Artiste_Collectif = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    confirmation: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
   },
   { timestamps: true, createdAt: "created", updatedAt: "updated" }
 );

@@ -26,6 +26,7 @@ const createCollectif = async (req, res) => {
         .json({ message: `Vous ne pouvez créer qu'un seul collectif` });
     }
     const { nom, description, influences, style, photoId } = req.body;
+    const confirmation = false;
     const existingNomDeCollectif = await Collectif.findOne({ where: { nom } });
     if (existingNomDeCollectif) {
       return res
@@ -49,11 +50,11 @@ const createCollectif = async (req, res) => {
       description,
       influences,
       style,
+      confirmation,
       photoId,
       userId
     );
-    let id = userId;
-    const user = await UserDAO.ReadUserById(id);
+    const user = await UserDAO.ReadUserById(userId);
     if (user.roleId >= 4) {
       const collectifId = collectif.id;
       const admin_collectif = await Admin_CollectifDAO.Create(
@@ -71,7 +72,7 @@ const createCollectif = async (req, res) => {
       userId,
       collectifId
     );
-    const updateRoleId = await UserDAO.UpdateRoleId(id, 4);
+    const updateRoleId = await UserDAO.UpdateRoleId(userId, 4);
     return res.status(201).json({
       message: `Collectif ${collectif.nom} créé avec succès`,
       data: collectif,
@@ -80,6 +81,34 @@ const createCollectif = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
+
+const confirmCollectif = async (req, res) => {
+  let result = null;
+  try {
+    const id = req.params.id;
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (!admin || admin <= 4) {
+      return res
+        .status(401)
+        .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+    }
+    const collectif = await CollectifDAO.ReadById(id);
+    if (!collectif) {
+      return res
+        .status(404)
+        .json({ message: `Artiste inexistant ou introuvable` });
+    }
+    let confirmation = !collectif.confirmation;
+    result = await CollectifDAO.ConfirmCollectif(id, confirmation);
+    console.log(result, `controller`);
+    return res
+      .status(200)
+      .json({ message: `Collectif confirmé avec succès`, data: result });
+  } catch (error) {
     return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 };
@@ -103,6 +132,43 @@ const readAllCollectifs = async (req, res) => {
   }
 };
 
+const readConfirmedCollectifs = async (req, res) => {
+  let result = null;
+  try {
+    result = await CollectifDAO.ReadConfirmedCollectifs();
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Impossible de récupérer la liste` });
+    }
+    return res.status(200).json({
+      message: `Liste des collectifs triés par confirmation positive récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
+
+const readUnconfirmedCollectifs = async (req, res) => {
+  let result = null;
+  try {
+    result = await CollectifDAO.ReadUnconfirmedCollectifs();
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Impossible de récupérer la liste` });
+    }
+    return res.status(200).json({
+      message: `Liste des collectifs triés par absence de confirmation récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
 const readOneCollectif = async (req, res) => {
   let result = null;
   try {
@@ -190,7 +256,10 @@ const deleteOneCollectif = async (req, res) => {
 };
 export const CollectifController = {
   createCollectif,
+  confirmCollectif,
   readAllCollectifs,
+  readConfirmedCollectifs,
+  readUnconfirmedCollectifs,
   readOneCollectif,
   updateOneCollectif,
   deleteOneCollectif,

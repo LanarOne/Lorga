@@ -118,7 +118,10 @@ const ReadBookingsByCollectifId = async (collectifId) => {
 const ReadBookingsByDate = async (date) => {
   let result = null;
   try {
-    result = await booking.findAll({ where: { date } });
+    result = await booking.findAll({
+      where: { date: `${date}%` },
+    });
+    console.log(result);
     return result.map((booking) => {
       return {
         date: booking.date,

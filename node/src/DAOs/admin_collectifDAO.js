@@ -1,17 +1,32 @@
 import Admin_collectif from "../models/Admin_collectif.js";
 
-async function Create(userId, collectifId) {
+const Create = async (confirmation, userId, collectifId) => {
   let result = null;
   try {
-    result = Admin_collectif.create({ userId, collectifId });
+    result = Admin_collectif.create({ confirmation, userId, collectifId });
     return result;
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    throw new Error(error.message);
   }
-}
+};
 
-async function ReadAll() {
+const Confirm = async (id, confirmation) => {
+  let result = null;
+  try {
+    const admin_col = await Admin_collectif.findByPk(id);
+    if (!admin_col || admin_col.length === 0) {
+      return result;
+    }
+    result = await Admin_collectif.update({ confirmation }, { where: { id } });
+    return result;
+  } catch (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
+};
+
+const ReadAll = async () => {
   let result = null;
   try {
     result = await Admin_collectif.findAll();
@@ -20,22 +35,24 @@ async function ReadAll() {
     });
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    throw new Error(error.message);
   }
-}
+};
 
-async function ReadById(id) {
+const ReadConfirmedAdmin = async () => {};
+
+const ReadById = async (id) => {
   let result = null;
   try {
     result = await Admin_collectif.findByPk(id);
     return { userId: result.userId, collectifId: result.collectifId };
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    throw new Error(error.message);
   }
-}
+};
 
-async function ReadByUserId(userId) {
+const ReadByUserId = async (userId) => {
   let result = null;
   try {
     result = await Admin_collectif.findAll({ where: { userId } });
@@ -47,11 +64,11 @@ async function ReadByUserId(userId) {
     });
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    throw new Error(error.message);
   }
-}
+};
 
-async function ReadByCollectifId(collectifId) {
+const ReadByCollectifId = async (collectifId) => {
   let result = null;
   try {
     result = await Admin_collectif.findAll({ where: { collectifId } });
@@ -59,15 +76,17 @@ async function ReadByCollectifId(collectifId) {
       return;
     }
     return result.map((adm_co) => {
-      return { userId: adm_co.userId, collectifId: adm_co.collectifId };
+      if (adm_co.confirmation) {
+        return { userId: adm_co.userId, collectifId: adm_co.collectifId };
+      }
     });
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    throw new Error(error.message);
   }
-}
+};
 
-async function DeleteOne(id) {
+const DeleteOne = async (id) => {
   let result = null;
   try {
     const admin_collectif = await Admin_collectif.findByPk(id);
@@ -78,11 +97,12 @@ async function DeleteOne(id) {
     return result;
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    throw new Error(error.message);
   }
-}
+};
 export const Admin_CollectifDAO = {
   Create,
+  Confirm,
   ReadAll,
   ReadById,
   ReadByUserId,

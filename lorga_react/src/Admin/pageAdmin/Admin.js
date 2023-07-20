@@ -27,7 +27,6 @@ const Admin = () => {
       getUserDatas();
     }
   }, [token]);
-  console.log(user);
   if (user.roleId <= 4) {
     window.location.href = "/";
   }

@@ -60,7 +60,6 @@ const confirmBooking = async (req, res) => {
         .status(404)
         .json({ message: `Réservation inexistante ou introuvable` });
     }
-    console.log(booking);
     let confirmation = !booking.confirmation;
     result = await BookingDAO.Confirm(id, confirmation);
     return res

@@ -26,6 +26,10 @@ const Artiste = sequelize.define(
       type: DataTypes.STRING(50),
       allowNull: false,
     },
+    confirmation: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,
