@@ -24,6 +24,12 @@ const bookingRoutes = (app, sm) => {
     BookingController.readOneBookingById
   );
   router.get(
+    "/readunconfirmed",
+    sm,
+    jwtMiddleware,
+    BookingController.readUnconfirmed
+  );
+  router.get(
     "/readbookingsbyuserid/:id",
     sm,
     jwtMiddleware,
@@ -40,6 +46,12 @@ const bookingRoutes = (app, sm) => {
     sm,
     jwtMiddleware,
     BookingController.readBookingByDate
+  );
+  router.get(
+    "/readbookingsbydateclient",
+    sm,
+    jwtMiddleware,
+    BookingController.readBookingByDateClient
   );
   router.put(
     "/updatebooking/:id",

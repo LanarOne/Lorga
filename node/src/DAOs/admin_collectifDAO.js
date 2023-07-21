@@ -39,7 +39,24 @@ const ReadAll = async () => {
   }
 };
 
-const ReadConfirmedAdmin = async () => {};
+const ReadUnconfirmedAdmins = async () => {
+  let result = null;
+  let confirmation = false;
+  try {
+    result = await Admin_collectif.findAll({ where: { confirmation } });
+    return result.map((adm_col) => {
+      return {
+        id: adm_col.id,
+        confirmation: adm_col.confirmation,
+        userId: adm_col.userId,
+        collectifId: adm_col.collectifId,
+      };
+    });
+  } catch (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
+};
 
 const ReadById = async (id) => {
   let result = null;
@@ -104,6 +121,7 @@ export const Admin_CollectifDAO = {
   Create,
   Confirm,
   ReadAll,
+  ReadUnconfirmedAdmins,
   ReadById,
   ReadByUserId,
   ReadByCollectifId,

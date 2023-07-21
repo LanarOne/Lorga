@@ -10,11 +10,23 @@ const Artiste_CollectifRoutes = (app, sm) => {
     jwtMiddleware,
     Artiste_CollectifController.createArtiste_Collectif
   );
+  router.put(
+    "/confirmation/:id",
+    sm,
+    jwtMiddleware,
+    Artiste_CollectifController.confirmArtCol
+  );
   router.get(
     "/readall",
     sm,
     jwtMiddleware,
     Artiste_CollectifController.readAll
+  );
+  router.get(
+    "/readunconfirmed",
+    sm,
+    jwtMiddleware,
+    Artiste_CollectifController.readUnconfirmed
   );
   router.get(
     "/readbyartiste/:id",

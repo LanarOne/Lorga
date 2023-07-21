@@ -23,6 +23,12 @@ const Admin_CollectifRoutes = (app, sm) => {
     Admin_CollectifController.readAllAdmins
   );
   router.get(
+    "/readunconfirmedadmins",
+    sm,
+    jwtMiddleware,
+    Admin_CollectifController.readUnconfirmedAdmins
+  );
+  router.get(
     "/readbyuserid/:id",
     sm,
     jwtMiddleware,

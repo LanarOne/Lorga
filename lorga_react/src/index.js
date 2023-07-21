@@ -7,6 +7,7 @@ import Accueil from "./Components/Accueil/Accueil";
 import Login from "./Components/Login/Login";
 import SignUp from "./Components/SignUp/SignUp";
 import Admin from "./Admin/pageAdmin/Admin";
+import EmptyPages from "./Components/EmptyPages/EmptyPages";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -17,6 +18,7 @@ root.render(
         <Route path={"/login"} element={<Login />} />
         <Route path={"/signup"} element={<SignUp />} />
         <Route path={"/admin"} element={<Admin />} />
+        <Route path={"/*"} element={<EmptyPages />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -42,10 +42,12 @@ const Confirm = async (id, confirmation) => {
 
 const ReadAllBookings = async () => {
   let result = null;
+  let confirmation = true;
   try {
-    result = await Booking.findAll();
+    result = await Booking.findAll({ where: { confirmation } });
     return result.map((booking) => {
       return {
+        id: booking.id,
         date: booking.date,
         time: booking.time,
         description: decodeURIComponent(booking.description),
@@ -56,6 +58,28 @@ const ReadAllBookings = async () => {
     });
   } catch (error) {
     return Error(error.message);
+  }
+};
+
+const ReadUnconfirmedBookings = async () => {
+  let result = null;
+  let confirmation = false;
+  try {
+    result = await Booking.findAll({ where: { confirmation } });
+    return result.map((booking) => {
+      return {
+        id: booking.id,
+        date: booking.date,
+        time: booking.time,
+        description: decodeURIComponent(booking.description),
+        nbr_invite: booking.nbr_invite,
+        confirmation: booking.confirmation,
+        collectifId: booking.collectifId,
+      };
+    });
+  } catch (error) {
+    console.error(error.message);
+    throw new Error(error.message);
   }
 };
 
@@ -81,8 +105,9 @@ const ReadBookingById = async (id) => {
 
 const ReadBookingsByUserId = async (userId) => {
   let result = null;
+  let confirmation = true;
   try {
-    result = await Booking.findAll({ where: { userId } });
+    result = await Booking.findAll({ where: { userId, confirmation } });
     return result.map((booking) => {
       return {
         date: booking.date,
@@ -99,8 +124,9 @@ const ReadBookingsByUserId = async (userId) => {
 
 const ReadBookingsByCollectifId = async (collectifId) => {
   let result = null;
+  let confirmation = true;
   try {
-    result = await Booking.findAll({ where: { collectifId } });
+    result = await Booking.findAll({ where: { collectifId, confirmation } });
     return result.map((booking) => {
       return {
         date: booking.date,
@@ -117,11 +143,33 @@ const ReadBookingsByCollectifId = async (collectifId) => {
 
 const ReadBookingsByDate = async (date) => {
   let result = null;
+  let confirmation = true;
   try {
     result = await booking.findAll({
-      where: { date: `${date}%` },
+      where: { date: date, confirmation },
     });
-    console.log(result);
+    return result.map((booking) => {
+      return {
+        date: booking.date,
+        time: booking.time,
+        description: decodeURIComponent(booking.description),
+        nbr_invite: booking.nbr_invite,
+        collectifId: booking.collectifId,
+      };
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+const ReadBookingsByDateClient = async (date) => {
+  let result = null;
+  let confirmation = true;
+  let collectifId = null;
+  try {
+    result = await booking.findAll({
+      where: { date: date, confirmation, collectifId },
+    });
     return result.map((booking) => {
       return {
         date: booking.date,
@@ -171,10 +219,12 @@ export const BookingDAO = {
   Create,
   Confirm,
   ReadAllBookings,
+  ReadUnconfirmedBookings,
   ReadBookingById,
   ReadBookingsByUserId,
   ReadBookingsByCollectifId,
   ReadBookingsByDate,
+  ReadBookingsByDateClient,
   UpdateOneBooking,
   DeleteOneBooking,
 };

@@ -8,7 +8,7 @@ const createAdmin_collectif = async (req, res) => {
   let result = null;
   let confirmation = false;
   try {
-    const userId = req.params.id;
+    const userId = parseInt(req.params.id);
     const user = await UserDAO.ReadUserById(userId);
     if (!user) {
       return res
@@ -39,6 +39,13 @@ const createAdmin_collectif = async (req, res) => {
         .status(404)
         .json({ message: `Collectif introuvable ou inexistant` });
     }
+    if (!existingCollectif.confirmation) {
+      return res
+        .status(401)
+        .json({
+          message: `Le collectif doit être validé avant d'accepter des membres`,
+        });
+    }
     result = await Admin_CollectifDAO.Create(confirmation, userId, collectifId);
     if (user.roleId >= 3) {
       return res.status(201).json({
@@ -54,14 +61,14 @@ const createAdmin_collectif = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    throw new Error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 };
 
 const confirmAdminCol = async (req, res) => {
   let result = null;
   try {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
     if (!admin || admin <= 4) {
@@ -107,13 +114,32 @@ const readAllAdmins = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
+
+const readUnconfirmedAdmins = async (req, res) => {
+  let result = null;
+  try {
+    result = await Admin_CollectifDAO.ReadUnconfirmedAdmins();
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Admin introuvable ou inexistant` });
+    }
+    return res.status(200).json({
+      message: `Liste des admins non confirmés récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 };
 
 const readAdminByUserId = async (req, res) => {
   let result = null;
-  const userId = req.params.id;
+  const userId = parseInt(req.params.id);
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
   if (!admin || admin === 1) {
@@ -133,13 +159,13 @@ const readAdminByUserId = async (req, res) => {
       .json({ message: `Admin trouvé avec succès`, data: result });
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 };
 
 const readByCollectifId = async (req, res) => {
   let result = null;
-  const collectifId = req.params.id;
+  const collectifId = parseInt(req.params.id);
   try {
     result = await Admin_CollectifDAO.ReadByCollectifId(collectifId);
     if (!result || result.length === 0) {
@@ -153,13 +179,13 @@ const readByCollectifId = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 };
 
 const deleteOne = async (req, res) => {
   let result = null;
-  const id = req.params.id;
+  const id = parseInt(req.params.id);
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
   if (!admin || admin === 1) {
@@ -191,13 +217,14 @@ const deleteOne = async (req, res) => {
       .json({ message: `Admin supprimé avec succès`, data: result });
   } catch (error) {
     console.error(error);
-    return Error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 };
 export const Admin_CollectifController = {
   createAdmin_collectif,
   confirmAdminCol,
   readAllAdmins,
+  readUnconfirmedAdmins,
   readAdminByUserId,
   readByCollectifId,
   deleteOne,

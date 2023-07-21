@@ -4,8 +4,7 @@ import { BookingDAO } from "../DAOs/bookingDAO.js";
 const createBooking = async (req, res) => {
   let result = null;
   try {
-    const userId = req.params.id;
-    console.log(userId);
+    const userId = parseInt(req.params.id);
     const token = req.headers.authorization;
     if (!token) {
       return res.status(401).json({ message: `Veuillez vous enregistrer` });
@@ -45,7 +44,7 @@ const createBooking = async (req, res) => {
 const confirmBooking = async (req, res) => {
   try {
     let result = null;
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
     if (!admin || admin <= 5) {
@@ -73,14 +72,14 @@ const confirmBooking = async (req, res) => {
 
 const readAllBookings = async (req, res) => {
   let result = null;
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (admin === 1 || admin <= 4) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
+  }
   try {
-    // const token = req.headers.authorization;
-    // const admin = await isAdmin(token);
-    // if (admin === 1) {
-    //   return res
-    //     .status(401)
-    //     .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
-    // }
     result = await BookingDAO.ReadAllBookings();
     if (!result || result.length === 0) {
       return res
@@ -97,6 +96,25 @@ const readAllBookings = async (req, res) => {
   }
 };
 
+const readUnconfirmed = async (req, res) => {
+  let result = null;
+  try {
+    result = await BookingDAO.ReadUnconfirmedBookings();
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Liste introuvable ou inexistante` });
+    }
+    return res.status(200).json({
+      message: `Liste des réservations récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).jsont({ message: `Erreur interne`, data: error });
+  }
+};
+
 const readOneBookingById = async (req, res) => {
   try {
     const token = req.headers.authorization;
@@ -107,7 +125,7 @@ const readOneBookingById = async (req, res) => {
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
     }
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     const booking = await BookingDAO.ReadBookingById(id);
     if (!booking) {
       return res
@@ -133,7 +151,7 @@ const readBookingsByUserId = async (req, res) => {
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
     }
-    const userId = req.params.id;
+    const userId = parseInt(req.params.id);
     const bookings = await BookingDAO.ReadBookingsByUserId(userId);
     if (!bookings || !bookings.length) {
       return res
@@ -152,15 +170,7 @@ const readBookingsByUserId = async (req, res) => {
 
 const readBookingsByCollectifId = async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const admin = await isAdmin(token);
-
-    if (admin === 1) {
-      return res
-        .status(401)
-        .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
-    }
-    const collectifId = req.params.id;
+    const collectifId = parseInt(req.params.id);
     const bookings = await BookingDAO.ReadBookingsByCollectifId(collectifId);
     if (bookings.length === 0) {
       return res
@@ -178,6 +188,40 @@ const readBookingsByCollectifId = async (req, res) => {
 
 const readBookingByDate = async (req, res) => {
   let result = null;
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (admin === 1 || admin <= 4) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
+  }
+  try {
+    const { date } = req.body;
+    result = await BookingDAO.ReadBookingsByDate(date);
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `il n'y a pas d'évènements pour cette date` });
+    }
+    return res.status(200).json({
+      message: `évènements trouvés par date avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
+
+const readBookingByDateClient = async (req, res) => {
+  let result = null;
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (admin === 1 || admin <= 4) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
+  }
   try {
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
@@ -188,7 +232,7 @@ const readBookingByDate = async (req, res) => {
         .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
     }
     const { date } = req.body;
-    result = await BookingDAO.ReadBookingsByDate(date);
+    result = await BookingDAO.ReadBookingsByDateClient(date);
     if (result.length === 0) {
       return res
         .status(404)
@@ -214,7 +258,7 @@ const updateOneBooking = async (req, res) => {
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
     }
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     const { date, time, description, nbr_invite, collectifId } = req.body;
     if (!date || !time || !description || !nbr_invite) {
       return res
@@ -237,7 +281,7 @@ const updateOneBooking = async (req, res) => {
 
 const deleteOneBooking = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     const existingBooking = await BookingDAO.ReadBookingById(id);
     if (!existingBooking) {
       return res
@@ -265,10 +309,12 @@ export const BookingController = {
   createBooking,
   confirmBooking,
   readAllBookings,
+  readUnconfirmed,
   readOneBookingById,
   readBookingsByUserId,
   readBookingsByCollectifId,
   readBookingByDate,
+  readBookingByDateClient,
   updateOneBooking,
   deleteOneBooking,
 };

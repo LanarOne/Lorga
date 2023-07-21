@@ -5,7 +5,7 @@ import Artiste from "../models/Artiste.js";
 import { UserDAO } from "../DAOs/userDAO.js";
 
 const createArtiste = async (req, res) => {
-  const userId = req.params.id;
+  const userId = parseInt(req.params.id);
   const token = req.headers.authorization;
   if (!token) {
     return res.status(401).json({ message: `Veuillez vous enregistrer` });
@@ -71,7 +71,7 @@ const createArtiste = async (req, res) => {
 const confirmArtiste = async (req, res) => {
   let result = null;
   try {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
     if (!admin || admin <= 4) {
@@ -96,9 +96,16 @@ const confirmArtiste = async (req, res) => {
 };
 
 const readAllArtistes = async (req, res) => {
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (!admin || admin <= 4) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+  }
   try {
     const artistes = await ArtisteDAO.ReadAll();
-    if (!artistes) {
+    if (!artistes || artistes.length === 0) {
       return res
         .status(404)
         .json({ message: `Impossible de récupérer la liste des artistes` });
@@ -133,6 +140,13 @@ const readConfirmedArtistes = async (req, res) => {
 };
 
 const readUnconfirmedArtistes = async (req, res) => {
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (!admin || admin <= 4) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+  }
   let result = null;
   try {
     result = await ArtisteDAO.ReadUnconfirmedArtistes();
@@ -153,7 +167,7 @@ const readUnconfirmedArtistes = async (req, res) => {
 const readOneArtiste = async (req, res) => {
   let result = null;
   try {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     result = await ArtisteDAO.ReadById(id);
     console.log(result);
     if (!result || result.length === 0) {
@@ -181,7 +195,7 @@ const readByUserId = async (req, res) => {
         message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
       });
     }
-    const userId = req.params.id;
+    const userId = parseInt(req.params.id);
     const user = await UserDAO.ReadUserById(userId);
     if (!user) {
       return res
@@ -207,7 +221,7 @@ const updateOneArtiste = async (req, res) => {
     });
   }
   try {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     const { nom, description, influences, style, photoId } = req.body;
     if (
       !stringIsFilled(nom) ||
@@ -246,7 +260,7 @@ const deleteOneArtiste = async (req, res) => {
     });
   }
   try {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     const existingArtiste = await ArtisteDAO.ReadById(id);
     if (!existingArtiste) {
       return res
