@@ -31,7 +31,6 @@ const createBooking = async (req, res) => {
       collectifId,
       userId
     );
-    console.log(result);
     return res
       .status(201)
       .json({ message: `Réservation passée avec succès`, data: result });
@@ -72,13 +71,6 @@ const confirmBooking = async (req, res) => {
 
 const readAllBookings = async (req, res) => {
   let result = null;
-  const token = req.headers.authorization;
-  const admin = await isAdmin(token);
-  if (admin === 1 || admin <= 4) {
-    return res
-      .status(401)
-      .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
-  }
   try {
     result = await BookingDAO.ReadAllBookings();
     if (!result || result.length === 0) {

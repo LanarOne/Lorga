@@ -3,5 +3,6 @@ export const GET_BOOKINGS = `booking/readall`;
 export const GET_COLLECTIFS = `collectif/readall`;
 export const GET_COL_BY_ID = `collectif/readone/`;
 export const GET_USER = `users/getone`;
+export const GET_ARTISTES = `artiste/readconfirmedartistes`;
 export const LOGIN = `users/signin`;
 export const SIGNUP = `users/signup`;

@@ -25,7 +25,7 @@ const Accueil = () => {
       let status = result.status;
       // let message = result.message;
       if (status >= 400) {
-        throw new Error(error.message);
+        return new Error(error.message);
       }
       return result.result.data;
     } catch (error) {
@@ -60,24 +60,22 @@ const Accueil = () => {
   async function displayBookings() {
     try {
       const articles = sets.map(async (set) => {
-        if (set.confirmation) {
-          const { date, time, collectifId, description } = set;
-          const collectif = await getCollectifById(collectifId);
-          let dateFr = `${date.slice(8, 10)}-${date.slice(5, 7)}-${date.slice(
-            0,
-            4
-          )}`;
-          let realTime = `${time.slice(0, 2)}h${time.slice(3, 5)}`;
-          let nom = collectif.nom;
-          let colDescr = collectif.description;
-          return {
-            date: dateFr,
-            time: realTime,
-            nom,
-            description,
-            colDescr,
-          };
-        }
+        const { date, time, collectifId, description } = set;
+        const collectif = await getCollectifById(collectifId);
+        let dateFr = `${date.slice(8, 10)}-${date.slice(5, 7)}-${date.slice(
+          0,
+          4
+        )}`;
+        let realTime = `${time.slice(0, 2)}h${time.slice(3, 5)}`;
+        let nom = collectif.nom;
+        let colDescr = collectif.description;
+        return {
+          date: dateFr,
+          time: realTime,
+          nom,
+          description,
+          colDescr,
+        };
       });
       return await Promise.all(articles);
     } catch (error) {

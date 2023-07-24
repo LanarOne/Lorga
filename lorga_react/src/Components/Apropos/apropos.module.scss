@@ -1,0 +1,29 @@
+@use "../../Style/general";
+
+main {
+  display: flex;
+  flex-direction: row;
+  & .sectionEquipe {
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  & .lafamille{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem;
+    & .blocText {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    & img {
+      width: 30%;
+      margin: 1rem;
+    }
+  }
+}

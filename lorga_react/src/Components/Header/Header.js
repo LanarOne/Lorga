@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import logo from "../../public/medias/lorgaLogo.jpg";
 import logo2 from "../../public/medias/lorgaLogo2.jpg";
 import mc from "./header.module.scss";
-// import photoPda from "../../public/medias/photoPda.jpg";
 import { NavLink } from "react-router-dom";
 import { manageDisplayDate } from "../../Helpers/dates";
 import { getUser } from "../../Helpers/usersHelper";
@@ -13,7 +12,6 @@ const Header = () => {
   const [displayDate, setDisplayDate] = useState("");
   const [user, setUser] = useState({});
   const token = window.localStorage.getItem("token");
-
   function deconexion() {
     localStorage.removeItem("token");
     window.location.href = "/";
@@ -39,16 +37,31 @@ const Header = () => {
         <div>
           <ul>
             <li>
-              <NavLink>Accueil/Programmation</NavLink>
+              <NavLink to={"/"}>Accueil/Programmation</NavLink>
             </li>
             <li>
               <NavLink>Carte des boissons</NavLink>
             </li>
             <li>
-              <NavLink>À propos de nous</NavLink>
+              <NavLink to={"/apropos"}>L'équipe</NavLink>
             </li>
             <li>
               <NavLink>Galerie</NavLink>
+            </li>
+            <li>
+              {!user.roleId ? (
+                ""
+              ) : user.roleId === 1 ? (
+                <NavLink>Réserver une table</NavLink>
+              ) : user.roleId === 2 ? (
+                <NavLink>Gérer ma page artiste</NavLink>
+              ) : user.roleId === 3 ? (
+                <NavLink>Gérer un collectif</NavLink>
+              ) : user.roleId === 4 ? (
+                <NavLink>Gérer mon collectif</NavLink>
+              ) : (
+                <NavLink to={"/admin"}>Admin</NavLink>
+              )}
             </li>
           </ul>
         </div>
