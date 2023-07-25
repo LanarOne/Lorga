@@ -6,7 +6,7 @@ export const getAllArtistes = async () => {
   try {
     result = await getRequest(GET_ARTISTES);
     let error = result.error;
-    let message = result.result.message;
+    let message = result.message;
     return result.result.data;
   } catch (error) {
     console.error(error.message);

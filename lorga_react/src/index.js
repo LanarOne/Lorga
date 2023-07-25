@@ -10,21 +10,25 @@ import Admin from "./Admin/pageAdmin/Admin";
 import EmptyPages from "./Components/EmptyPages/EmptyPages";
 import Apropos from "./Components/Apropos/Apropos";
 import Artiste from "./Components/Artiste/Artiste";
+import { store } from "./Redux/store";
+import { Provider } from "react-redux";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path={"/"} element={<Accueil />} />
-        <Route path={"/login"} element={<Login />} />
-        <Route path={"/signup"} element={<SignUp />} />
-        <Route path={"/admin"} element={<Admin />} />
-        <Route path={"/apropos"} element={<Apropos />} />
-        <Route path={"/artistes"} element={<Artiste />} />
-        <Route path={"/*"} element={<EmptyPages />} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Routes>
+          <Route path={"/"} element={<Accueil />} />
+          <Route path={"/login"} element={<Login />} />
+          <Route path={"/signup"} element={<SignUp />} />
+          <Route path={"/admin"} element={<Admin />} />
+          <Route path={"/apropos"} element={<Apropos />} />
+          <Route path={"/artistes"} element={<Artiste />} />
+          <Route path={"/*"} element={<EmptyPages />} />
+        </Routes>
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );
 

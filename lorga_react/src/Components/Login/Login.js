@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import Header from "../Header/Header";
 import { postRequest } from "../../api/api";
 import { LOGIN } from "../../constants/constants";
 import Button from "../smallElts/Button/Button";
 import mc from "./login.module.scss";
 import { NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getEmail, getPassword } from "../../Redux/Reducers/login.slice";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { password, email } = useSelector((store) => store.login);
+  const dispatch = useDispatch();
+
+  const handleEmail = (e) => {
+    dispatch(getEmail(e));
+  };
+  const handlePassword = (e) => {
+    dispatch(getPassword(e));
+  };
   async function handleSubmit(e) {
     e.preventDefault();
     let body = { email, password };
@@ -48,7 +57,7 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => {
-                  setEmail(e.target.value);
+                  handleEmail(e.target.value);
                 }}
               />
             </div>
@@ -58,7 +67,7 @@ const Login = () => {
                 type="password"
                 value={password}
                 onChange={(e) => {
-                  setPassword(e.target.value);
+                  handlePassword(e.target.value);
                 }}
               />
             </div>

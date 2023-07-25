@@ -1,16 +1,38 @@
-import React, { useState } from "react";
+import React from "react";
 import Header from "../Header/Header";
 import Button from "../smallElts/Button/Button";
 import mc from "./signup.module.scss";
-import { getRequest, postRequest } from "../../api/api";
+import { postRequest } from "../../api/api";
 import { SIGNUP } from "../../constants/constants";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getConfirmation,
+  getEmail,
+  getPassword,
+  getUsername,
+  getZipCode,
+} from "../../Redux/Reducers/signup.slice";
 
 const SignUp = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmation, setConfirmation] = useState("");
-  const [username, setUsername] = useState("");
-  const [zipCode, setZipCode] = useState(33000);
+  const { email, password, confirmation, username, zipCode } = useSelector(
+    (store) => store.signup
+  );
+  const dispatch = useDispatch();
+  const handleEmail = (e) => {
+    dispatch(getEmail(e));
+  };
+  const handlePassword = (e) => {
+    dispatch(getPassword(e));
+  };
+  const handleConfirmation = (e) => {
+    dispatch(getConfirmation(e));
+  };
+  const handleUsername = (e) => {
+    dispatch(getUsername(e));
+  };
+  const handleZipCode = (e) => {
+    dispatch(getZipCode(e));
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -23,8 +45,7 @@ const SignUp = () => {
         const response = await postRequest(SIGNUP, body);
         const { error, status, result } = response;
         if (status === 201) {
-          const data = result;
-          localStorage.setItem("token", data.token);
+          localStorage.setItem("token", result.token);
           window.location.href = "/";
         } else {
           return error.message;
@@ -51,7 +72,7 @@ const SignUp = () => {
               type="email"
               value={email}
               onChange={(e) => {
-                setEmail(e.target.value);
+                handleEmail(e.target.value);
               }}
             />
           </div>
@@ -61,7 +82,7 @@ const SignUp = () => {
               type="text"
               value={username}
               onChange={(e) => {
-                setUsername(e.target.value);
+                handleUsername(e.target.value);
               }}
             />
           </div>
@@ -71,7 +92,7 @@ const SignUp = () => {
               type="password"
               value={password}
               onChange={(e) => {
-                setPassword(e.target.value);
+                handlePassword(e.target.value);
               }}
             />
           </div>
@@ -81,7 +102,7 @@ const SignUp = () => {
               type="password"
               value={confirmation}
               onChange={(e) => {
-                setConfirmation(e.target.value);
+                handleConfirmation(e.target.value);
               }}
             />
           </div>
@@ -91,7 +112,7 @@ const SignUp = () => {
               type="number"
               value={zipCode}
               onChange={(e) => {
-                setZipCode(e.target.value);
+                handleZipCode(e.target.value);
               }}
             />
           </div>

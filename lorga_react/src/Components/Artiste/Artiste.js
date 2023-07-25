@@ -1,39 +1,38 @@
 import React, { useEffect, useState } from "react";
 import Header from "../Header/Header";
-import { getAllArtistes } from "../../Helpers/artistesHelper";
+import { useDispatch, useSelector } from "react-redux";
+import { getArtistes } from "../../Redux/Reducers/artistes.slice";
+import mc from "./artiste.module.scss";
 
 const Artiste = () => {
-  const [artistes, setArtistes] = useState([]);
-  const [article, setArticle] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const diplayArtistes = async () => {
-    try {
-      const articles = artistes.map(async (artiste) => {
-        const { nom, description, influences, style } = artiste;
-        return { nom, description, influences, style };
-      });
-      return await Promise.all(articles);
-    } catch (error) {
-      console.error(error.message);
-      throw new Error(error.message);
-    }
-  };
+  const dispatch = useDispatch();
+  const { data, loading, error } = useSelector((state) => state.artistes);
   useEffect(() => {
-    const fetchData = async () => {
-      let result = null;
-      try {
-        result = await getAllArtistes();
-        setArtistes(result);
-      } catch (error) {
-        throw new Error(error.message);
-      }
-    };
-    fetchData();
-  }, [artistes.length]);
+    dispatch(getArtistes());
+  }, [dispatch]);
+  let content;
+  if (loading === "pending") {
+    content = <h2>Loading ...</h2>;
+  }
+  if (loading === "idle") {
+    content = data.map((artiste) => {
+      return (
+        <article>
+          <h3>{artiste.nom}</h3>
+          <p>{artiste.style}</p>
+          <p>{artiste.description}</p>
+          <p>{artiste.influences}</p>
+        </article>
+      );
+    });
+  }
+  if (error !== null) {
+    content = <p>{error}</p>;
+  }
   return (
     <>
       <Header />
+      <main>{content}</main>
     </>
   );
 };

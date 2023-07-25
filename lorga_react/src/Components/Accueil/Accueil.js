@@ -121,10 +121,7 @@ const Accueil = () => {
   }, [bookings, sets.length]);
   async function sortBookings() {
     return bookings.filter(
-      (booking) =>
-        booking.collectifId &&
-        booking.date >= dateDuJour &&
-        booking.confirmation === true
+      (booking) => booking.collectifId && booking.date >= dateDuJour
     );
   }
 

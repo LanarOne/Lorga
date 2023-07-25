@@ -71,7 +71,6 @@ const ReadConfirmedArtistes = async () => {
         description: decodeURIComponent(artiste.description),
         influences: decodeURIComponent(artiste.influences),
         style: decodeURIComponent(artiste.style),
-        confirmation: artiste.confirmation,
         photoId: artiste.photoId,
       };
     });
