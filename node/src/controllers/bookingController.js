@@ -88,6 +88,25 @@ const readAllBookings = async (req, res) => {
   }
 };
 
+const readConfirmedCollectifsBookings = async (req, res) => {
+  let result = null;
+  try {
+    result = await BookingDAO.ReadConfirmedCollectifBookings();
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `Liste introuvable ou inexistante` });
+    }
+    return res.status(200).json({
+      message: `Liste des réservations confirmées, par artiste, récupérée avec succès`,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
+  }
+};
+
 const readUnconfirmed = async (req, res) => {
   let result = null;
   try {
@@ -301,6 +320,7 @@ export const BookingController = {
   createBooking,
   confirmBooking,
   readAllBookings,
+  readConfirmedCollectifsBookings,
   readUnconfirmed,
   readOneBookingById,
   readBookingsByUserId,

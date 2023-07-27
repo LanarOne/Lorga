@@ -1,5 +1,6 @@
 import Booking from "../models/Booking.js";
 import booking from "../models/Booking.js";
+import { Op } from "sequelize";
 
 const Create = async (
   date,
@@ -55,6 +56,31 @@ const ReadAllBookings = async () => {
         confirmation: booking.confirmation,
         collectifId: booking.collectifId,
       };
+    });
+  } catch (error) {
+    return Error(error.message);
+  }
+};
+
+const ReadConfirmedCollectifBookings = async () => {
+  let result = null;
+  let confirmation = true;
+  try {
+    result = await Booking.findAll({
+      where: { confirmation, collectifId: { [Op.not]: null } },
+    });
+    return result.map((booking) => {
+      if (booking.collectifId) {
+        return {
+          id: booking.id,
+          date: booking.date,
+          time: booking.time,
+          description: decodeURIComponent(booking.description),
+          nbr_invite: booking.nbr_invite,
+          confirmation: booking.confirmation,
+          collectifId: booking.collectifId,
+        };
+      }
     });
   } catch (error) {
     return Error(error.message);
@@ -219,6 +245,7 @@ export const BookingDAO = {
   Create,
   Confirm,
   ReadAllBookings,
+  ReadConfirmedCollectifBookings,
   ReadUnconfirmedBookings,
   ReadBookingById,
   ReadBookingsByUserId,

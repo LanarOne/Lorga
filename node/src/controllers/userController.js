@@ -56,7 +56,6 @@ const signIn = async (req, res) => {
   try {
     let { email, password } = req.body;
     email = decodeURIComponent(email);
-
     if (!stringIsFilled(email) || !stringIsFilled(password)) {
       return res
         .status(403)

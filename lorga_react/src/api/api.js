@@ -4,10 +4,17 @@ async function Request(url, config) {
   let status = -1;
   let error = null;
   let result = null;
+
   try {
     const response = await fetch(`${API_URL}${url}`, config);
     status = response.status;
-    result = await response.json();
+    if (status <= 201) {
+      result = await response.json();
+      return result;
+    }
+    if (status >= 400) {
+      error = await response.json();
+    }
   } catch (e) {
     error = e.message;
   } finally {
@@ -16,12 +23,16 @@ async function Request(url, config) {
 }
 
 function handleResponse(result, status, error) {
-  const hasError = !result || status >= 400;
-  return {
-    status,
-    result: hasError ? null : result,
-    error: hasError ? `Result is null ${error || ""}` : null,
-  };
+  try {
+    const hasError = !result || status >= 400;
+    return {
+      status: status,
+      result: hasError ? null : result,
+      error: hasError ? error : null,
+    };
+  } catch (e) {
+    console.error(e.message);
+  }
 }
 
 async function getRequest(url, token = null) {
@@ -37,8 +48,8 @@ async function getRequest(url, token = null) {
 async function postRequest(url, body = {}, token = null) {
   const config = {
     method: "POST",
-    body: JSON.stringify(body),
     headers: { "Content-type": "application/json; charset=UTF-8" },
+    body: JSON.stringify(body),
   };
   if (token) config.headers.Authorization = token;
   return await Request(url, config);

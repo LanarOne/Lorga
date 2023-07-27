@@ -5,17 +5,21 @@ import { getRequest } from "../../api/api";
 import { manageDate } from "../../Helpers/dates";
 import { GET_BOOKINGS, GET_COL_BY_ID } from "../../constants/constants";
 import photoPda from "../../public/medias/photoPda.jpg";
+import { useDispatch, useSelector } from "react-redux";
+import { getBookings } from "../../Redux/Reducers/bookings.slice";
 
 const Accueil = () => {
   const [dateDuJour, setDateDuJour] = useState("");
-  // const [collectifs, setCollectifs] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [sets, setSets] = useState([]);
-  const [articles, setArticles] = useState([]);
-  const token = window.localStorage.getItem("token");
   const [opacity, setOpacity] = useState(1);
-  const [loading, setLoading] = useState(false);
 
+  const dispatch = useDispatch();
+  const { data, loading, error } = useSelector((state) => state.bookings);
+
+  useEffect(() => {
+    dispatch(getBookings());
+  }, [dispatch]);
   const getCollectifById = async (id) => {
     const url = `${GET_COL_BY_ID}${id}`;
     let result = null;
@@ -46,20 +50,9 @@ const Accueil = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  async function getBookings() {
-    let result = null;
-    try {
-      result = await getRequest(GET_BOOKINGS);
-
-      return result;
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  }
   async function displayBookings() {
     try {
-      const articles = sets.map(async (set) => {
+      const toDisplay = sets.map(async (set) => {
         const { date, time, collectifId, description } = set;
         const collectif = await getCollectifById(collectifId);
         let dateFr = `${date.slice(8, 10)}-${date.slice(5, 7)}-${date.slice(
@@ -77,50 +70,31 @@ const Accueil = () => {
           colDescr,
         };
       });
-      return await Promise.all(articles);
+      return await Promise.all(toDisplay);
     } catch (error) {
       throw new Error(error.message);
     }
   }
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getBookings();
-        const { error, status, result } = response;
-        if (status >= 400) {
-          console.error(error, status);
-          return new Error(error.message);
-        }
-        setBookings(result.data);
-      } catch (error) {
-        throw new Error(error.message);
-      }
-    };
-    fetchData();
-  }, []);
-  useEffect(() => {
     const manageData = async () => {
-      setLoading(true);
       try {
-        if (bookings.length > 0) {
-          const sorting = await sortBookings();
-          setSets(sorting);
+        if (data.length > 0) {
+          const sorted = await sortBookings();
+          setSets(sorted);
           if (sets.length > 0) {
             const result = await displayBookings();
-            setArticles(result);
+            setBookings(result);
           }
         }
       } catch (error) {
         throw new Error(error.message);
-      } finally {
-        setLoading(false);
       }
     };
     setDateDuJour(manageDate());
     manageData();
-  }, [bookings, sets.length]);
+  }, [data, sets.length]);
   async function sortBookings() {
-    return bookings.filter(
+    return data.filter(
       (booking) => booking.collectifId && booking.date >= dateDuJour
     );
   }
@@ -137,10 +111,10 @@ const Accueil = () => {
       <main className={`${mc.main}`}>
         <section>
           <h2>Les sets à venir : </h2>
-          {loading ? (
+          {loading === "pending" ? (
             <h3>Informations en cours de chargement...</h3>
-          ) : articles.length > 0 ? (
-            articles.map((article) => {
+          ) : bookings.length > 0 ? (
+            bookings.map((article) => {
               return (
                 <>
                   <article
@@ -157,6 +131,8 @@ const Accueil = () => {
                 </>
               );
             })
+          ) : error ? (
+            <p>{error}</p>
           ) : (
             <h3>Pas de sets prévus pour le moment :(</h3>
           )}

@@ -18,7 +18,7 @@ const ReadUserByEmail = async (email) => {
       where: { email: email },
     });
     if (!result) {
-      return;
+      return result;
     }
     return {
       id: result.id,
