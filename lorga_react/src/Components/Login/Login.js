@@ -9,11 +9,21 @@ import {
   getPassword,
   postLogin,
 } from "../../Redux/Reducers/login.slice";
+import Modale from "../smallElts/Modale/Modale";
 
 const Login = () => {
   const { password, email } = useSelector((store) => store.login);
   const dispatch = useDispatch();
   const [alertElt, setAlertElt] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const token = localStorage.getItem("token");
+  if (token) {
+    window.location.href = "/";
+  }
+
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
+  };
   const handleEmail = (e) => {
     dispatch(getEmail(e));
   };
@@ -26,12 +36,12 @@ const Login = () => {
     try {
       const response = await dispatch(postLogin({ body }));
       if (response.type === "users/login/fulfilled") {
-        localStorage.setItem("token", response.payload.token);
-        setAlertElt(response.payload.message);
-        window.location.href = "/";
+        setAlertElt(response.payload.result.message);
+        localStorage.setItem("token", response.payload.result.token);
         return response;
       } else {
-        setAlertElt(response.error.message);
+        setAlertElt(<h2>{response.error.message}</h2>);
+        toggleModal();
       }
     } catch (error) {
       throw new Error(error.message);
@@ -41,8 +51,12 @@ const Login = () => {
     <>
       <Header />
       <main>
+        <>
+          {isOpen ? (
+            <Modale message={alertElt} setModaleOpen={toggleModal} />
+          ) : null}
+        </>
         <section className={`${mc.formSection}`}>
-          <div>{alertElt ? <h2>{alertElt}</h2> : null}</div>
           <form
             className={`${mc.loginForm}`}
             action=""

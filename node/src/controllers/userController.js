@@ -64,7 +64,7 @@ const signIn = async (req, res) => {
     const user = await UserDAO.ReadUserByEmail(email);
     if (!user) {
       return res.status(404).json({
-        message: `L'utilisateur n'existe pas dans la base de données`,
+        message: `Email ou mot de passe non valide`,
       });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);

@@ -1,9 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../Header/Header";
 import Button from "../smallElts/Button/Button";
 import mc from "./signup.module.scss";
-import { postRequest } from "../../api/api";
-import { SIGNUP } from "../../constants/constants";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getConfirmation,
@@ -11,13 +9,20 @@ import {
   getPassword,
   getUsername,
   getZipCode,
+  postSignup,
 } from "../../Redux/Reducers/signup.slice";
+import Modale from "../smallElts/Modale/Modale";
 
 const SignUp = () => {
   const { email, password, confirmation, username, zipCode } = useSelector(
     (store) => store.signup
   );
+  const [isOpen, setIsOpen] = useState(false);
+  const [alertElt, setAlertElt] = useState(null);
   const dispatch = useDispatch();
+  const toggleModale = () => {
+    setIsOpen(!isOpen);
+  };
   const handleEmail = (e) => {
     dispatch(getEmail(e));
   };
@@ -37,18 +42,21 @@ const SignUp = () => {
   async function handleSubmit(e) {
     e.preventDefault();
     if (password !== confirmation) {
-      alert(`Le mot de passe ne correspond pas à la confirmation`);
+      setAlertElt(<h2>Le mot de passe ne correspond pas à la confirmation</h2>);
+      toggleModale();
     }
     if (password === confirmation) {
       try {
         const body = { email, password, username, zipCode };
-        const response = await postRequest(SIGNUP, body);
-        const { error, status, result } = response;
-        if (status === 201) {
-          localStorage.setItem("token", result.token);
+        const response = await dispatch(postSignup({ body }));
+        console.log(response);
+        // const { error, status, result } = response;
+        if (response.type === "users/signup/fulfilled") {
+          localStorage.setItem("token", response.payload.result.token);
           window.location.href = "/";
         } else {
-          return error.message;
+          setAlertElt(<h2>{response.error.message}</h2>);
+          toggleModale();
         }
       } catch (error) {
         throw new Error(error.message);
@@ -59,6 +67,11 @@ const SignUp = () => {
     <>
       <Header />
       <main>
+        <>
+          {isOpen ? (
+            <Modale message={alertElt} setModaleOpen={toggleModale} />
+          ) : null}
+        </>
         <form
           action=""
           className={`${mc.signUpForm}`}

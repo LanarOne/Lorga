@@ -12,6 +12,7 @@ import Apropos from "./Components/Apropos/Apropos";
 import Artiste from "./Components/Artiste/Artiste";
 import { store } from "./Redux/store";
 import { Provider } from "react-redux";
+import CreationArtiste from "./Components/CreationArtiste/CreationArtiste";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -25,6 +26,7 @@ root.render(
           <Route path={"/admin"} element={<Admin />} />
           <Route path={"/apropos"} element={<Apropos />} />
           <Route path={"/artistes"} element={<Artiste />} />
+          <Route path={"/nouvelartiste"} element={<CreationArtiste />} />
           <Route path={"/*"} element={<EmptyPages />} />
         </Routes>
       </BrowserRouter>

@@ -5,6 +5,7 @@ import yula from "../../public/medias/yula.png";
 import fruckie from "../../public/medias/clubJesus.png";
 import lanar from "../../public/medias/laptopCatLogo2.png";
 import mc from "./apropos.module.scss";
+import { NavLink } from "react-router-dom";
 
 const Apropos = () => {
   const token = window.localStorage.getItem("token");
@@ -78,6 +79,16 @@ const Apropos = () => {
                 <p>Votre second bartender préféré / dévellopeur web</p>
               </div>
             </article>
+          </section>
+          <section>
+            <h2>S'impliquer dans la vie de Lorga!</h2>
+            <p>
+              Pour créer une page artiste c'est{" "}
+              <NavLink to={"/nouvelartiste"}>par ici</NavLink>
+            </p>
+            <p>
+              Pour créer une page collectif et réserver un créneau c'est par là!
+            </p>
           </section>
         </main>
       )}

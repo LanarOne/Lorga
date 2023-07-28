@@ -43,7 +43,7 @@ const Header = () => {
               <NavLink>Carte des boissons</NavLink>
             </li>
             <li>
-              <NavLink to={"/apropos"}>L'équipe</NavLink>
+              <NavLink to={"/apropos"}>L'équipe/Contact</NavLink>
             </li>
             <li>
               <NavLink>Galerie</NavLink>
