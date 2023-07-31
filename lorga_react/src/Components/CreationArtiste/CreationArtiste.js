@@ -20,7 +20,7 @@ const CreationArtiste = () => {
   const { nom, description, influences, style, photoId, userId } = useSelector(
     (store) => store.artiste
   );
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState([]);
 
   const handleNom = (e) => {
     dispatch(getNom(e));
@@ -38,11 +38,12 @@ const CreationArtiste = () => {
     dispatch(getPhotoId(e));
   };
   const handleSubmit = async (e) => {
-    const userId = user.userId;
+    const userId = user.id;
     e.preventDefault();
     let body = { nom, description, influences, style, photoId, userId };
+    console.log(body);
     try {
-      const response = await dispatch(postNewArtiste({ body }));
+      const response = await dispatch(postNewArtiste({ body, token }));
       console.log(response);
     } catch (e) {
       throw new Error(e.message);
@@ -56,11 +57,11 @@ const CreationArtiste = () => {
       }
     };
     const handleUserId = (user) => {
-      dispatch(getUserId(user.userId));
-      return user.userId;
+      dispatch(getUserId(user.id));
+      return user.id;
     };
     fetchUser().then(handleUserId(user));
-  }, [token]);
+  }, [user.length]);
   return (
     <>
       <Header />

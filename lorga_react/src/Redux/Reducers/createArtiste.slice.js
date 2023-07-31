@@ -1,14 +1,17 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { postRequest } from "../../api/api";
-import { CREATE_ARTISTE } from "../../constants/constants";
+import {
+  createAsyncThunk,
+  createSlice,
+  isRejectedWithValue,
+} from "@reduxjs/toolkit";
+import { getRequest, postRequest } from "../../api/api";
+import { CREATE_ARTISTE, GET_ARTISTE_BY_NOM } from "../../constants/constants";
 
 export const postNewArtiste = createAsyncThunk(
   "artiste/create",
-  async ({ body }) => {
+  async ({ body, token }) => {
     try {
-      console.log(body);
       let url = `${CREATE_ARTISTE}${body.userId}`;
-      const response = await postRequest(url, body);
+      const response = await postRequest(url, body, token);
       const status = response.status;
       if (status <= 201) {
         return response;
@@ -18,6 +21,28 @@ export const postNewArtiste = createAsyncThunk(
       }
     } catch (e) {
       throw new Error(e.message);
+    }
+  }
+);
+export const getArtisteByName = createAsyncThunk(
+  `artiste/getonebyname`,
+  async ({ nom, token }, { rejectWithValue }) => {
+    let error;
+    let status;
+    try {
+      let url = `${GET_ARTISTE_BY_NOM}${nom}`;
+      const response = await getRequest(url, token);
+      status = response.status;
+      error = response.error;
+      if (error) {
+        let { message } = error;
+        throw rejectWithValue({ message, status });
+      }
+      if (status <= 201) {
+        return response;
+      }
+    } catch (e) {
+      throw e;
     }
   }
 );
@@ -69,6 +94,24 @@ export const createArtisteSlice = createSlice({
       if (state.loading) {
         state.loading = false;
         state.error = action.payload;
+      }
+    });
+    builder.addCase(getArtisteByName.pending, (state, action) => {
+      if (!state.loading) {
+        state.loading = true;
+      }
+    });
+    builder.addCase(getArtisteByName.fulfilled, (state, action) => {
+      if (state.loading) {
+        state.loading = action.payload;
+        state.loading = false;
+      }
+    });
+    builder.addCase(getArtisteByName.rejected, (state, action) => {
+      if (state.loading) {
+        state.loading = false;
+        state.error = action.payload;
+        state.status = action.payload;
       }
     });
   },

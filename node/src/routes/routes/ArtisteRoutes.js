@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { ArtisteController } from "../../controllers/artisteController.js";
 import { jwtMiddleware } from "../../jwt/jwt.js";
-
+import { wrongRoute } from "../../utils/wrongPath.js";
 const ArtisteRoutes = (app, sm) => {
   const router = Router();
   router.post(
@@ -40,6 +40,7 @@ const ArtisteRoutes = (app, sm) => {
     jwtMiddleware,
     ArtisteController.readByUserId
   );
+  router.get("/readbynom/:nom", sm, jwtMiddleware, ArtisteController.readByNom);
   router.put(
     "/updateone/:id",
     sm,
@@ -52,6 +53,7 @@ const ArtisteRoutes = (app, sm) => {
     jwtMiddleware,
     ArtisteController.deleteOneArtiste
   );
+  router.get("/*", sm, wrongRoute.wrongPath);
 
   app.use("/artiste", router);
 };

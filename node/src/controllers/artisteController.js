@@ -212,6 +212,33 @@ const readByUserId = async (req, res) => {
   }
 };
 
+const readByNom = async (req, res) => {
+  const nom = req.params.nom;
+  let result = null;
+  try {
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (!admin || admin === 1) {
+      return res.status(401).json({
+        message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
+      });
+    }
+    result = await ArtisteDAO.ReadByArtisteNom(nom);
+    if (!result || result.lenght === 0) {
+      return res
+        .status(404)
+        .json({ message: `Artiste introuvable ou inexistant` });
+    }
+    return res.status(200).json({
+      message: `Artiste ${result.nom} trouvé avec succès`,
+      data: result,
+    });
+  } catch (e) {
+    console.error(e.message);
+    return res.status(500).json({ message: `Erreur interne`, data: e });
+  }
+};
+
 const updateOneArtiste = async (req, res) => {
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
@@ -282,6 +309,7 @@ export const ArtisteController = {
   readUnconfirmedArtistes,
   readOneArtiste,
   readByUserId,
+  readByNom,
   updateOneArtiste,
   deleteOneArtiste,
 };

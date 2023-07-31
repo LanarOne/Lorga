@@ -3,6 +3,7 @@ import Header from "../Header/Header";
 import { useDispatch, useSelector } from "react-redux";
 import { getArtistes } from "../../Redux/Reducers/artistes.slice";
 import mc from "./artiste.module.scss";
+import { NavLink } from "react-router-dom";
 
 const Artiste = () => {
   const dispatch = useDispatch();
@@ -16,12 +17,13 @@ const Artiste = () => {
   }
   if (loading === "idle") {
     content = data.map((artiste) => {
+      console.log(artiste);
       return (
-        <article>
-          <h3>{artiste.nom}</h3>
+        <article key={artiste.id}>
+          <h3>
+            <NavLink to={`/artistes/${artiste.nom}`}>{artiste.nom}</NavLink>
+          </h3>
           <p>{artiste.style}</p>
-          <p>{artiste.description}</p>
-          <p>{artiste.influences}</p>
         </article>
       );
     });

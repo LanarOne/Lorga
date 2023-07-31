@@ -13,7 +13,7 @@ export const postSignup = createAsyncThunk("users/signup", async ({ body }) => {
       throw new Error(response.error.message);
     }
   } catch (e) {
-    console.error(e.meta);
+    console.error(e.message);
     throw new Error(e.message);
   }
 });

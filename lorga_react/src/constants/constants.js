@@ -4,6 +4,7 @@ export const GET_COLLECTIFS = `collectif/readall`;
 export const GET_COL_BY_ID = `collectif/readone/`;
 export const GET_USER = `users/getone`;
 export const GET_ARTISTES = `artiste/readconfirmedartistes`;
+export const GET_ARTISTE_BY_NOM = `artiste/readbynom/`;
 export const LOGIN = `users/signin`;
 export const SIGNUP = `users/signup`;
 export const CREATE_ARTISTE = `artiste/create/`;

@@ -145,6 +145,28 @@ const ReadByUserId = async (userId) => {
   }
 };
 
+const ReadByArtisteNom = async (nom) => {
+  let result = null;
+  try {
+    result = await Artiste.findOne({ where: { nom } });
+    if (!result || result.length === 0) {
+      return;
+    }
+    return {
+      id: result.id,
+      nom: decodeURIComponent(result.nom),
+      description: decodeURIComponent(result.description),
+      influences: decodeURIComponent(result.influences),
+      style: decodeURIComponent(result.style),
+      confirmation: result.confirmation,
+      photoId: result.photoId,
+    };
+  } catch (e) {
+    console.error(e.message);
+    throw new Error(e.message);
+  }
+};
+
 const UpdateOne = async (id, data) => {
   try {
     const artiste = await Artiste.findByPk(id);
@@ -181,6 +203,7 @@ export const ArtisteDAO = {
   ReadUnconfirmedArtistes,
   ReadById,
   ReadByUserId,
+  ReadByArtisteNom,
   UpdateOne,
   DeleteOne,
 };
