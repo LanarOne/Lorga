@@ -2,7 +2,7 @@ import { Router } from "express";
 import { PhotoController } from "../../controllers/photoController.js";
 import { jwtMiddleware } from "../../jwt/jwt.js";
 import { upload } from "../../middlewares/multer.js";
-const PhotoRoutes = (app, sm, unSanitize) => {
+const PhotoRoutes = (app, sm) => {
   const router = Router();
   router.post(
     "/create",

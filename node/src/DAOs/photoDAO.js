@@ -43,6 +43,20 @@ const ReadPhotoById = async (id) => {
   }
 };
 
+const ReadPhotoByName = async (nom) => {
+  let result = null;
+  try {
+    result = await Photo.findOne({ where: { nom } });
+    return {
+      nom: decodeURIComponent(result.nom),
+      path: decodeURIComponent(result.path),
+      alt: decodeURIComponent(result.alt),
+    };
+  } catch (e) {
+    return new Error(e.message);
+  }
+};
+
 const UpdatePhoto = async (id, data) => {
   let result = null;
   try {
@@ -79,6 +93,7 @@ export const PhotoDAO = {
   Create,
   ReadPhotoById,
   ReadAllPhotos,
+  ReadPhotoByName,
   UpdatePhoto,
   DeletePhoto,
 };

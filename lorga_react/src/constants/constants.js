@@ -8,3 +8,4 @@ export const GET_ARTISTE_BY_NOM = `artiste/readbynom/`;
 export const LOGIN = `users/signin`;
 export const SIGNUP = `users/signup`;
 export const CREATE_ARTISTE = `artiste/create/`;
+export const CREATE_PHOTO = `photo/create`;

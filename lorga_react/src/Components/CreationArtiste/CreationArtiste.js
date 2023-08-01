@@ -13,6 +13,7 @@ import Button from "../smallElts/Button/Button";
 import mc from "./creationArtiste.module.scss";
 import { getUser } from "../../Helpers/usersHelper";
 import Header from "../Header/Header";
+import { postPhoto, uploadPhoto } from "../../Redux/Reducers/photo.slice";
 
 const CreationArtiste = () => {
   const token = localStorage.getItem("token");
@@ -21,6 +22,8 @@ const CreationArtiste = () => {
     (store) => store.artiste
   );
   const [user, setUser] = useState([]);
+  const [image, setImage] = useState({ file: null });
+  const [formData, setFormData] = useState({ image: null, token: "" });
 
   const handleNom = (e) => {
     dispatch(getNom(e));
@@ -36,6 +39,11 @@ const CreationArtiste = () => {
   };
   const handlePhotoId = (e) => {
     dispatch(getPhotoId(e));
+  };
+  const handleUpload = async (e) => {
+    let image = e.target.files[0];
+    console.log(image);
+    dispatch(await postPhoto({ image, token }));
   };
   const handleSubmit = async (e) => {
     const userId = user.id;
@@ -138,6 +146,16 @@ const CreationArtiste = () => {
                 value={photoId}
                 onChange={(e) => {
                   handlePhotoId(e.target.value);
+                }}
+              />
+            </div>
+            <div>
+              <label htmlFor="photo">Téléverse ta meilleure photo</label>
+              <input
+                type="file"
+                accept={"image/*"}
+                onChange={(e) => {
+                  handleUpload(e);
                 }}
               />
             </div>

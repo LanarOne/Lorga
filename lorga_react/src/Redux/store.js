@@ -4,6 +4,7 @@ import { signupSlice } from "./Reducers/signup.slice";
 import { artisteSlice } from "./Reducers/artistes.slice";
 import { bookingSlice } from "./Reducers/bookings.slice";
 import { createArtisteSlice } from "./Reducers/createArtiste.slice";
+import { photoSlice } from "./Reducers/photo.slice";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     artistes: artisteSlice.reducer,
     artiste: createArtisteSlice.reducer,
     bookings: bookingSlice.reducer,
+    photo: photoSlice.reducer,
   },
 });

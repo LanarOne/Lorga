@@ -13,11 +13,10 @@ const Artiste = () => {
   }, [dispatch]);
   let content;
   if (loading === "pending") {
-    content = <h2>Loading ...</h2>;
+    content = <h2>Chargement des données ...</h2>;
   }
   if (loading === "idle") {
     content = data.map((artiste) => {
-      console.log(artiste);
       return (
         <article key={artiste.id}>
           <h3>
