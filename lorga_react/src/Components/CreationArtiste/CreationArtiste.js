@@ -13,18 +13,25 @@ import Button from "../smallElts/Button/Button";
 import mc from "./creationArtiste.module.scss";
 import { getUser } from "../../Helpers/usersHelper";
 import Header from "../Header/Header";
-import { postPhoto, uploadPhoto } from "../../Redux/Reducers/photo.slice";
+import { getPhoto, postPhoto } from "../../Redux/Reducers/photo.slice";
+import Modale from "../smallElts/Modale/Modale";
 
 const CreationArtiste = () => {
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
-  const { nom, description, influences, style, photoId, userId } = useSelector(
+  const { nom, description, influences, style } = useSelector(
     (store) => store.artiste
   );
   const [user, setUser] = useState([]);
   const [image, setImage] = useState({ file: null });
   const [formData, setFormData] = useState({ image: null, token: "" });
+  const [previewURL, setPreviewURL] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
 
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
+  };
   const handleNom = (e) => {
     dispatch(getNom(e));
   };
@@ -37,22 +44,33 @@ const CreationArtiste = () => {
   const handleStyle = (e) => {
     dispatch(getStyle(e));
   };
-  const handlePhotoId = (e) => {
-    dispatch(getPhotoId(e));
-  };
   const handleUpload = async (e) => {
     let image = e.target.files[0];
-    console.log(image);
-    dispatch(await postPhoto({ image, token }));
+    setImage(image);
+    dispatch(getPhoto(image));
+    if (image) {
+      setPreviewURL(URL.createObjectURL(image));
+    }
   };
   const handleSubmit = async (e) => {
-    const userId = user.id;
     e.preventDefault();
+    let newPhoto = await dispatch(await postPhoto({ image, token }));
+    if (newPhoto.error) {
+      setMessage(newPhoto.payload.message);
+      setIsOpen(true);
+      return;
+    }
+    const photoId = newPhoto.payload.result.data.id;
+    dispatch(getPhotoId(photoId));
+
+    const userId = user.id;
     let body = { nom, description, influences, style, photoId, userId };
-    console.log(body);
     try {
       const response = await dispatch(postNewArtiste({ body, token }));
-      console.log(response);
+      if (response.error) {
+        setMessage(response.error.message);
+        setIsOpen(true);
+      }
     } catch (e) {
       throw new Error(e.message);
     }
@@ -75,6 +93,9 @@ const CreationArtiste = () => {
       <Header />
       <main>
         <section>
+          {isOpen ? (
+            <Modale message={message} setModaleOpen={toggleModal} />
+          ) : null}
           <h2>Tes informations</h2>
           <p>
             Toutes les informations que tu partages ici seront publiées telles
@@ -140,16 +161,6 @@ const CreationArtiste = () => {
               />
             </div>
             <div>
-              <label htmlFor="photoid">PhotoId</label>
-              <input
-                type="number"
-                value={photoId}
-                onChange={(e) => {
-                  handlePhotoId(e.target.value);
-                }}
-              />
-            </div>
-            <div>
               <label htmlFor="photo">Téléverse ta meilleure photo</label>
               <input
                 type="file"
@@ -158,6 +169,7 @@ const CreationArtiste = () => {
                   handleUpload(e);
                 }}
               />
+              {image ? <img src={previewURL} alt={`preview`} /> : ""}
             </div>
             <Button message={"Envoyer la Demande"} />
           </form>

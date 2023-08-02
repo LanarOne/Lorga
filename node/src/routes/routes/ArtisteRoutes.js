@@ -53,7 +53,10 @@ const ArtisteRoutes = (app, sm) => {
     jwtMiddleware,
     ArtisteController.deleteOneArtiste
   );
+  router.post("/*", sm, wrongRoute.wrongPath);
   router.get("/*", sm, wrongRoute.wrongPath);
+  router.delete("/*", sm, wrongRoute.wrongPath);
+  router.put("/*", sm, wrongRoute.wrongPath);
 
   app.use("/artiste", router);
 };

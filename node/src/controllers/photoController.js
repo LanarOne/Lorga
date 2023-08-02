@@ -46,8 +46,14 @@ const readAll = async (req, res) => {
 const readById = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!id) {
+      return res
+        .status(409)
+        .json({ message: `Pas de données concernant cette photo` });
+    }
     const photo = await PhotoDAO.ReadPhotoById(id);
-    if (!photo) {
+    console.log(photo);
+    if (!photo || photo.length === 0) {
       return res
         .status(404)
         .json({ message: `Photo introuvable ou inexistante` });

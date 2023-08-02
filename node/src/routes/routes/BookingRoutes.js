@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { BookingController } from "../../controllers/bookingController.js";
 import { jwtMiddleware } from "../../jwt/jwt.js";
+import { wrongRoute } from "../../utils/wrongPath.js";
 
 const bookingRoutes = (app, sm) => {
   const router = Router();
@@ -70,6 +71,10 @@ const bookingRoutes = (app, sm) => {
     jwtMiddleware,
     BookingController.deleteOneBooking
   );
+  router.post("/*", sm, wrongRoute.wrongPath);
+  router.get("/*", sm, wrongRoute.wrongPath);
+  router.delete("/*", sm, wrongRoute.wrongPath);
+  router.put("/*", sm, wrongRoute.wrongPath);
 
   app.use("/booking", router);
 };

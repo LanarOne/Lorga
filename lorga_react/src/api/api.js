@@ -30,7 +30,6 @@ async function requestFile(url, config) {
     const response = await fetch(`${API_URL}${url}`, config);
     status = response.status;
     result = await response.json();
-    console.log(result);
   } catch (e) {
     error = e.message;
   } finally {
@@ -43,7 +42,7 @@ function handleResponse(result, status, error) {
     const hasError = !result || status >= 400;
     return {
       status: status,
-      result: hasError ? null : result,
+      result: hasError ? result : result,
       error: hasError ? error : null,
     };
   } catch (e) {

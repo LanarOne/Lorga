@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { postFileRequest } from "../../api/api";
-import { CREATE_PHOTO } from "../../constants/constants";
+import { getRequest, postFileRequest } from "../../api/api";
+import { CREATE_PHOTO, GET_PHOTO_BY_ID } from "../../constants/constants";
 
 export const postPhoto = createAsyncThunk(
   "photo/create",
@@ -8,21 +8,41 @@ export const postPhoto = createAsyncThunk(
     let error;
     let status;
     try {
-      console.log(image, token);
       const formData = new FormData();
       let alt = `ntm`;
       formData.append("image", image);
       formData.append("alt", alt);
       const response = await postFileRequest(CREATE_PHOTO, formData, token);
-      console.log(response);
       status = response.status;
       error = response.error;
       if (status >= 400 || !status || error) {
+        const message = await response.result.message;
+        if (message) {
+          throw rejectWithValue({ error, status, message });
+        }
         throw rejectWithValue(error, status);
       }
       if (status <= 201) {
         return response;
       }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const getPhoto = createAsyncThunk(
+  "photo/get",
+  async ({ photoId, token }, { rejectWithValue }) => {
+    let error;
+    let status;
+    console.log(photoId, token);
+    let url = `${GET_PHOTO_BY_ID}${photoId}`;
+    console.log(url);
+    try {
+      const response = await getRequest(url, token);
+      console.log(response);
+      return response;
     } catch (e) {
       throw e;
     }
@@ -36,11 +56,7 @@ export const photoSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {
-    getAlt: (state, action) => {
-      return { ...state, alt: action.payload };
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(postPhoto.pending, (state, action) => {
       if (!state.loading) {
@@ -62,5 +78,5 @@ export const photoSlice = createSlice({
   },
 });
 
-export const { getAlt } = photoSlice.actions;
+export const {} = photoSlice.actions;
 export default photoSlice.reducer;

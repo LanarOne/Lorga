@@ -49,7 +49,6 @@ const SignUp = () => {
       try {
         const body = { email, password, username, zipCode };
         const response = await dispatch(postSignup({ body }));
-        console.log(response);
         // const { error, status, result } = response;
         if (response.type === "users/signup/fulfilled") {
           localStorage.setItem("token", response.payload.result.token);

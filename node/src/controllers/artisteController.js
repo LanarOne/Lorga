@@ -11,7 +11,7 @@ const createArtiste = async (req, res) => {
     return res.status(401).json({ message: `Veuillez vous enregistrer` });
   }
   const admin = await isAdmin(token);
-  if (!admin || admin === 1) {
+  if (!admin) {
     return res
       .status(403)
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
@@ -169,7 +169,6 @@ const readOneArtiste = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     result = await ArtisteDAO.ReadById(id);
-    console.log(result);
     if (!result || result.length === 0) {
       return res
         .status(404)

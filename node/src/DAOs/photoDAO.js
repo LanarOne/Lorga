@@ -15,6 +15,7 @@ const ReadAllPhotos = async () => {
   let result = null;
   try {
     result = await Photo.findAll();
+
     return result.map((photo) => {
       const decodedData = {
         nom: decodeURIComponent(photo.nom),
@@ -33,6 +34,9 @@ const ReadPhotoById = async (id) => {
   let result = null;
   try {
     result = await Photo.findByPk(id);
+    if (!result || result.length === 0) {
+      return;
+    }
     return {
       nom: decodeURIComponent(result.nom),
       path: decodeURIComponent(result.path),

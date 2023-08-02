@@ -49,13 +49,13 @@ const Login = () => {
   }
   return (
     <>
+      <>
+        {isOpen ? (
+          <Modale message={alertElt} setModaleOpen={toggleModal} />
+        ) : null}
+      </>
       <Header />
       <main>
-        <>
-          {isOpen ? (
-            <Modale message={alertElt} setModaleOpen={toggleModal} />
-          ) : null}
-        </>
         <section className={`${mc.formSection}`}>
           <form
             className={`${mc.loginForm}`}

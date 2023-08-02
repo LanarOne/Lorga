@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { UserController } from "../../controllers/userController.js";
 import { jwtMiddleware } from "../../jwt/jwt.js";
+import { wrongRoute } from "../../utils/wrongPath.js";
 
 const userRoutes = (app, sm) => {
   const router = Router();
@@ -17,6 +18,10 @@ const userRoutes = (app, sm) => {
     UserController.updateRoleId
   );
   router.delete("/delete/:id", sm, jwtMiddleware, UserController.deleteOne);
+  router.post("/*", sm, wrongRoute.wrongPath);
+  router.get("/*", sm, wrongRoute.wrongPath);
+  router.delete("/*", sm, wrongRoute.wrongPath);
+  router.put("/*", sm, wrongRoute.wrongPath);
 
   app.use("/users", router);
 };

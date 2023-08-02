@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Admin_CollectifController } from "../../controllers/admin_collectifController.js";
 import { jwtMiddleware } from "../../jwt/jwt.js";
+import { wrongRoute } from "../../utils/wrongPath.js";
 
 const Admin_CollectifRoutes = (app, sm) => {
   const router = Router();
@@ -46,6 +47,10 @@ const Admin_CollectifRoutes = (app, sm) => {
     jwtMiddleware,
     Admin_CollectifController.deleteOne
   );
+  router.post("/*", sm, wrongRoute.wrongPath);
+  router.get("/*", sm, wrongRoute.wrongPath);
+  router.delete("/*", sm, wrongRoute.wrongPath);
+  router.put("/*", sm, wrongRoute.wrongPath);
 
   app.use("/admin_collectif", router);
 };

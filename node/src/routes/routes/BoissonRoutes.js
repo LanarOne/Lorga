@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { BoissonController } from "../../controllers/boissonController.js";
 import { jwtMiddleware } from "../../jwt/jwt.js";
+import { wrongRoute } from "../../utils/wrongPath.js";
 
 const BoissonRoutes = (app, sm) => {
   const router = Router();
@@ -42,6 +43,10 @@ const BoissonRoutes = (app, sm) => {
     jwtMiddleware,
     BoissonController.deleteOneBoisson
   );
+  router.post("/*", sm, wrongRoute.wrongPath);
+  router.get("/*", sm, wrongRoute.wrongPath);
+  router.delete("/*", sm, wrongRoute.wrongPath);
+  router.put("/*", sm, wrongRoute.wrongPath);
 
   app.use("/boisson", router);
 };
