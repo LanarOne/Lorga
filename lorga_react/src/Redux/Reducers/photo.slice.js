@@ -36,18 +36,16 @@ export const getPhoto = createAsyncThunk(
   async ({ photoId, token }, { rejectWithValue }) => {
     let error;
     let status;
-    console.log(photoId, token);
     let url = `${GET_PHOTO_BY_ID}${photoId}`;
-    console.log(url);
     try {
       const response = await getRequest(url, token);
-      console.log(response);
       return response;
     } catch (e) {
       throw e;
     }
   }
 );
+
 export const photoSlice = createSlice({
   name: "photo",
   initialState: {

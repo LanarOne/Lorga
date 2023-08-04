@@ -60,6 +60,14 @@ async function getRequest(url, token = null) {
   return await Request(url, config);
 }
 
+async function getImageRequest(url, token = null) {
+  const config = {
+    method: "GET",
+    headers: {},
+  };
+  if (token) config.headers.Authorization = token;
+  return await requestUploaded(url, config);
+}
 async function postRequest(url, body = {}, token = null) {
   const config = {
     method: "POST",
@@ -83,4 +91,22 @@ async function postFileRequest(url, formData = {}, token = null) {
   return await requestFile(url, config);
 }
 
-export { getRequest, postRequest, postFileRequest };
+async function requestUploaded(url, config) {
+  let status = -1;
+  let error;
+  let result;
+  try {
+    const response = await fetch(`${API_URL}${url}`, config);
+    status = response.status;
+    if (response.ok) {
+      result = await response.blob();
+      result = URL.createObjectURL(result);
+    }
+  } catch (e) {
+    error = e.message;
+  } finally {
+    return handleResponse(result, status, error);
+  }
+}
+
+export { getRequest, postRequest, postFileRequest, getImageRequest };

@@ -52,7 +52,6 @@ const readById = async (req, res) => {
         .json({ message: `Pas de données concernant cette photo` });
     }
     const photo = await PhotoDAO.ReadPhotoById(id);
-    console.log(photo);
     if (!photo || photo.length === 0) {
       return res
         .status(404)

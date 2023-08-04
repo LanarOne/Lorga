@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import Header from "../Header/Header";
 import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getArtisteByName } from "../../Redux/Reducers/createArtiste.slice";
 import { getPhoto } from "../../Redux/Reducers/photo.slice";
-import { API_URL } from "../../constants/constants";
+import { getUpload } from "../../Redux/Reducers/uploads.slice";
 const PageArtiste = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
   const { nom } = useParams();
   const [artiste, setArtiste] = useState([]);
   const [content, setContent] = useState([]);
-  const [photoId, setPhotoId] = useState(null);
+  const [path, setPath] = useState("");
+  const { imageData, loading, error } = useSelector((state) => state.upload);
+  const [img, setImg] = useState("");
 
   useEffect(() => {
     const getArtiste = async () => {
@@ -21,30 +23,6 @@ const PageArtiste = () => {
         let status = response.payload.status;
         if (status <= 201) {
           setArtiste(await response.payload.result.data);
-          if (artiste) {
-            setPhotoId(artiste.photoId);
-            if (photoId) {
-              const photo = await dispatch(getPhoto({ photoId, token }));
-              console.log(photo);
-              const datas = photo.payload.result.data;
-              let path = datas.path.replace(/\\/g, "/");
-
-              content = (
-                <section>
-                  <div>
-                    <img src={`${API_URL}uploaded/${path}`} alt="" />
-                  </div>
-                  <div>
-                    <h2>{artiste.nom}</h2>
-                    <p>{artiste.style}</p>
-                    <p>{artiste.description}</p>
-                    <p>{artiste.influences}</p>
-                  </div>
-                </section>
-              );
-              setContent(content);
-            }
-          }
         }
         if (status >= 400) {
           console.log(response);
@@ -56,11 +34,56 @@ const PageArtiste = () => {
       }
     };
     getArtiste();
-  }, [dispatch, content.length, photoId]);
+  }, [dispatch, nom, token]);
+  useEffect(() => {
+    if (artiste) {
+      const displayUpload = async () => {
+        let photoId = artiste.photoId;
+        const photo = await dispatch(getPhoto({ photoId, token }));
+        console.log(photo);
+        if (
+          photo &&
+          photo.payload &&
+          photo.payload.result &&
+          photo.payload.result.data
+        ) {
+          const tempUrl = await photo.payload.result.data.path
+            .replace(/\\/g, "/")
+            .replace("uploads", "uploaded");
+          const url = `photo/${tempUrl}`;
+          console.log(url);
+          const response = await dispatch(getUpload(url));
+          setImg(await response.payload.result);
+          console.log(img);
+        }
+      };
+      displayUpload();
+    }
+  }, [dispatch, artiste, token]);
   return (
     <>
       <Header />
-      <main>{content}</main>
+      <main>
+        {loading ? (
+          <h2>Données en chargement</h2>
+        ) : error ? (
+          <p>{error}</p>
+        ) : artiste && img ? (
+          <section>
+            <div>
+              <img src={img} alt={artiste.description} />
+            </div>
+            <article>
+              <h2>{artiste.nom}</h2>
+              <p>{artiste.style}</p>
+              <p>{artiste.description}</p>
+              <p>{artiste.influences}</p>
+            </article>
+          </section>
+        ) : (
+          <p>{content}</p>
+        )}
+      </main>
     </>
   );
 };
