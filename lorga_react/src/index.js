@@ -14,6 +14,7 @@ import { store } from "./Redux/store";
 import { Provider } from "react-redux";
 import CreationArtiste from "./Components/CreationArtiste/CreationArtiste";
 import PageArtiste from "./Components/PageArtiste/PageArtiste";
+import CreationCollectif from "./Components/CreationCollectif/CreationCollectif";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -29,6 +30,7 @@ root.render(
           <Route path={"/artistes"} element={<Artiste />} />
           <Route path={"/nouvelartiste"} element={<CreationArtiste />} />
           <Route path={"artistes/:nom"} element={<PageArtiste />} />
+          <Route path={"/nouveaucollectif"} element={<CreationCollectif />} />
           <Route path={"/*"} element={<EmptyPages />} />
         </Routes>
       </BrowserRouter>

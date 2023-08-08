@@ -3,7 +3,12 @@ import Admin_collectif from "../models/Admin_collectif.js";
 const Create = async (confirmation, userId, collectifId) => {
   let result = null;
   try {
-    result = Admin_collectif.create({ confirmation, userId, collectifId });
+    result = await Admin_collectif.create({
+      confirmation,
+      userId,
+      collectifId,
+    });
+    console.log(result);
     return result;
   } catch (error) {
     console.error(error);

@@ -7,20 +7,20 @@ import {
   getPhotoId,
   getStyle,
   getUserId,
-  postNewArtiste,
-} from "../../Redux/Reducers/createArtiste.slice";
-import Button from "../smallElts/Button/Button";
-import mc from "./creationArtiste.module.scss";
+  postNewCollectif,
+} from "../../Redux/Reducers/createCollectif.slice";
+import { getPhoto, postPhoto } from "../../Redux/Reducers/photo.slice";
 import { getUser } from "../../Helpers/usersHelper";
 import Header from "../Header/Header";
-import { getPhoto, postPhoto } from "../../Redux/Reducers/photo.slice";
+import mc from "./creationCollectif.module.scss";
+import Button from "../smallElts/Button/Button";
 import Modale from "../smallElts/Modale/Modale";
 
-const CreationArtiste = () => {
+const CreationCollectif = () => {
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
   const { nom, description, influences, style } = useSelector(
-    (store) => store.artiste
+    (state) => state.collectif
   );
   const [user, setUser] = useState([]);
   const [image, setImage] = useState({ file: null });
@@ -65,7 +65,13 @@ const CreationArtiste = () => {
     const userId = user.id;
     let body = { nom, description, influences, style, photoId, userId };
     try {
-      const response = await dispatch(postNewArtiste({ body, token }));
+      const response = await dispatch(postNewCollectif({ body, token }));
+      if (response.ok) {
+        setMessage(
+          `Ta demande sera étudiée et validée très prochaînement par les admins`
+        );
+        setIsOpen(true);
+      }
       if (response.error) {
         setMessage(response.error.message);
         setIsOpen(true);
@@ -97,7 +103,7 @@ const CreationArtiste = () => {
       <Header />
       <main>
         <section>
-          <h2>Tes informations</h2>
+          <h2>Vos informations</h2>
           <p>
             Toutes les informations que tu partages ici seront publiées telles
             quelles dans ta page artiste et éventuellement en page d'accueil si
@@ -106,16 +112,16 @@ const CreationArtiste = () => {
             fautes)
           </p>
         </section>
-        <section className={`${mc.formSection}`}>
+        <section>
           <form
             action=""
-            className={`${mc.artisteForm}`}
+            className={`${mc.collectifForm}`}
             onSubmit={(e) => {
               handleSubmit(e);
             }}
           >
             <div>
-              <label htmlFor="nom">Ton nom de scène : </label>
+              <label htmlFor="nom">Le nom du collectif : </label>
               <input
                 type="text"
                 value={nom}
@@ -126,7 +132,7 @@ const CreationArtiste = () => {
             </div>
             <div>
               <label htmlFor="descr">
-                Ta description telle qu'elle apparaîtra sur ta page artiste :{" "}
+                La description telle qu'elle apparaîtra sur la page collectif :{" "}
               </label>
               <textarea
                 name="description"
@@ -140,7 +146,7 @@ const CreationArtiste = () => {
               ></textarea>
             </div>
             <div>
-              <label htmlFor="influences">Tes influences musicale : </label>
+              <label htmlFor="influences">Vos influences musicale : </label>
               <input
                 type="text"
                 value={influences}
@@ -151,7 +157,7 @@ const CreationArtiste = () => {
             </div>
             <div>
               <label htmlFor="style">
-                Quel(s) style(s) préfère tu jouer :{" "}
+                Quel(s) style(s) vous représente le mieux :{" "}
               </label>
               <input
                 type="text"
@@ -170,9 +176,9 @@ const CreationArtiste = () => {
                   handleUpload(e);
                 }}
               />
-              {image ? <img src={previewURL} alt={`preview`} /> : ""}
+              {image ? <img src={previewURL} alt="preview" /> : null}
             </div>
-            <Button message={"Envoyer la Demande"} />
+            <Button message={"Envoyer la demande"} />
           </form>
         </section>
       </main>
@@ -180,4 +186,4 @@ const CreationArtiste = () => {
   );
 };
 
-export default CreationArtiste;
+export default CreationCollectif;

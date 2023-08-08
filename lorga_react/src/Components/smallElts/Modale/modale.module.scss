@@ -17,6 +17,10 @@
     border: 5px ridge var(--body-color);
     padding: 2rem;
     background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
   & .buttons {
     display: flex;

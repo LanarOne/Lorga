@@ -11,7 +11,6 @@ const PageArtiste = () => {
   const { nom } = useParams();
   const [artiste, setArtiste] = useState([]);
   const [content, setContent] = useState([]);
-  const [path, setPath] = useState("");
   const { imageData, loading, error } = useSelector((state) => state.upload);
   const [img, setImg] = useState("");
 
@@ -51,10 +50,8 @@ const PageArtiste = () => {
             .replace(/\\/g, "/")
             .replace("uploads", "uploaded");
           const url = `photo/${tempUrl}`;
-          console.log(url);
           const response = await dispatch(getUpload(url));
           setImg(await response.payload.result);
-          console.log(img);
         }
       };
       displayUpload();

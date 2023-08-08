@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getRequest } from "../../api/api";
-import { API_URL, GET_ARTISTES } from "../../constants/constants";
+import { GET_ARTISTES } from "../../constants/constants";
 
 export const getArtistes = createAsyncThunk(
   "artistes.slice/getArtistes",

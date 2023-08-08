@@ -6,6 +6,7 @@ import { bookingSlice } from "./Reducers/bookings.slice";
 import { createArtisteSlice } from "./Reducers/createArtiste.slice";
 import { photoSlice } from "./Reducers/photo.slice";
 import { uploadsSlice } from "./Reducers/uploads.slice";
+import { createCollectifSlice } from "./Reducers/createCollectif.slice";
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
     bookings: bookingSlice.reducer,
     photo: photoSlice.reducer,
     upload: uploadsSlice.reducer,
+    collectif: createCollectifSlice.reducer,
   },
 });

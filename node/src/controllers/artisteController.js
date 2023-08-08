@@ -217,13 +217,13 @@ const readByNom = async (req, res) => {
   try {
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
-    if (!admin || admin === 1) {
+    if (!admin) {
       return res.status(401).json({
         message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
       });
     }
     result = await ArtisteDAO.ReadByArtisteNom(nom);
-    if (!result || result.lenght === 0) {
+    if (!result || result.length === 0) {
       return res
         .status(404)
         .json({ message: `Artiste introuvable ou inexistant` });

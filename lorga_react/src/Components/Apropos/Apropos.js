@@ -87,7 +87,8 @@ const Apropos = () => {
               <NavLink to={"/nouvelartiste"}>par ici</NavLink>
             </p>
             <p>
-              Pour créer une page collectif et réserver un créneau c'est par là!
+              Pour créer une page collectif et réserver un créneau c'est{" "}
+              <NavLink to={"/nouveaucollectif"}>par là</NavLink>!
             </p>
           </section>
         </main>

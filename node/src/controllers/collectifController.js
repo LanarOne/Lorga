@@ -7,7 +7,7 @@ import { Admin_CollectifDAO } from "../DAOs/admin_collectifDAO.js";
 
 const createCollectif = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = parseInt(req.params.id);
     const token = decodeURIComponent(req.headers.authorization);
     if (!token) {
       return res
@@ -55,9 +55,11 @@ const createCollectif = async (req, res) => {
       userId
     );
     const user = await UserDAO.ReadUserById(userId);
+    console.log(collectif.id, `ColControl`);
     if (user.roleId >= 4) {
       const collectifId = collectif.id;
       const admin_collectif = await Admin_CollectifDAO.Create(
+        confirmation,
         userId,
         collectifId
       );
@@ -69,6 +71,7 @@ const createCollectif = async (req, res) => {
     }
     const collectifId = collectif.id;
     const admin_collectif = await Admin_CollectifDAO.Create(
+      confirmation,
       userId,
       collectifId
     );
@@ -189,6 +192,35 @@ const readOneCollectif = async (req, res) => {
   }
 };
 
+const readByNom = async (req, res) => {
+  const nom = req.params.nom;
+  let result = null;
+  try {
+    const token = req.headers.Authorization;
+    const admin = await isAdmin(token);
+    if (!admin) {
+      return res.status(401).json({
+        message: `Veuillez vous identifier pour accéder à ces informations`,
+      });
+    }
+    result = await CollectifDAO.ReadByNom(nom);
+    if (!result || result.length === 0) {
+      return res.status(404).json({
+        message: `Collectif introuvable ou inexistant, vérifiez l'orthographe`,
+      });
+    }
+    return res.status(200).json({
+      message: `Collectif ${result.nom} trouvé avec succès`,
+      data: result,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: `Erreur interne, veuillez réessayer ultérieurement`,
+      data: e,
+    });
+  }
+};
+
 const updateOneCollectif = async (req, res) => {
   try {
     let result = null;
@@ -261,6 +293,7 @@ export const CollectifController = {
   readConfirmedCollectifs,
   readUnconfirmedCollectifs,
   readOneCollectif,
+  readByNom,
   updateOneCollectif,
   deleteOneCollectif,
 };
