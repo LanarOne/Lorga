@@ -13,14 +13,12 @@ export const postPhoto = createAsyncThunk(
       formData.append("image", image);
       formData.append("alt", alt);
       const response = await postFileRequest(CREATE_PHOTO, formData, token);
+      console.log(response);
       status = response.status;
       error = response.error;
-      if (status >= 400 || !status || error) {
-        const message = await response.result.message;
-        if (message) {
-          throw rejectWithValue({ error, status, message });
-        }
-        throw rejectWithValue(error, status);
+      if (status >= 400 || error) {
+        const { message } = response.error;
+        return rejectWithValue({ message, status });
       }
       if (status <= 201) {
         return response;
@@ -39,7 +37,15 @@ export const getPhoto = createAsyncThunk(
     let url = `${GET_PHOTO_BY_ID}${photoId}`;
     try {
       const response = await getRequest(url, token);
-      return response;
+      status = response.status;
+      error = response.error;
+      if (status <= 201) {
+        return response;
+      }
+      if (status >= 400 || error) {
+        const { message } = response.error;
+        return rejectWithValue({ message, status });
+      }
     } catch (e) {
       throw e;
     }

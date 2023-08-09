@@ -26,7 +26,7 @@ export const postNewCollectif = createAsyncThunk(
 
 export const getCollectifByName = createAsyncThunk(
   "collectif/getonebyname",
-  async ({ nom, token }, { rejectedWithValue }) => {
+  async ({ nom, token }, { rejectWithValue }) => {
     let error;
     let status;
     try {
@@ -36,7 +36,7 @@ export const getCollectifByName = createAsyncThunk(
       error = response.error;
       if (error) {
         let { message } = error;
-        throw rejectedWithValue({ message, status });
+        throw rejectWithValue({ message, status });
       }
       if (status <= 201) {
         return response;

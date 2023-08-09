@@ -4,19 +4,23 @@ import { CREATE_ARTISTE, GET_ARTISTE_BY_NOM } from "../../constants/constants";
 
 export const postNewArtiste = createAsyncThunk(
   "artiste/create",
-  async ({ body, token }) => {
+  async ({ body, token }, { rejectWithValue }) => {
+    let error;
+    let status;
     try {
       let url = `${CREATE_ARTISTE}${body.userId}`;
       const response = await postRequest(url, body, token);
-      const status = response.status;
+      status = response.status;
+      error = response.error;
       if (status <= 201) {
         return response;
       }
-      if (status >= 400) {
-        throw new Error(response.error.message);
+      if (status >= 400 || error) {
+        const { message } = response.error;
+        return rejectWithValue({ message, status });
       }
     } catch (e) {
-      throw new Error(e.message);
+      throw e;
     }
   }
 );
@@ -29,13 +33,13 @@ export const getArtisteByName = createAsyncThunk(
       let url = `${GET_ARTISTE_BY_NOM}${nom}`;
       const response = await getRequest(url, token);
       status = response.status;
-      error = response.error;
-      if (error) {
-        let { message } = error;
-        throw rejectWithValue({ message, status });
-      }
       if (status <= 201) {
-        return response;
+        let { data } = response.result;
+        return { data, status };
+      }
+      if (status >= 400 || error) {
+        const { message } = response.error;
+        return rejectWithValue({ message, status });
       }
     } catch (e) {
       throw e;
@@ -107,7 +111,6 @@ export const createArtisteSlice = createSlice({
       if (state.loading) {
         state.loading = false;
         state.error = action.payload;
-        state.status = action.payload;
       }
     });
   },

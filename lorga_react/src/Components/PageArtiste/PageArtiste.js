@@ -5,27 +5,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { getArtisteByName } from "../../Redux/Reducers/createArtiste.slice";
 import { getPhoto } from "../../Redux/Reducers/photo.slice";
 import { getUpload } from "../../Redux/Reducers/uploads.slice";
+import Modale from "../smallElts/Modale/Modale";
 const PageArtiste = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
   const { nom } = useParams();
   const [artiste, setArtiste] = useState([]);
-  const [content, setContent] = useState([]);
+  const [message, setMessage] = useState([]);
   const { imageData, loading, error } = useSelector((state) => state.upload);
   const [img, setImg] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
+  };
 
   useEffect(() => {
     const getArtiste = async () => {
-      let content;
       try {
         let response = await dispatch(getArtisteByName({ nom, token }));
         let status = response.payload.status;
         if (status <= 201) {
-          setArtiste(await response.payload.result.data);
+          setArtiste(await response.payload.data);
         }
-        if (status >= 400) {
-          console.log(response);
-          setContent(<h2>{response.payload.message}</h2>);
+        if (status >= 400 || error) {
+          let { message } = response.payload;
+          setMessage(message);
+          toggleModal();
         }
       } catch (e) {
         console.error(e.message);
@@ -39,7 +45,6 @@ const PageArtiste = () => {
       const displayUpload = async () => {
         let photoId = artiste.photoId;
         const photo = await dispatch(getPhoto({ photoId, token }));
-        console.log(photo);
         if (
           photo &&
           photo.payload &&
@@ -59,6 +64,11 @@ const PageArtiste = () => {
   }, [dispatch, artiste, token]);
   return (
     <>
+      <>
+        {isOpen ? (
+          <Modale message={message} setModaleOpen={toggleModal} />
+        ) : null}
+      </>
       <Header />
       <main>
         {loading ? (
@@ -78,7 +88,7 @@ const PageArtiste = () => {
             </article>
           </section>
         ) : (
-          <p>{content}</p>
+          <h2>Quelque chose cloche...</h2>
         )}
       </main>
     </>

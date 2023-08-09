@@ -128,7 +128,7 @@ const ReadById = async (id) => {
 const ReadByNom = async (nom) => {
   let result = null;
   try {
-    result = await Collectif.findOne(nom);
+    result = await Collectif.findOne({ where: { nom } });
     if (!result || result.length === 0) {
       return;
     }

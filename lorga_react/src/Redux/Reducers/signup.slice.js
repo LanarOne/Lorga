@@ -2,21 +2,27 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { postRequest } from "../../api/api";
 import { SIGNUP } from "../../constants/constants";
 
-export const postSignup = createAsyncThunk("users/signup", async ({ body }) => {
-  try {
-    const response = await postRequest(SIGNUP, body);
-    const status = response.status;
-    if (status <= 201) {
-      return response;
+export const postSignup = createAsyncThunk(
+  "users/signup",
+  async ({ body }, { rejectWithValue }) => {
+    let error;
+    let status;
+    try {
+      const response = await postRequest(SIGNUP, body);
+      status = response.status;
+      error = response.error;
+      if (status <= 201) {
+        return response;
+      }
+      if (status >= 400 || error) {
+        const { message } = response.error;
+        return rejectWithValue({ message, status });
+      }
+    } catch (e) {
+      throw e;
     }
-    if (status >= 400) {
-      throw new Error(response.error.message);
-    }
-  } catch (e) {
-    console.error(e.message);
-    throw new Error(e.message);
   }
-});
+);
 export const signupSlice = createSlice({
   name: "signup",
   initialState: {
@@ -47,12 +53,12 @@ export const signupSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(postSignup.pending, (state, action) => {
-      if (state.loading === false) {
+      if (!state.loading) {
         state.loading = true;
       }
     });
     builder.addCase(postSignup.fulfilled, (state, action) => {
-      if (state.loading === true) {
+      if (state.loading) {
         state.loading = action.payload;
         state.loading = false;
       }

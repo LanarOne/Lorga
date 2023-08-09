@@ -2,22 +2,27 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { postRequest } from "../../api/api";
 import { LOGIN } from "../../constants/constants";
 
-export const postLogin = createAsyncThunk("users/login", async ({ body }) => {
-  try {
-    const response = await postRequest(LOGIN, body);
-    const status = response.status;
-    if (status <= 201) {
-      let { data, message, token } = response;
-      return response;
+export const postLogin = createAsyncThunk(
+  "users/login",
+  async ({ body }, { rejectWithValue }) => {
+    let error;
+    let status;
+    try {
+      const response = await postRequest(LOGIN, body);
+      status = response.status;
+      error = response.error;
+      if (status <= 201) {
+        return response;
+      }
+      if (status >= 400 || error) {
+        const { message } = response.error;
+        return rejectWithValue({ message, status });
+      }
+    } catch (e) {
+      throw e;
     }
-    if (status >= 400) {
-      throw new Error(response.error.message);
-    }
-  } catch (e) {
-    console.error(e.message);
-    throw new Error(e.message);
   }
-});
+);
 export const loginSlice = createSlice({
   name: "login",
   initialState: {
@@ -36,18 +41,18 @@ export const loginSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(postLogin.pending, (state, action) => {
-      if (state.loading === false) {
+      if (!state.loading) {
         state.loading = true;
       }
     });
     builder.addCase(postLogin.fulfilled, (state, action) => {
-      if (state.loading === true) {
+      if (state.loading) {
         state.loading = action.payload;
         state.loading = false;
       }
     });
     builder.addCase(postLogin.rejected, (state, action) => {
-      if (state.loading === true) {
+      if (state.loading) {
         state.loading = false;
         state.error = action.payload;
       }

@@ -4,36 +4,63 @@ import { useDispatch, useSelector } from "react-redux";
 import { getArtistes } from "../../Redux/Reducers/artistes.slice";
 import mc from "./artiste.module.scss";
 import { NavLink } from "react-router-dom";
+import Modale from "../smallElts/Modale/Modale";
 
 const Artiste = () => {
   const dispatch = useDispatch();
   const { data, loading, error } = useSelector((state) => state.artistes);
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [artistes, setArtistes] = useState([]);
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
+  };
   useEffect(() => {
-    dispatch(getArtistes());
+    const displayData = async () => {
+      dispatch(await getArtistes());
+    };
+    displayData();
   }, [dispatch]);
-  let content;
-  if (loading === "pending") {
-    content = <h2>Chargement des données ...</h2>;
-  }
-  if (loading === "idle") {
-    content = data.map((artiste) => {
-      return (
-        <article key={artiste.id}>
-          <h3>
-            <NavLink to={`/artistes/${artiste.nom}`}>{artiste.nom}</NavLink>
-          </h3>
-          <p>{artiste.style}</p>
-        </article>
-      );
-    });
-  }
-  if (error !== null) {
-    content = <p>{error}</p>;
-  }
+  useEffect(() => {
+    setArtistes(data.data);
+    if (error) {
+      setMessage(error);
+    }
+  });
   return (
     <>
+      <>
+        {isOpen ? (
+          <Modale message={message} setModaleOpen={toggleModal} />
+        ) : null}
+      </>
       <Header />
-      <main>{content}</main>
+      <main>
+        <section>
+          {loading ? (
+            <h2>Chargement des données...</h2>
+          ) : error ? (
+            toggleModal()
+          ) : artistes ? (
+            <>
+              {artistes.map((artiste) => {
+                return (
+                  <article>
+                    <h3>
+                      <NavLink to={`/artistes/${artiste.nom}`}>
+                        {artiste.nom}
+                      </NavLink>
+                    </h3>
+                    <p>{artiste.style}</p>
+                  </article>
+                );
+              })}
+            </>
+          ) : (
+            <h2>Quelque chose cloche...</h2>
+          )}
+        </section>
+      </main>
     </>
   );
 };

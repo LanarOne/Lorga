@@ -195,8 +195,9 @@ const readOneCollectif = async (req, res) => {
 const readByNom = async (req, res) => {
   const nom = req.params.nom;
   let result = null;
+
   try {
-    const token = req.headers.Authorization;
+    const token = req.headers.authorization;
     const admin = await isAdmin(token);
     if (!admin) {
       return res.status(401).json({
@@ -204,6 +205,7 @@ const readByNom = async (req, res) => {
       });
     }
     result = await CollectifDAO.ReadByNom(nom);
+
     if (!result || result.length === 0) {
       return res.status(404).json({
         message: `Collectif introuvable ou inexistant, vérifiez l'orthographe`,

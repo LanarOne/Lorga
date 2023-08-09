@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Header from "../Header/Header";
 import Button from "../smallElts/Button/Button";
 import mc from "./login.module.scss";
@@ -32,15 +32,17 @@ const Login = () => {
   };
   async function handleSubmit(e) {
     e.preventDefault();
-    let body = { email, password };
+
     try {
+      const body = { email, password };
       const response = await dispatch(postLogin({ body }));
-      if (response.type === "users/login/fulfilled") {
-        setAlertElt(response.payload.result.message);
+      const { status, message } = response.payload;
+      if (status <= 201) {
         localStorage.setItem("token", response.payload.result.token);
         return response;
-      } else {
-        setAlertElt(<h2>{response.error.message}</h2>);
+      }
+      if (status >= 400) {
+        setAlertElt(<h2>{message}</h2>);
         toggleModal();
       }
     } catch (error) {

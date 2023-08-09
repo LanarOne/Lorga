@@ -53,22 +53,34 @@ const CreationArtiste = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let newPhoto = await dispatch(await postPhoto({ image, token }));
-    if (newPhoto.error) {
-      setMessage(newPhoto.payload.message);
-      setIsOpen(true);
-      return;
-    }
-    const photoId = newPhoto.payload.result.data.id;
-    dispatch(getPhotoId(photoId));
-
-    const userId = user.id;
-    let body = { nom, description, influences, style, photoId, userId };
     try {
-      const response = await dispatch(postNewArtiste({ body, token }));
-      if (response.error) {
-        setMessage(response.error.message);
-        setIsOpen(true);
+      const newPhoto = await dispatch(await postPhoto({ image, token }));
+      console.log(newPhoto);
+      let { status, message } = newPhoto.payload;
+      if (status >= 400) {
+        setMessage(message);
+        toggleModal();
+      }
+      const photoId = newPhoto.payload.result.data.id;
+      dispatch(getPhotoId(photoId));
+      try {
+        const userId = user.id;
+        let body = { nom, description, influences, style, photoId, userId };
+
+        const response = await dispatch(postNewArtiste({ body, token }));
+        const { status, message } = response.payload;
+        if (status >= 400) {
+          setMessage(message);
+          toggleModal();
+        }
+        if (status <= 201) {
+          setMessage(
+            `${response.payload.result.message}, en attente de validation par les admins`
+          );
+          toggleModal();
+        }
+      } catch (e) {
+        throw new Error(e.message);
       }
     } catch (e) {
       throw new Error(e.message);

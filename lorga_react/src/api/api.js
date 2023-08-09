@@ -29,7 +29,12 @@ async function requestFile(url, config) {
   try {
     const response = await fetch(`${API_URL}${url}`, config);
     status = response.status;
-    result = await response.json();
+    if (status <= 201) {
+      result = await response.json();
+    }
+    if (status >= 400) {
+      error = await response.json();
+    }
   } catch (e) {
     error = e.message;
   } finally {

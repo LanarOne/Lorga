@@ -49,12 +49,13 @@ const SignUp = () => {
       try {
         const body = { email, password, username, zipCode };
         const response = await dispatch(postSignup({ body }));
-        // const { error, status, result } = response;
-        if (response.type === "users/signup/fulfilled") {
+        const { status, message } = response.payload;
+        if (status <= 201) {
           localStorage.setItem("token", response.payload.result.token);
           window.location.href = "/";
-        } else {
-          setAlertElt(<h2>{response.error.message}</h2>);
+        }
+        if (status >= 400) {
+          setAlertElt(<h2>{message}</h2>);
           toggleModale();
         }
       } catch (error) {
@@ -64,13 +65,13 @@ const SignUp = () => {
   }
   return (
     <>
+      <>
+        {isOpen ? (
+          <Modale message={alertElt} setModaleOpen={toggleModale} />
+        ) : null}
+      </>
       <Header />
       <main>
-        <>
-          {isOpen ? (
-            <Modale message={alertElt} setModaleOpen={toggleModale} />
-          ) : null}
-        </>
         <form
           action=""
           className={`${mc.signUpForm}`}
