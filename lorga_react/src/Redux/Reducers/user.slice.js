@@ -1,0 +1,108 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { getUser } from "../../Helpers/usersHelper";
+import {
+  GET_ART_COL_BY_ARTISTE_ID,
+  GET_ARTISTE_BY_USERID,
+  GET_COL_BY_ID,
+} from "../../constants/constants";
+import { getRequest } from "../../api/api";
+
+export const fetchUser = createAsyncThunk(
+  "user/getUser",
+  async (token, thunkAPI) => {
+    let error;
+    let status;
+    let url;
+    try {
+      const user = await getUser(token);
+      console.log(user);
+      thunkAPI.dispatch(setUserId(user.id));
+      thunkAPI.dispatch(setUsername(user.username));
+      thunkAPI.dispatch(setRoleId(user.roleId));
+      url = `${GET_ARTISTE_BY_USERID}${user.id}`;
+      const response = await getRequest(url, token);
+      if (response.status <= 201) {
+        const artiste = response.result.data;
+        thunkAPI.dispatch(setArtisteId(artiste.id));
+        thunkAPI.dispatch(setArtisteName(artiste.nom));
+        url = `${GET_ART_COL_BY_ARTISTE_ID}${artiste.id}`;
+        const responseCol = await getRequest(url, token);
+        if (responseCol.status <= 201) {
+          const collectifs = responseCol.result.data;
+          collectifs.map(async (collectif) => {
+            url = `${GET_COL_BY_ID}${collectif.collectifId}`;
+            const response = await getRequest(url, token);
+            thunkAPI.dispatch(
+              addCollectif({
+                id: collectif.collectifId,
+                nom: response.result.data.nom,
+              })
+            );
+          });
+        }
+      }
+      if (response.status === 404) {
+        console.log(response);
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+export const userSlice = createSlice({
+  name: "user",
+  initialState: {
+    userId: null,
+    username: "",
+    roleId: null,
+    artisteId: null,
+    artisteName: "",
+    collectifs: [],
+    loading: false,
+    error: null,
+  },
+  reducers: {
+    setUserId: (state, action) => {
+      state.userId = action.payload;
+    },
+    setUsername: (state, action) => {
+      state.username = action.payload;
+    },
+    setRoleId: (state, action) => {
+      state.roleId = action.payload;
+    },
+    setArtisteId: (state, action) => {
+      state.artisteId = action.payload;
+    },
+    setArtisteName: (state, action) => {
+      state.artisteName = action.payload;
+    },
+    addCollectif: (state, action) => {
+      const { id, nom } = action.payload;
+      const existingEntries = state.collectifs.some(
+        (collectif) => collectif.id === id
+      );
+      if (!existingEntries) {
+        state.collectifs.push({ id, nom });
+      }
+    },
+    clearUser: (state) => {
+      state.userId = null;
+      state.username = "";
+      state.artisteId = null;
+      state.artisteName = "";
+      state.collectifs = [];
+      state.loading = false;
+      state.error = null;
+    },
+  },
+});
+export const {
+  setUserId,
+  setUsername,
+  setRoleId,
+  setArtisteId,
+  setArtisteName,
+  addCollectif,
+  clearUser,
+} = userSlice.actions;

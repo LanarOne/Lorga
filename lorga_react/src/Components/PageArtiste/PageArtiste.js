@@ -6,19 +6,43 @@ import { getArtisteByName } from "../../Redux/Reducers/createArtiste.slice";
 import { getPhoto } from "../../Redux/Reducers/photo.slice";
 import { getUpload } from "../../Redux/Reducers/uploads.slice";
 import Modale from "../smallElts/Modale/Modale";
+import { fetchUser } from "../../Redux/Reducers/user.slice";
+import Button from "../smallElts/Button/Button";
+import { SmallModale } from "../smallElts/SmallModale/SmallModale";
+
 const PageArtiste = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
   const { nom } = useParams();
   const [artiste, setArtiste] = useState([]);
-  const [message, setMessage] = useState([]);
+  const [message, setMessage] = useState(null);
   const { imageData, loading, error } = useSelector((state) => state.upload);
+  const user = useSelector((state) => state.user);
   const [img, setImg] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-
+  const [isPoped, setIsPoped] = useState(false);
+  const [content, setContent] = useState(null);
+  const [position, setPosition] = useState(null);
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
+  // const toggleSmallModale = () => {
+  //   setIsPoped(!isPoped);
+  // };
+  //
+  // const handleModale = (e) => {
+  //   const clickX = e.clientX;
+  //   const clickY = e.clientY;
+  //   setPosition({ x: clickX, y: clickY });
+  //   setContent(
+  //     <div>
+  //       <input type="text" />
+  //       <button></button>
+  //     </div>
+  //   );
+  //   console.log(position);
+  //   toggleSmallModale();
+  // };
 
   useEffect(() => {
     const getArtiste = async () => {
@@ -62,11 +86,30 @@ const PageArtiste = () => {
       displayUpload();
     }
   }, [dispatch, artiste, token]);
+  useEffect(() => {
+    dispatch(fetchUser(token));
+  }, [dispatch, token]);
+
   return (
     <>
       <>
+        {isPoped ? (
+          <SmallModale
+            isPoped={toggleSmallModale}
+            children={content}
+            onClose={toggleSmallModale}
+            position={position}
+          />
+        ) : null}
+      </>
+      <>
         {isOpen ? (
-          <Modale message={message} setModaleOpen={toggleModal} />
+          <Modale
+            message={message}
+            setModaleOpen={(e) => {
+              toggleModal(e);
+            }}
+          />
         ) : null}
       </>
       <Header />
@@ -75,6 +118,27 @@ const PageArtiste = () => {
           <h2>Données en chargement</h2>
         ) : error ? (
           <p>{error}</p>
+        ) : user.artisteName === nom ? (
+          <>
+            <section>
+              <div>
+                <img src={img} alt={artiste.description} />
+              </div>
+              <article>
+                <h2
+                  onClick={(e) => {
+                    handleModale(e);
+                  }}
+                >
+                  {artiste.nom}
+                </h2>
+                <p>{artiste.style}</p>
+                <p>{artiste.description}</p>
+                <p>{artiste.influences}</p>
+              </article>
+            </section>
+            <Button message={`Changer mes données`} onClick={toggleModal} />
+          </>
         ) : artiste && img ? (
           <section>
             <div>
