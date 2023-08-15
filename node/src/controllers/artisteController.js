@@ -189,19 +189,25 @@ const readByUserId = async (req, res) => {
   try {
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
-    if (!admin || admin === 1) {
+    if (!admin) {
       return res.status(401).json({
         message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
       });
     }
     const userId = parseInt(req.params.id);
     const user = await UserDAO.ReadUserById(userId);
-    if (!user) {
+    if (!user || user.length === 0) {
       return res
         .status(404)
         .json({ message: `Utilisateur introuvable ou inexistant` });
     }
     result = await ArtisteDAO.ReadByUserId(userId);
+    console.log(result);
+    if (!result) {
+      return res
+        .status(404)
+        .json({ message: `Artiste introuvable ou inexistant` });
+    }
     return res
       .status(200)
       .json({ message: `Artiste récupéré avec succès`, data: result });

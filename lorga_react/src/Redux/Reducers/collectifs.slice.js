@@ -41,7 +41,7 @@ export const collectifsSlice = createSlice({
       })
       .addCase(getCollectifs.fulfilled, (state, action) => {
         if (state.loading) {
-          state.data = action.payload.data;
+          state.loading = action.payload;
           state.loading = false;
         }
       })

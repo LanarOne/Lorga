@@ -33,7 +33,12 @@ const Collectif = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
+    createurId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
+
   {
     timestamps: true,
     createdAt: "created",

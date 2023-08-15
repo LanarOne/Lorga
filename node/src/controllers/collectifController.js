@@ -55,7 +55,6 @@ const createCollectif = async (req, res) => {
       userId
     );
     const user = await UserDAO.ReadUserById(userId);
-    console.log(collectif.id, `ColControl`);
     if (user.roleId >= 4) {
       const collectifId = collectif.id;
       const admin_collectif = await Admin_CollectifDAO.Create(

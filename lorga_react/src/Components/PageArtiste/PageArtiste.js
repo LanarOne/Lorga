@@ -8,7 +8,6 @@ import { getUpload } from "../../Redux/Reducers/uploads.slice";
 import Modale from "../smallElts/Modale/Modale";
 import { fetchUser } from "../../Redux/Reducers/user.slice";
 import Button from "../smallElts/Button/Button";
-import { SmallModale } from "../smallElts/SmallModale/SmallModale";
 
 const PageArtiste = () => {
   const dispatch = useDispatch();
@@ -17,32 +16,16 @@ const PageArtiste = () => {
   const [artiste, setArtiste] = useState([]);
   const [message, setMessage] = useState(null);
   const { imageData, loading, error } = useSelector((state) => state.upload);
+  const { loadingUser, errorUser } = useSelector((state) => state.user);
   const user = useSelector((state) => state.user);
   const [img, setImg] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [isPoped, setIsPoped] = useState(false);
-  const [content, setContent] = useState(null);
-  const [position, setPosition] = useState(null);
+  const [artisteName, setArtisteName] = useState(null);
+
+  console.log(user);
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
-  // const toggleSmallModale = () => {
-  //   setIsPoped(!isPoped);
-  // };
-  //
-  // const handleModale = (e) => {
-  //   const clickX = e.clientX;
-  //   const clickY = e.clientY;
-  //   setPosition({ x: clickX, y: clickY });
-  //   setContent(
-  //     <div>
-  //       <input type="text" />
-  //       <button></button>
-  //     </div>
-  //   );
-  //   console.log(position);
-  //   toggleSmallModale();
-  // };
 
   useEffect(() => {
     const getArtiste = async () => {
@@ -88,20 +71,11 @@ const PageArtiste = () => {
   }, [dispatch, artiste, token]);
   useEffect(() => {
     dispatch(fetchUser(token));
+    // setArtisteName(user.artisteName ? user.artisteName : null);
   }, [dispatch, token]);
 
   return (
     <>
-      <>
-        {isPoped ? (
-          <SmallModale
-            isPoped={toggleSmallModale}
-            children={content}
-            onClose={toggleSmallModale}
-            position={position}
-          />
-        ) : null}
-      </>
       <>
         {isOpen ? (
           <Modale
@@ -114,11 +88,11 @@ const PageArtiste = () => {
       </>
       <Header />
       <main>
-        {loading ? (
+        {loading || loadingUser ? (
           <h2>Données en chargement</h2>
-        ) : error ? (
+        ) : error || errorUser ? (
           <p>{error}</p>
-        ) : user.artisteName === nom ? (
+        ) : artisteName || artisteName === nom ? (
           <>
             <section>
               <div>

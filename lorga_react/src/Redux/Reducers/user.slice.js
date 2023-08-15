@@ -15,13 +15,13 @@ export const fetchUser = createAsyncThunk(
     let url;
     try {
       const user = await getUser(token);
-      console.log(user);
       thunkAPI.dispatch(setUserId(user.id));
       thunkAPI.dispatch(setUsername(user.username));
       thunkAPI.dispatch(setRoleId(user.roleId));
       url = `${GET_ARTISTE_BY_USERID}${user.id}`;
       const response = await getRequest(url, token);
-      if (response.status <= 201) {
+      status = response.status;
+      if (status <= 201) {
         const artiste = response.result.data;
         thunkAPI.dispatch(setArtisteId(artiste.id));
         thunkAPI.dispatch(setArtisteName(artiste.nom));
@@ -41,8 +41,9 @@ export const fetchUser = createAsyncThunk(
           });
         }
       }
-      if (response.status === 404) {
-        console.log(response);
+      if (status >= 400) {
+        thunkAPI.dispatch(setArtisteName(`null`));
+        console.log(response, user);
       }
     } catch (e) {
       throw e;
@@ -58,8 +59,8 @@ export const userSlice = createSlice({
     artisteId: null,
     artisteName: "",
     collectifs: [],
-    loading: false,
-    error: null,
+    loadingUser: false,
+    errorUser: null,
   },
   reducers: {
     setUserId: (state, action) => {
@@ -72,10 +73,10 @@ export const userSlice = createSlice({
       state.roleId = action.payload;
     },
     setArtisteId: (state, action) => {
-      state.artisteId = action.payload;
+      state.artisteId = action.payload || null;
     },
     setArtisteName: (state, action) => {
-      state.artisteName = action.payload;
+      state.artisteName = action.payload || null;
     },
     addCollectif: (state, action) => {
       const { id, nom } = action.payload;
@@ -92,9 +93,29 @@ export const userSlice = createSlice({
       state.artisteId = null;
       state.artisteName = "";
       state.collectifs = [];
-      state.loading = false;
-      state.error = null;
+      state.loadingUser = false;
+      state.errorUser = null;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUser.pending, (state) => {
+        if (!state.loadingUser) {
+          state.loadingUser = true;
+        }
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        if (state.loadingUser) {
+          // state.loadingUser = action.payload;
+          state.loadingUser = false;
+        }
+      })
+      .addCase(fetchUser.rejected, (state, action) => {
+        if (state.loading) {
+          state.loadingUser = false;
+          state.errorUser = action.payload;
+        }
+      });
   },
 });
 export const {
@@ -106,3 +127,5 @@ export const {
   addCollectif,
   clearUser,
 } = userSlice.actions;
+
+export default userSlice.reducer;
