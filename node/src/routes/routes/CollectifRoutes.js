@@ -41,6 +41,12 @@ const CollectifRoutes = (app, sm) => {
     jwtMiddleware,
     CollectifController.readByNom
   );
+  router.get(
+    "/readbycreateur/:createurId",
+    sm,
+    jwtMiddleware,
+    CollectifController.readByCreateur
+  );
   router.put(
     "/updateone/:id",
     sm,

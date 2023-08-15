@@ -7,8 +7,9 @@ const Create = async (
   influences,
   style,
   confirmation,
-  photoId,
-  userId
+  createurId,
+  photoId
+  // userId,
 ) => {
   let result = null;
   try {
@@ -18,8 +19,9 @@ const Create = async (
       influences,
       style,
       confirmation,
+      createurId,
       photoId,
-      userId,
+      // userId,
     });
     return result;
   } catch (error) {
@@ -146,6 +148,26 @@ const ReadByNom = async (nom) => {
   }
 };
 
+const ReadByCreateur = async (createurId) => {
+  let result = null;
+  try {
+    result = await Collectif.findOne({ where: { createurId } });
+    if (!result || result.length === 0) {
+      return;
+    }
+    return {
+      nom: decodeURIComponent(result.nom),
+      description: decodeURIComponent(result.description),
+      influences: decodeURIComponent(result.influences),
+      style: decodeURIComponent(result.style),
+      confirmation: result.confirmation,
+      photoId: result.photoId,
+    };
+  } catch (e) {
+    throw e;
+  }
+};
+
 const UpdateOne = async (id, data) => {
   let result = null;
   try {
@@ -190,6 +212,7 @@ export const CollectifDAO = {
   ReadUnconfirmedCollectifs,
   ReadById,
   ReadByNom,
+  ReadByCreateur,
   UpdateOne,
   DeleteOne,
 };

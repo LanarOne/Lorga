@@ -27,6 +27,7 @@ const createCollectif = async (req, res) => {
     }
     const { nom, description, influences, style, photoId } = req.body;
     const confirmation = false;
+    const createurId = userId;
     const existingNomDeCollectif = await Collectif.findOne({ where: { nom } });
     if (existingNomDeCollectif) {
       return res
@@ -51,8 +52,9 @@ const createCollectif = async (req, res) => {
       influences,
       style,
       confirmation,
-      photoId,
-      userId
+      createurId,
+      photoId
+      // userId
     );
     const user = await UserDAO.ReadUserById(userId);
     if (user.roleId >= 4) {
@@ -211,7 +213,7 @@ const readByNom = async (req, res) => {
       });
     }
     return res.status(200).json({
-      message: `Collectif ${result.nom} trouvé avec succès`,
+      message: `Collectif ${decodeURIComponent(result.nom)} trouvé avec succès`,
       data: result,
     });
   } catch (e) {
@@ -219,6 +221,32 @@ const readByNom = async (req, res) => {
       message: `Erreur interne, veuillez réessayer ultérieurement`,
       data: e,
     });
+  }
+};
+
+const readByCreateur = async (req, res) => {
+  const createurId = req.params.createurId;
+  let result = null;
+  try {
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (!admin) {
+      return res.status(401).json({
+        message: `Veuillez vous identifier pour accéder à ces informations`,
+      });
+    }
+    result = await CollectifDAO.ReadByCreateur(createurId);
+    if (!result || result.length === 0) {
+      return res.status(404).json({
+        message: `Collectif introuvable ou inexistant`,
+      });
+    }
+    return res.status(200).json({
+      message: `Collectif ${decodeURIComponent(result.nom)} trouvé avec succès`,
+      data: result,
+    });
+  } catch (e) {
+    return res.status(500).json({ message: `Erreur interne`, data: e });
   }
 };
 
@@ -295,6 +323,7 @@ export const CollectifController = {
   readUnconfirmedCollectifs,
   readOneCollectif,
   readByNom,
+  readByCreateur,
   updateOneCollectif,
   deleteOneCollectif,
 };

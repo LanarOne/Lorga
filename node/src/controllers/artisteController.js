@@ -266,7 +266,8 @@ const updateOneArtiste = async (req, res) => {
         message: `Tous les champs doivent être remplis pour validation`,
       });
     }
-    const data = { nom, description, influences, style, photoId };
+    const confirmation = false;
+    const data = { nom, description, influences, style, confirmation, photoId };
     const artiste = await ArtisteDAO.UpdateOne(id, data);
     if (!artiste) {
       return res

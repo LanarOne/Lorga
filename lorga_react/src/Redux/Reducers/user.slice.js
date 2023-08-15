@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getUser } from "../../Helpers/usersHelper";
 import {
+  GET_ADMIN_COLLECTIF_BY_USER_ID,
   GET_ART_COL_BY_ARTISTE_ID,
   GET_ARTISTE_BY_USERID,
   GET_COL_BY_ID,
@@ -40,10 +41,36 @@ export const fetchUser = createAsyncThunk(
             );
           });
         }
+        if (responseCol.status >= 400) {
+          let { message } = response.error;
+          return thunkAPI.rejectWithValue({ message, status });
+        }
       }
       if (status >= 400) {
-        thunkAPI.dispatch(setArtisteName(`null`));
-        console.log(response, user);
+        try {
+          url = `${GET_ADMIN_COLLECTIF_BY_USER_ID}${user.id}`;
+          const response = await getRequest(url, token);
+          status = response.status;
+          if (status <= 201) {
+            const collectifs = response.result.data;
+            collectifs.map(async (collectif) => {
+              url = `${GET_COL_BY_ID}${collectif.collectifId}`;
+              const response = await getRequest(url, token);
+              thunkAPI.dispatch(
+                addCollectif({
+                  id: collectif.collectifId,
+                  nom: response.result.data.nom,
+                })
+              );
+            });
+          }
+          if (status >= 400) {
+            let { message } = response.error;
+            return thunkAPI.rejectWithValue({ message, status });
+          }
+        } catch (e) {
+          throw e;
+        }
       }
     } catch (e) {
       throw e;
@@ -106,12 +133,11 @@ export const userSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         if (state.loadingUser) {
-          // state.loadingUser = action.payload;
           state.loadingUser = false;
         }
       })
       .addCase(fetchUser.rejected, (state, action) => {
-        if (state.loading) {
+        if (state.loadingUser) {
           state.loadingUser = false;
           state.errorUser = action.payload;
         }

@@ -46,6 +46,18 @@ export const getArtisteByName = createAsyncThunk(
     }
   }
 );
+
+export const updateArtiste = createAsyncThunk(
+  "artiste/update",
+  async ({ nom, token }, thunkAPI) => {
+    let error;
+    let status;
+    try {
+    } catch (e) {
+      throw e;
+    }
+  }
+);
 export const createArtisteSlice = createSlice({
   name: "artiste",
   initialState: {
