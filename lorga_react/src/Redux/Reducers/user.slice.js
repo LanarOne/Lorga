@@ -22,6 +22,11 @@ export const fetchUser = createAsyncThunk(
       url = `${GET_ARTISTE_BY_USERID}${user.id}`;
       const response = await getRequest(url, token);
       status = response.status;
+      error = response.error;
+      if (error) {
+        let { message } = error;
+        return thunkAPI.rejectWithValue({ message, status });
+      }
       if (status <= 201) {
         const artiste = response.result.data;
         thunkAPI.dispatch(setArtisteId(artiste.id));

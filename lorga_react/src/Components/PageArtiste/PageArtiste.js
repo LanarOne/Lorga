@@ -2,30 +2,39 @@ import React, { useEffect, useState } from "react";
 import Header from "../Header/Header";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getArtisteByName } from "../../Redux/Reducers/createArtiste.slice";
-import { getPhoto } from "../../Redux/Reducers/photo.slice";
+import {
+  getArtisteByName,
+  getDescription,
+  getInfluences,
+  getNom,
+  getPhotoId,
+  getStyle,
+  updateArtiste,
+} from "../../Redux/Reducers/createArtiste.slice";
+import { getPhoto, updatePhoto } from "../../Redux/Reducers/photo.slice";
 import { getUpload } from "../../Redux/Reducers/uploads.slice";
 import Modale from "../smallElts/Modale/Modale";
-import { fetchUser, setArtisteName } from "../../Redux/Reducers/user.slice";
+import { fetchUser } from "../../Redux/Reducers/user.slice";
 import Button from "../smallElts/Button/Button";
+import mc from "./pageArtiste.module.scss";
 
 const PageArtiste = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
-  const { nom } = useParams();
+  const { blaze } = useParams();
   const [artiste, setArtiste] = useState([]);
   const [message, setMessage] = useState(null);
+  const [image, setImage] = useState({ file: null });
+  const [previewURL, setPreviewURL] = useState("");
   const { imageData, loading, error } = useSelector((state) => state.upload);
   const { loadingUser, errorUser } = useSelector((state) => state.user);
   const user = useSelector((state) => state.user);
   const [img, setImg] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [nouveauNom, setNouveauNom] = useState("");
-  const [newDescription, setNewDescription] = useState("");
-  const [newStyle, setNewStyle] = useState("");
-  const [newInfluences, setNewInfluences] = useState("");
-  const [newImg, setNewImg] = useState("");
-
+  const { nom, style, description, influences } = useSelector(
+    (state) => state.artiste
+  );
+  const [adminMode, setAdminMode] = useState(false);
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
@@ -33,6 +42,7 @@ const PageArtiste = () => {
   useEffect(() => {
     const getArtiste = async () => {
       try {
+        let nom = blaze;
         let response = await dispatch(getArtisteByName({ nom, token }));
         let status = response.payload.status;
         if (status <= 201) {
@@ -49,7 +59,7 @@ const PageArtiste = () => {
       }
     };
     getArtiste();
-  }, [dispatch, nom, token]);
+  }, [dispatch, blaze, token]);
   useEffect(() => {
     if (artiste) {
       const displayUpload = async () => {
@@ -82,67 +92,43 @@ const PageArtiste = () => {
   }, [dispatch, token]);
 
   const handleUpdate = async () => {
-    setMessage(
-      <form
-        action=""
-        onSubmit={(e) => {
-          handleSubmit(e);
-        }}
-      >
-        <div>
-          <label htmlFor="nom">Ton nouveau nom : </label>
-          <input
-            type="text"
-            placeholder={user.artisteName}
-            onChange={(e) => {
-              setNouveauNom(e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <label htmlFor="style">Ton nouveau style : </label>
-          <input
-            type="text"
-            onChange={(e) => {
-              setNewStyle(e.target.value);
-            }}
-            placeholder={artiste.style}
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Ta nouvelle description : </label>
-          <textarea
-            name="description"
-            id="description"
-            cols="30"
-            rows="10"
-            onChange={(e) => {
-              setNewDescription(e.target.value);
-            }}
-            placeholder={artiste.description}
-          ></textarea>
-        </div>
-        <div>
-          <label htmlFor="influences">Tes nouvelles influences : </label>
-          <input
-            type="text"
-            onChange={(e) => {
-              setNewInfluences(e.target.value);
-            }}
-            placeholder={artiste.influences}
-          />
-        </div>
-        <Button message={`Valider`} />
-      </form>
-    );
-    toggleModal();
+    setAdminMode(true);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(e);
+    const photoId = parseInt(artiste.photoId);
+    const body = { nom, style, description, influences, photoId };
+    const artisteId = artiste.id;
+    const response = await dispatch(updateArtiste({ artisteId, body, token }));
+    if (image) {
+      try {
+        const newPhoto = await dispatch(updatePhoto({ image, token, photoId }));
+        console.log(newPhoto);
+      } catch (e) {
+        console.error(e.message);
+      }
+    }
   };
-
+  useEffect(() => {
+    const getData = async () => {
+      await dispatch(getNom(artiste.nom));
+      await dispatch(getStyle(artiste.style));
+      await dispatch(getDescription(artiste.description));
+      await dispatch(getInfluences(artiste.influences));
+      await dispatch(getPhotoId(artiste.photoId));
+    };
+    if (artiste && artiste.nom) {
+      getData();
+    }
+  }, [artiste]);
+  const handleUpload = async (e) => {
+    let image = e.target.files[0];
+    setImage(image);
+    if (image) {
+      dispatch(getPhoto(image));
+      setPreviewURL(URL.createObjectURL(image));
+    }
+  };
   return (
     <>
       <>
@@ -164,7 +150,78 @@ const PageArtiste = () => {
             <h2>Quelque chose cloche...</h2>
             <p>Essayes de contacter un admin</p>
           </>
-        ) : user.artisteName && user.artisteName === nom ? (
+        ) : user.artisteName && user.artisteName === blaze && adminMode ? (
+          <section>
+            <h2>
+              Une fois le formulaire envoyé, ta page artiste sera désactivée le
+              temps d'être validée par nos admins !
+            </h2>
+            <form
+              action=""
+              onSubmit={(e) => {
+                handleSubmit(e);
+              }}
+            >
+              <div>
+                <label htmlFor="nom">Ton nouveau nom : </label>
+                <input
+                  type="text"
+                  placeholder={user.artisteName}
+                  onChange={(e) => {
+                    dispatch(getNom(e.target.value));
+                  }}
+                />
+              </div>
+              <div>
+                <label htmlFor="style">Ton nouveau style : </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getStyle(e.target.value));
+                  }}
+                  placeholder={artiste.style}
+                />
+              </div>
+              <div>
+                <label htmlFor="description">Ta nouvelle description : </label>
+                <textarea
+                  name="description"
+                  id="description"
+                  cols="30"
+                  rows="10"
+                  onChange={(e) => {
+                    dispatch(getDescription(e.target.value));
+                  }}
+                  placeholder={artiste.description}
+                ></textarea>
+              </div>
+              <div>
+                <label htmlFor="influences">Tes nouvelles influences : </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getInfluences(e.target.value));
+                  }}
+                  placeholder={artiste.influences}
+                />
+              </div>
+              <div>
+                <label htmlFor="photo">
+                  Téléverse une nouvelle photo (l'ancienne sera supprimée)
+                </label>
+                <input
+                  type="file"
+                  accept={"image/*"}
+                  onChange={(e) => {
+                    handleUpload(e);
+                  }}
+                />
+                {previewURL ? <img src={previewURL} /> : null}
+              </div>
+              <Button message={`Valider`} />
+            </form>
+          </section>
+        ) : user.artisteName && user.artisteName === blaze ? (
           <>
             <section>
               <div>

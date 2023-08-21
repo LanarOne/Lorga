@@ -12,13 +12,13 @@ const Collectif = () => {
   const [message, setMessage] = useState("");
   const { data, loading, error } = useSelector((state) => state.collectifs);
   const [collectifs, setCollectifs] = useState([]);
-
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
   useEffect(() => {
     const displayData = async () => {
       dispatch(await getCollectifs());
+      console.log(dispatch);
     };
     displayData();
   }, [dispatch]);

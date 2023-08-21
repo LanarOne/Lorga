@@ -1,5 +1,6 @@
 import { PhotoDAO } from "../DAOs/photoDAO.js";
 import { stringIsFilled } from "../utils/stringUtils.js";
+import * as fs from "fs";
 
 const create = async (req, res) => {
   try {
@@ -70,7 +71,23 @@ const readById = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    let { nom, path, alt } = req.body;
+    let { alt } = req.body;
+    const nom = req.file.filename;
+    const path = req.file.path;
+    const existingPhoto = await PhotoDAO.ReadPhotoById(id);
+    if (!existingPhoto) {
+      return res
+        .status(404)
+        .json({ message: `Photo introuvable ou inexistante` });
+    }
+    if (existingPhoto.path !== path) {
+      fs.unlink(existingPhoto.path, (err) => {
+        if (err) {
+          console.error(`Erreur pendant l'effacement de la photo`, err);
+        }
+        console.log(`Photo supprimée avec succès`);
+      });
+    }
     const data = { nom, path, alt };
     const updatedPhoto = await PhotoDAO.UpdatePhoto(id, data);
     if (!updatedPhoto) {

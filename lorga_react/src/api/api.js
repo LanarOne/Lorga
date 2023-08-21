@@ -83,6 +83,16 @@ async function postRequest(url, body = {}, token = null) {
   return await Request(url, config);
 }
 
+async function putRequest(url, body = {}, token = null) {
+  const config = {
+    method: "PUT",
+    headers: { "Content-type": "application/json; charset=UTF-8" },
+    body: JSON.stringify(body),
+  };
+  if (token) config.headers.Authorization = token;
+  return await Request(url, config);
+}
+
 async function postFileRequest(url, formData = {}, token = null) {
   const config = {
     method: "POST",
@@ -95,7 +105,18 @@ async function postFileRequest(url, formData = {}, token = null) {
   if (token) config.headers.Authorization = token;
   return await requestFile(url, config);
 }
-
+async function putFileRequest(url, formData = {}, token = null) {
+  const config = {
+    method: "PUT",
+    body: formData,
+    headers: {
+      // "Content-Type": "multipart/form-data",
+      // Authorization: `${token}`,
+    },
+  };
+  if (token) config.headers.Authorization = token;
+  return await requestFile(url, config);
+}
 async function requestUploaded(url, config) {
   let status = -1;
   let error;
@@ -114,4 +135,11 @@ async function requestUploaded(url, config) {
   }
 }
 
-export { getRequest, postRequest, postFileRequest, getImageRequest };
+export {
+  getRequest,
+  postRequest,
+  postFileRequest,
+  putFileRequest,
+  getImageRequest,
+  putRequest,
+};

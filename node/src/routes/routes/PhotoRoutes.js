@@ -14,7 +14,13 @@ const PhotoRoutes = (app, sm) => {
   );
   router.get("/readall", sm, jwtMiddleware, PhotoController.readAll);
   router.get("/readone/:id", sm, jwtMiddleware, PhotoController.readById);
-  router.put("/updateone/:id", sm, jwtMiddleware, PhotoController.update);
+  router.put(
+    "/updateone/:id",
+    sm,
+    jwtMiddleware,
+    upload.single("image"),
+    PhotoController.update
+  );
   router.delete("/deleteone/:id", sm, jwtMiddleware, PhotoController.remove);
   router.use("/uploaded", express.static("uploads"));
   router.post("/*", sm, wrongRoute.wrongPath);

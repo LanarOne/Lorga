@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest, postFileRequest } from "../../api/api";
-import { CREATE_PHOTO, GET_PHOTO_BY_ID } from "../../constants/constants";
+import { getRequest, postFileRequest, putFileRequest } from "../../api/api";
+import {
+  CREATE_PHOTO,
+  GET_PHOTO_BY_ID,
+  PUT_PHOTO,
+} from "../../constants/constants";
 
 export const postPhoto = createAsyncThunk(
   "photo/create",
@@ -13,7 +17,6 @@ export const postPhoto = createAsyncThunk(
       formData.append("image", image);
       formData.append("alt", alt);
       const response = await postFileRequest(CREATE_PHOTO, formData, token);
-      console.log(response);
       status = response.status;
       error = response.error;
       if (status >= 400 || error) {
@@ -28,7 +31,32 @@ export const postPhoto = createAsyncThunk(
     }
   }
 );
-
+export const updatePhoto = createAsyncThunk(
+  "photo/put",
+  async ({ image, token, photoId }, thunkAPI) => {
+    let error;
+    let status;
+    try {
+      const formData = new FormData();
+      let alt = `ntm`;
+      formData.append("image", image);
+      formData.append("alt", alt);
+      const url = `${PUT_PHOTO}${photoId}`;
+      const response = await putFileRequest(url, formData, token);
+      status = response.status;
+      error = response.error;
+      if (status >= 400 || error) {
+        const { message } = error;
+        return thunkAPI({ message, status });
+      }
+      if (status <= 201) {
+        return response;
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
 export const getPhoto = createAsyncThunk(
   "photo/get",
   async ({ photoId, token }, { rejectWithValue }) => {

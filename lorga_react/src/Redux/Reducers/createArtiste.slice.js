@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest, postRequest } from "../../api/api";
-import { CREATE_ARTISTE, GET_ARTISTE_BY_NOM } from "../../constants/constants";
+import { getRequest, postRequest, putRequest } from "../../api/api";
+import {
+  CREATE_ARTISTE,
+  GET_ARTISTE_BY_NOM,
+  PUT_ARTISTE,
+} from "../../constants/constants";
 
 export const postNewArtiste = createAsyncThunk(
   "artiste/create",
@@ -49,10 +53,23 @@ export const getArtisteByName = createAsyncThunk(
 
 export const updateArtiste = createAsyncThunk(
   "artiste/update",
-  async ({ nom, token }, thunkAPI) => {
+  async ({ artisteId, body, token }, thunkAPI) => {
     let error;
     let status;
+
     try {
+      let url = `${PUT_ARTISTE}${artisteId}`;
+      const response = await putRequest(url, body, token);
+      console.log(response);
+      status = response.status;
+      if (status <= 201) {
+        let { data } = response.result;
+        return { data, status };
+      }
+      if (status >= 400) {
+        let { message } = response.error;
+        return thunkAPI.rejectWithValue({ message, status });
+      }
     } catch (e) {
       throw e;
     }

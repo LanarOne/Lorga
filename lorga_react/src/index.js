@@ -31,7 +31,7 @@ root.render(
           <Route path={"/apropos"} element={<Apropos />} />
           <Route path={"/artistes"} element={<Artiste />} />
           <Route path={"/nouvelartiste"} element={<CreationArtiste />} />
-          <Route path={"/artistes/:nom"} element={<PageArtiste />} />
+          <Route path={"/artistes/:blaze"} element={<PageArtiste />} />
           <Route path={"/collectifs"} element={<Collectif />} />
           <Route path={"/nouveaucollectif"} element={<CreationCollectif />} />
           <Route path={"/collectifs/:nom"} element={<PageCollectif />} />

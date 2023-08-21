@@ -4,13 +4,15 @@ import logo2 from "../../public/medias/lorgaLogo2.jpg";
 import mc from "./header.module.scss";
 import { NavLink } from "react-router-dom";
 import { manageDisplayDate } from "../../Helpers/dates";
-import { getUser } from "../../Helpers/usersHelper";
-import IcomoonReact, { iconList } from "icomoon-react";
+import IcomoonReact from "icomoon-react";
 import iconSet from "../../Style/IcoMoon/selection.json";
 import Button from "../smallElts/Button/Button";
+import { useSelector } from "react-redux";
 const Header = () => {
   const [displayDate, setDisplayDate] = useState("");
-  const [user, setUser] = useState({});
+  const user = useSelector((state) => state.user);
+  console.log(user);
+
   const token = window.localStorage.getItem("token");
   function deconexion() {
     localStorage.removeItem("token");
@@ -20,17 +22,6 @@ const Header = () => {
   useEffect(() => {
     setDisplayDate(manageDisplayDate());
   }, []);
-  useEffect(() => {
-    if (token) {
-      getUser(token)
-        .then((userData) => {
-          setUser(userData);
-        })
-        .catch((error) => {
-          return new Error(error.message);
-        });
-    }
-  }, [token]);
   return (
     <header>
       <section className={`${mc.blocLogo}`}>
@@ -54,7 +45,9 @@ const Header = () => {
               ) : user.roleId === 1 ? (
                 <NavLink>Réserver une table</NavLink>
               ) : user.roleId === 2 ? (
-                <NavLink>Gérer ma page artiste</NavLink>
+                <NavLink to={`artistes/${user.artisteName}`}>
+                  Gérer ma page {user.artisteName}
+                </NavLink>
               ) : user.roleId === 3 ? (
                 <NavLink>Gérer un collectif</NavLink>
               ) : user.roleId === 4 ? (

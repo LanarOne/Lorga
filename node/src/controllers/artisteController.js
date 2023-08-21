@@ -202,7 +202,6 @@ const readByUserId = async (req, res) => {
         .json({ message: `Utilisateur introuvable ou inexistant` });
     }
     result = await ArtisteDAO.ReadByUserId(userId);
-    console.log(result);
     if (!result) {
       return res
         .status(404)
@@ -245,6 +244,7 @@ const readByNom = async (req, res) => {
 };
 
 const updateOneArtiste = async (req, res) => {
+  console.log(req.body, `controller`);
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
   if (!admin || admin === 1) {

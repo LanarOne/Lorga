@@ -1,1 +1,6 @@
 @use "src/Style/general";
+main {
+  & img {
+    max-width: 100%;
+  }
+}

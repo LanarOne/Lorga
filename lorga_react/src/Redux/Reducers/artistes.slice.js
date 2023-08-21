@@ -3,14 +3,14 @@ import { getRequest } from "../../api/api";
 import { GET_ARTISTES } from "../../constants/constants";
 
 export const getArtistes = createAsyncThunk(
-  "artistes.slice/getArtistes",
+  "artistes/get",
   async (_, { rejectWithValue }) => {
     let error;
     let status;
     try {
       const response = await getRequest(GET_ARTISTES);
-      error = response.error;
       status = response.status;
+      error = response.error;
       if (status <= 201) {
         let { data } = response.result;
         return { data, status };
@@ -19,6 +19,18 @@ export const getArtistes = createAsyncThunk(
         const { message } = response.error;
         return rejectWithValue({ message, status });
       }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+export const getArtiste = createAsyncThunk(
+  "artiste/get",
+  async (id, thunkAPI) => {
+    let error;
+    let status;
+    try {
+      const response = await getRequest();
     } catch (e) {
       throw e;
     }
