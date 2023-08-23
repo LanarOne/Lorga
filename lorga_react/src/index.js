@@ -34,7 +34,7 @@ root.render(
           <Route path={"/artistes/:blaze"} element={<PageArtiste />} />
           <Route path={"/collectifs"} element={<Collectif />} />
           <Route path={"/nouveaucollectif"} element={<CreationCollectif />} />
-          <Route path={"/collectifs/:nom"} element={<PageCollectif />} />
+          <Route path={"/collectifs/:blaze"} element={<PageCollectif />} />
           <Route path={"/*"} element={<EmptyPages />} />
         </Routes>
       </BrowserRouter>

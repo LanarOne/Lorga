@@ -24,18 +24,6 @@ export const getArtistes = createAsyncThunk(
     }
   }
 );
-export const getArtiste = createAsyncThunk(
-  "artiste/get",
-  async (id, thunkAPI) => {
-    let error;
-    let status;
-    try {
-      const response = await getRequest();
-    } catch (e) {
-      throw e;
-    }
-  }
-);
 
 export const artisteSlice = createSlice({
   name: "artistes",

@@ -113,6 +113,20 @@ async function ReadByCollectifId(collectifId) {
   }
 }
 
+async function ReadUnconfirmedByCollectifId(collectifId) {
+  let result = null;
+  let confirmation = false;
+  try {
+    result = await Artiste_Collectif.findAll({
+      where: { collectifId, confirmation },
+    });
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+}
+
 async function DeleteOne(id) {
   let result = null;
   try {
@@ -135,5 +149,6 @@ export const Artiste_CollectifDAO = {
   ReadById,
   ReadByArtisteId,
   ReadByCollectifId,
+  ReadUnconfirmedByCollectifId,
   DeleteOne,
 };

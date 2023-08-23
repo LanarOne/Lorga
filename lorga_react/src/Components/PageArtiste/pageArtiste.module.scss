@@ -3,4 +3,11 @@ main {
   & img {
     max-width: 100%;
   }
+  & .disclaimer {
+    color: var(--body-color-bright);
+  }
+  & .buttons {
+    display: flex;
+    flex-direction: row;
+  }
 }

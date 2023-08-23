@@ -279,10 +279,12 @@ const updateOneCollectif = async (req, res) => {
         message: `Tous les champs doivent être remplis pour validation`,
       });
     }
-    const data = { nom, description, influences, style, photoId };
+    const confirmation = false;
+    const data = { nom, description, influences, style, confirmation, photoId };
     result = await CollectifDAO.UpdateOne(id, data);
+    console.log(result);
     return res.status(200).json({
-      message: `Collectif ${collectif.nom} mis à jour avec succès`,
+      message: `Collectif ${result.collectif.nom} mis à jour avec succès`,
       data: result,
     });
   } catch (error) {

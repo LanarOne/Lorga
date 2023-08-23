@@ -41,6 +41,12 @@ const Artiste_CollectifRoutes = (app, sm) => {
     jwtMiddleware,
     Artiste_CollectifController.readByCollectifId
   );
+  router.get(
+    "/readunconfirmedbycolid/:id",
+    sm,
+    jwtMiddleware,
+    Artiste_CollectifController.readUnconfirmedByCollectifId
+  );
   router.delete(
     "/deleteone/:id",
     sm,

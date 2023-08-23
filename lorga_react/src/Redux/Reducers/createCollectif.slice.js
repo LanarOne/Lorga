@@ -1,9 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   CREATE_COLLECTIF,
+  GET_COLLECTIF_BY_CREATEUR,
   GET_COLLECTIF_BY_NOM,
+  PUT_COLLECTIF,
 } from "../../constants/constants";
-import { getRequest, postRequest } from "../../api/api";
+import { getRequest, postRequest, putRequest } from "../../api/api";
 
 export const postNewCollectif = createAsyncThunk(
   "collectif/create",
@@ -24,6 +26,34 @@ export const postNewCollectif = createAsyncThunk(
   }
 );
 
+export const updateCollectif = createAsyncThunk(
+  "collectif/update",
+  async ({ collectifId, body, token }, thunkAPI) => {
+    let error;
+    let status;
+
+    try {
+      console.log(body);
+
+      let url = `${PUT_COLLECTIF}${collectifId}`;
+      const response = await putRequest(url, body, token);
+      console.log(response);
+      status = response.status;
+      error = response.error;
+      if (status <= 201) {
+        let { data } = response.result;
+        return thunkAPI.fulfillWithValue({ data, status });
+      }
+      if (status >= 400 || error) {
+        let { message } = error;
+        return thunkAPI.rejectWithValue({ message, status });
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
 export const getCollectifByName = createAsyncThunk(
   "collectif/getonebyname",
   async ({ nom, token }, { rejectWithValue }) => {
@@ -40,6 +70,29 @@ export const getCollectifByName = createAsyncThunk(
       }
       if (status <= 201) {
         return response;
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const getCollectifByCreateur = createAsyncThunk(
+  "collectif/getbycreateur",
+  async ({ userId, token }, thunkAPI) => {
+    let error;
+    let status;
+    try {
+      let url = `${GET_COLLECTIF_BY_CREATEUR}${userId}`;
+      const response = await getRequest(url, token);
+      status = response.status;
+      error = response.error;
+      if (status <= 201) {
+        return response;
+      }
+      if (status >= 400 || error) {
+        let { message } = error;
+        throw thunkAPI.rejectWithValue({ message, status });
       }
     } catch (e) {
       throw e;

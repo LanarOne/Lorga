@@ -38,6 +38,9 @@ const PageArtiste = () => {
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
+  const toggleAdminMode = () => {
+    setAdminMode(!adminMode);
+  };
 
   useEffect(() => {
     const getArtiste = async () => {
@@ -83,7 +86,7 @@ const PageArtiste = () => {
     }
   }, [dispatch, artiste, token]);
   useEffect(() => {
-    dispatch(fetchUser(token));
+    dispatch(fetchUser({ token }));
     if (errorUser) {
       let { message } = errorUser;
       setMessage(message);
@@ -100,7 +103,7 @@ const PageArtiste = () => {
     const body = { nom, style, description, influences, photoId };
     const artisteId = artiste.id;
     const response = await dispatch(updateArtiste({ artisteId, body, token }));
-    if (image) {
+    if (response && image) {
       try {
         const newPhoto = await dispatch(updatePhoto({ image, token, photoId }));
         console.log(newPhoto);
@@ -152,7 +155,7 @@ const PageArtiste = () => {
           </>
         ) : user.artisteName && user.artisteName === blaze && adminMode ? (
           <section>
-            <h2>
+            <h2 className={`${mc.disclaimer}`}>
               Une fois le formulaire envoyé, ta page artiste sera désactivée le
               temps d'être validée par nos admins !
             </h2>
@@ -218,7 +221,10 @@ const PageArtiste = () => {
                 />
                 {previewURL ? <img src={previewURL} /> : null}
               </div>
-              <Button message={`Valider`} />
+              <div className={`${mc.buttons}`}>
+                <Button message={`Valider`} />
+                <Button message={`Retour`} onClick={toggleAdminMode} />
+              </div>
             </form>
           </section>
         ) : user.artisteName && user.artisteName === blaze ? (

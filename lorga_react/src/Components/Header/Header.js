@@ -7,85 +7,120 @@ import { manageDisplayDate } from "../../Helpers/dates";
 import IcomoonReact from "icomoon-react";
 import iconSet from "../../Style/IcoMoon/selection.json";
 import Button from "../smallElts/Button/Button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUser } from "../../Redux/Reducers/user.slice";
+import { getCollectifByCreateur } from "../../Redux/Reducers/createCollectif.slice";
 const Header = () => {
   const [displayDate, setDisplayDate] = useState("");
   const user = useSelector((state) => state.user);
-  console.log(user);
-
+  const [collectif, setCollectif] = useState([]);
+  const dispatch = useDispatch();
   const token = window.localStorage.getItem("token");
+  const [collectifName, setCollectifName] = useState("");
+  const [message, setMessage] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
   function deconexion() {
     localStorage.removeItem("token");
     window.location.href = "/";
   }
+  const toggleModale = () => {
+    setIsOpen(!isOpen);
+  };
 
   useEffect(() => {
     setDisplayDate(manageDisplayDate());
   }, []);
+  useEffect(() => {
+    dispatch(fetchUser({ token }));
+  }, [token]);
+  useEffect(() => {
+    const getDatas = async () => {
+      let userId = user.userId;
+      if (user.collectifs.length > 0) {
+        let collectif = await dispatch(
+          getCollectifByCreateur({ userId, token })
+        );
+        setCollectif(collectif.payload.result.data);
+      }
+    };
+    if (user) {
+      setCollectifName(encodeURIComponent(collectif.nom));
+      getDatas();
+    }
+  }, [user]);
   return (
-    <header>
-      <section className={`${mc.blocLogo}`}>
-        <div>
-          <ul>
-            <li>
-              <NavLink to={"/"}>Accueil/Programmation</NavLink>
-            </li>
-            <li>
-              <NavLink>Carte des boissons</NavLink>
-            </li>
-            <li>
-              <NavLink to={"/apropos"}>L'équipe/Contact</NavLink>
-            </li>
-            <li>
-              <NavLink>Galerie</NavLink>
-            </li>
-            <li>
-              {!user.roleId ? (
-                ""
-              ) : user.roleId === 1 ? (
-                <NavLink>Réserver une table</NavLink>
-              ) : user.roleId === 2 ? (
-                <NavLink to={`artistes/${user.artisteName}`}>
-                  Gérer ma page {user.artisteName}
-                </NavLink>
-              ) : user.roleId === 3 ? (
-                <NavLink>Gérer un collectif</NavLink>
-              ) : user.roleId === 4 ? (
-                <NavLink>Gérer mon collectif</NavLink>
-              ) : (
-                <NavLink to={"/admin"}>Admin</NavLink>
-              )}
-            </li>
-          </ul>
-        </div>
-        <img src={logo2} alt="Logo de Lorga" />
-        <div>
-          {" "}
-          <p>{displayDate}</p>
-          {!token ? (
-            <p>
-              <NavLink to={"/login"}>Inscription/connexion</NavLink>
-            </p>
-          ) : (
-            <>
-              <p>Bienvenue</p>
-              <p>{user.username}</p>
-              <Button
-                message={
-                  <IcomoonReact
-                    icon={"switch"}
-                    iconSet={iconSet}
-                    color={"Crimson"}
-                    size={20}
-                    onClick={deconexion}
-                  />
-                }
-              />
-            </>
-          )}
-        </div>
-      </section>
-    </header>
+    <>
+      {isOpen && message ? (
+        <>
+          <Modale message={message} setModaleOpen={toggleModale} />
+        </>
+      ) : null}
+      <header>
+        <section className={`${mc.blocLogo}`}>
+          <div>
+            <ul>
+              <li>
+                <NavLink to={"/"}>Accueil/Programmation</NavLink>
+              </li>
+              <li>
+                <NavLink>Carte des boissons</NavLink>
+              </li>
+              <li>
+                <NavLink to={"/apropos"}>L'équipe/Contact</NavLink>
+              </li>
+              <li>
+                <NavLink>Galerie</NavLink>
+              </li>
+              <li>
+                {!user.roleId ? (
+                  ""
+                ) : user.roleId === 1 ? (
+                  <NavLink>Réserver une table</NavLink>
+                ) : user.roleId === 2 ? (
+                  <NavLink to={`/artistes/${user.artisteName}`}>
+                    Gérer ma page {user.artisteName}
+                  </NavLink>
+                ) : user.roleId === 3 ? (
+                  <NavLink>Gérer un collectif</NavLink>
+                ) : user.roleId === 4 ? (
+                  <NavLink to={`/collectifs/${collectifName}`}>
+                    Gérer mon collectif
+                  </NavLink>
+                ) : (
+                  <NavLink to={"/admin"}>Admin</NavLink>
+                )}
+              </li>
+            </ul>
+          </div>
+          <img src={logo2} alt="Logo de Lorga" />
+          <div>
+            {" "}
+            <p>{displayDate}</p>
+            {!token ? (
+              <p>
+                <NavLink to={"/login"}>Inscription/connexion</NavLink>
+              </p>
+            ) : (
+              <>
+                <p>Bienvenue</p>
+                <p>{user.username}</p>
+                <Button
+                  message={
+                    <IcomoonReact
+                      icon={"switch"}
+                      iconSet={iconSet}
+                      color={"Crimson"}
+                      size={20}
+                      onClick={deconexion}
+                    />
+                  }
+                />
+              </>
+            )}
+          </div>
+        </section>
+      </header>
+    </>
   );
 };
 

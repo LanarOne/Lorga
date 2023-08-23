@@ -10,7 +10,7 @@ import { getRequest } from "../../api/api";
 
 export const fetchUser = createAsyncThunk(
   "user/getUser",
-  async (token, thunkAPI) => {
+  async ({ token }, thunkAPI) => {
     let error;
     let status;
     let url;
@@ -23,10 +23,7 @@ export const fetchUser = createAsyncThunk(
       const response = await getRequest(url, token);
       status = response.status;
       error = response.error;
-      if (error) {
-        let { message } = error;
-        return thunkAPI.rejectWithValue({ message, status });
-      }
+
       if (status <= 201) {
         const artiste = response.result.data;
         thunkAPI.dispatch(setArtisteId(artiste.id));

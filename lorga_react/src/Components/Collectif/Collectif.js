@@ -12,22 +12,17 @@ const Collectif = () => {
   const [message, setMessage] = useState("");
   const { data, loading, error } = useSelector((state) => state.collectifs);
   const [collectifs, setCollectifs] = useState([]);
+  const token = localStorage.getItem("token");
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
   useEffect(() => {
-    const displayData = async () => {
-      dispatch(await getCollectifs());
-      console.log(dispatch);
+    const getConfirmedCollectifs = async () => {
+      const confirmedCollectifs = await dispatch(getCollectifs());
+      setCollectifs(confirmedCollectifs.payload.data);
     };
-    displayData();
+    getConfirmedCollectifs();
   }, [dispatch]);
-  useEffect(() => {
-    setCollectifs(data);
-    if (error) {
-      setMessage(error);
-    }
-  });
   return (
     <>
       <>

@@ -4,7 +4,7 @@ import { GET_COLLECTIFS } from "../../constants/constants";
 
 export const getCollectifs = createAsyncThunk(
   "collectifs/getAllCollectifs",
-  async (_, { rejectWithValue }) => {
+  async (_, thunkAPI) => {
     let error;
     let status;
     try {
@@ -13,11 +13,11 @@ export const getCollectifs = createAsyncThunk(
       status = response.status;
       if (status <= 201) {
         let { data } = response.result;
-        return { data, status };
+        return thunkAPI.fulfillWithValue({ data, status });
       }
       if (status >= 400 || error) {
         const { message } = response.error;
-        return rejectWithValue({ message, status });
+        return thunkAPI.rejectWithValue({ message, status });
       }
     } catch (e) {
       throw e;

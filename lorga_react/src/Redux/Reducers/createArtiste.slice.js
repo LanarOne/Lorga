@@ -60,7 +60,6 @@ export const updateArtiste = createAsyncThunk(
     try {
       let url = `${PUT_ARTISTE}${artisteId}`;
       const response = await putRequest(url, body, token);
-      console.log(response);
       status = response.status;
       if (status <= 201) {
         let { data } = response.result;
