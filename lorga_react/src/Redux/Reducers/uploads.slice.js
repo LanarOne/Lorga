@@ -26,28 +26,28 @@ export const uploadsSlice = createSlice({
   name: "upload",
   initialState: {
     imageData: null,
-    loading: false,
-    error: null,
+    loadingUpload: false,
+    errorUpload: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getUpload.pending, (state) => {
-      if (!state.loading) {
-        state.loading = true;
-        state.error = null;
+      if (!state.loadingUpload) {
+        state.loadingUpload = true;
+        state.errorUpload = null;
       }
     });
     builder.addCase(getUpload.fulfilled, (state, action) => {
-      if (state.loading) {
-        state.loading = action.payload;
-        state.loading = false;
+      if (state.loadingUpload) {
+        state.loadingUpload = action.payload;
+        state.loadingUpload = false;
         state.imageData = action.payload;
       }
     });
     builder.addCase(getUpload.rejected, (state, action) => {
-      if (state.loading) {
-        state.loading = false;
-        state.error = action.payload;
+      if (state.loadingUpload) {
+        state.loadingUpload = false;
+        state.errorUpload = action.payload;
       }
     });
   },

@@ -26,14 +26,15 @@ const PageArtiste = () => {
   const [message, setMessage] = useState(null);
   const [image, setImage] = useState({ file: null });
   const [previewURL, setPreviewURL] = useState("");
-  const { imageData, loading, error } = useSelector((state) => state.upload);
+  const { imageData, loadingUpload, errorUpload } = useSelector(
+    (state) => state.upload
+  );
   const { loadingUser, errorUser } = useSelector((state) => state.user);
   const user = useSelector((state) => state.user);
   const [img, setImg] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const { nom, style, description, influences } = useSelector(
-    (state) => state.artiste
-  );
+  const { nom, style, description, influences, loadingArtiste, errorArtiste } =
+    useSelector((state) => state.artiste);
   const [adminMode, setAdminMode] = useState(false);
   const toggleModal = () => {
     setIsOpen(!isOpen);
@@ -48,6 +49,7 @@ const PageArtiste = () => {
         let nom = blaze;
         let response = await dispatch(getArtisteByName({ nom, token }));
         let status = response.payload.status;
+        let error = response.payload.error;
         if (status <= 201) {
           setArtiste(await response.payload.data);
         }
@@ -146,9 +148,9 @@ const PageArtiste = () => {
       </>
       <Header />
       <main>
-        {loading || loadingUser ? (
+        {loadingUpload || loadingUser || loadingArtiste ? (
           <h2>Données en chargement</h2>
-        ) : error || errorUser ? (
+        ) : errorArtiste || errorUser || errorUpload ? (
           <>
             <h2>Quelque chose cloche...</h2>
             <p>Essayes de contacter un admin</p>

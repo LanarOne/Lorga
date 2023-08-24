@@ -108,8 +108,8 @@ export const createCollectifSlice = createSlice({
     style: "",
     photoId: "",
     userId: "",
-    loading: false,
-    error: null,
+    loadingCollectif: false,
+    errorCollectif: null,
   },
   reducers: {
     getNom: (state, action) => {
@@ -134,38 +134,38 @@ export const createCollectifSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(postNewCollectif.pending, (state) => {
-        if (!state.loading) {
-          state.loading = true;
+        if (!state.loadingCollectif) {
+          state.loadingCollectif = true;
         }
       })
       .addCase(postNewCollectif.fulfilled, (state, action) => {
-        if (state.loading) {
-          state.loading = action.payload;
-          state.loading = false;
+        if (state.loadingCollectif) {
+          state.loadingCollectif = action.payload;
+          state.loadingCollectif = false;
         }
       })
       .addCase(postNewCollectif.rejected, (state, action) => {
-        if (state.loading) {
-          state.loading = false;
-          state.error = action.payload;
+        if (state.loadingCollectif) {
+          state.loadingCollectif = false;
+          state.errorCollectif = action.payload;
         }
       });
     builder
       .addCase(getCollectifByName.pending, (state) => {
-        if (!state.loading) {
-          state.loading = true;
+        if (!state.loadingCollectif) {
+          state.loadingCollectif = true;
         }
       })
       .addCase(getCollectifByName.fulfilled, (state, action) => {
-        if (state.loading) {
-          state.loading = action.payload;
-          state.loading = false;
+        if (state.loadingCollectif) {
+          state.loadingCollectif = action.payload;
+          state.loadingCollectif = false;
         }
       })
       .addCase(getCollectifByName.rejected, (state, action) => {
-        if (state.loading) {
-          state.loading = false;
-          state.error = action.payload;
+        if (state.loadingCollectif) {
+          state.loadingCollectif = false;
+          state.errorCollectif = action.payload;
           state.status = action.payload;
         }
       });

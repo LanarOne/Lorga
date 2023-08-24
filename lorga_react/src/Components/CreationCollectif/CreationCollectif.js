@@ -19,9 +19,15 @@ import Modale from "../smallElts/Modale/Modale";
 const CreationCollectif = () => {
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
-  const { nom, description, influences, style } = useSelector(
-    (state) => state.collectif
-  );
+  const {
+    nom,
+    description,
+    influences,
+    style,
+    loadingCollectif,
+    errorCollectif,
+  } = useSelector((state) => state.collectif);
+  const { loadingPhoto, errorPhoto } = useSelector((state) => state.photo);
   const [user, setUser] = useState([]);
   const [image, setImage] = useState({ file: null });
   const [previewURL, setPreviewURL] = useState("");
@@ -102,85 +108,92 @@ const CreationCollectif = () => {
       </>
       <Header />
       <main>
-        <section>
-          <h2>Vos informations</h2>
-          <p>
-            Toutes les informations que tu partages ici seront publiées telles
-            quelles dans ta page artiste et éventuellement en page d'accueil si
-            tu es programmé chez nous! Elles seront bien sûr modifiables avant
-            publication et nous nous réservons le droit d'ajuster (corriger les
-            fautes)
-          </p>
-        </section>
-        <section>
-          <form
-            action=""
-            className={`${mc.collectifForm}`}
-            onSubmit={(e) => {
-              handleSubmit(e);
-            }}
-          >
-            <div>
-              <label htmlFor="nom">Le nom du collectif : </label>
-              <input
-                type="text"
-                value={nom}
-                onChange={(e) => {
-                  handleNom(e.target.value);
+        {loadingCollectif || loadingPhoto ? (
+          <h2>Chargement</h2>
+        ) : (
+          <>
+            <section>
+              <h2>Vos informations</h2>
+              <p>
+                Toutes les informations que tu partages ici seront publiées
+                telles quelles dans ta page artiste et éventuellement en page
+                d'accueil si tu es programmé chez nous! Elles seront bien sûr
+                modifiables avant publication et nous nous réservons le droit
+                d'ajuster (corriger les fautes)
+              </p>
+            </section>
+            <section>
+              <form
+                action=""
+                className={`${mc.collectifForm}`}
+                onSubmit={(e) => {
+                  handleSubmit(e);
                 }}
-              />
-            </div>
-            <div>
-              <label htmlFor="descr">
-                La description telle qu'elle apparaîtra sur la page collectif :{" "}
-              </label>
-              <textarea
-                name="description"
-                id="description"
-                cols="30"
-                rows="10"
-                value={description}
-                onChange={(e) => {
-                  handleDescr(e.target.value);
-                }}
-              ></textarea>
-            </div>
-            <div>
-              <label htmlFor="influences">Vos influences musicale : </label>
-              <input
-                type="text"
-                value={influences}
-                onChange={(e) => {
-                  handleInfluences(e.target.value);
-                }}
-              />
-            </div>
-            <div>
-              <label htmlFor="style">
-                Quel(s) style(s) vous représente le mieux :{" "}
-              </label>
-              <input
-                type="text"
-                value={style}
-                onChange={(e) => {
-                  handleStyle(e.target.value);
-                }}
-              />
-            </div>
-            <div>
-              <label htmlFor="photo">Téléverse ta meilleure photo : </label>
-              <input
-                type="file"
-                accept={"image/*"}
-                onChange={(e) => {
-                  handleUpload(e);
-                }}
-              />
-              {image ? <img src={previewURL} alt="preview" /> : null}
-            </div>
-            <Button message={"Envoyer la demande"} />
-          </form>
-        </section>
+              >
+                <div>
+                  <label htmlFor="nom">Le nom du collectif : </label>
+                  <input
+                    type="text"
+                    value={nom}
+                    onChange={(e) => {
+                      handleNom(e.target.value);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="descr">
+                    La description telle qu'elle apparaîtra sur la page
+                    collectif :{" "}
+                  </label>
+                  <textarea
+                    name="description"
+                    id="description"
+                    cols="30"
+                    rows="10"
+                    value={description}
+                    onChange={(e) => {
+                      handleDescr(e.target.value);
+                    }}
+                  ></textarea>
+                </div>
+                <div>
+                  <label htmlFor="influences">Vos influences musicale : </label>
+                  <input
+                    type="text"
+                    value={influences}
+                    onChange={(e) => {
+                      handleInfluences(e.target.value);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="style">
+                    Quel(s) style(s) vous représente le mieux :{" "}
+                  </label>
+                  <input
+                    type="text"
+                    value={style}
+                    onChange={(e) => {
+                      handleStyle(e.target.value);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="photo">Téléverse ta meilleure photo : </label>
+                  <input
+                    type="file"
+                    accept={"image/*"}
+                    onChange={(e) => {
+                      handleUpload(e);
+                    }}
+                  />
+                  {image ? <img src={previewURL} alt="preview" /> : null}
+                </div>
+                <Button message={"Envoyer la demande"} />
+              </form>
+            </section>
+          </>
+        )}
       </main>
     </>
   );

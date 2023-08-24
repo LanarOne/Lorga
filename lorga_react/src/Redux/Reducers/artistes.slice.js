@@ -29,26 +29,26 @@ export const artisteSlice = createSlice({
   name: "artistes",
   initialState: {
     data: [],
-    loading: false,
-    error: null,
+    loadingArtiste: false,
+    errorArtiste: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getArtistes.pending, (state, action) => {
-      if (!state.loading) {
-        state.loading = true;
+      if (!state.loadingArtiste) {
+        state.loadingArtiste = true;
       }
     });
     builder.addCase(getArtistes.fulfilled, (state, action) => {
-      if (state.loading) {
+      if (state.loadingArtiste) {
         state.data = action.payload;
-        state.loading = false;
+        state.loadingArtiste = false;
       }
     });
     builder.addCase(getArtistes.rejected, (state, action) => {
-      if (state.loading) {
-        state.loading = false;
-        state.error = action.payload;
+      if (state.loadingArtiste) {
+        state.loadingArtiste = false;
+        state.errorArtiste = action.payload;
       }
     });
   },

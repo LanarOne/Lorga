@@ -28,27 +28,27 @@ export const collectifsSlice = createSlice({
   name: "collectifs",
   initialState: {
     data: [],
-    loading: false,
-    error: null,
+    loadingCollectifs: false,
+    errorCollectifs: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getCollectifs.pending, (state) => {
-        if (!state.loading) {
-          state.loading = true;
+        if (!state.loadingCollectifs) {
+          state.loadingCollectifs = true;
         }
       })
       .addCase(getCollectifs.fulfilled, (state, action) => {
-        if (state.loading) {
-          state.loading = action.payload;
-          state.loading = false;
+        if (state.loadingCollectifs) {
+          state.loadingCollectifs = action.payload;
+          state.loadingCollectifs = false;
         }
       })
       .addCase(getCollectifs.rejected, (state, action) => {
-        if (state.loading) {
-          state.loading = false;
-          state.error = action.payload;
+        if (state.loadingCollectifs) {
+          state.loadingCollectifs = false;
+          state.errorCollectifs = action.payload;
         }
       });
   },

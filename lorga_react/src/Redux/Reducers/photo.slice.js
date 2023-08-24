@@ -85,26 +85,26 @@ export const photoSlice = createSlice({
   initialState: {
     alt: "",
     image: null,
-    loading: false,
-    error: null,
+    loadingPhoto: false,
+    errorPhoto: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(postPhoto.pending, (state, action) => {
-      if (!state.loading) {
-        state.loading = true;
+      if (!state.loadingPhoto) {
+        state.loadingPhoto = true;
       }
     });
     builder.addCase(postPhoto.fulfilled, (state, action) => {
-      if (state.loading) {
-        state.loading = action.payload;
-        state.loading = false;
+      if (state.loadingPhoto) {
+        state.loadingPhoto = action.payload;
+        state.loadingPhoto = false;
       }
     });
     builder.addCase(postPhoto.rejected, (state, action) => {
-      if (state.loading) {
-        state.loading = false;
-        state.error = action.payload;
+      if (state.loadingPhoto) {
+        state.loadingPhoto = false;
+        state.errorPhoto = action.payload;
       }
     });
   },

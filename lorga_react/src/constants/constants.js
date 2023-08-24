@@ -8,6 +8,7 @@ export const GET_ARTISTE_BY_NOM = `artiste/readbynom/`;
 export const GET_ARTISTE_BY_USERID = `artiste/readbyuserid/`;
 export const GET_ART_COL_BY_ARTISTE_ID = `artiste_collectif/readbyartiste/`;
 export const GET_ART_COL_BY_COLLECTIF = `artiste_collectif/readunconfirmedbycolid/`;
+export const GET_ART_COL_BY_COL = `artiste_collectif/readbycollectif/`;
 export const GET_COLLECTIF_BY_NOM = `collectif/readbynom/`;
 export const GET_COLLECTIF_BY_CREATEUR = `collectif/readbycreateur/`;
 export const GET_ADMIN_COLLECTIF_BY_USER_ID = `admin_collectif/readbyuserid/`;

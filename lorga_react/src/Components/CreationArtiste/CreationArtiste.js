@@ -19,9 +19,10 @@ import Modale from "../smallElts/Modale/Modale";
 const CreationArtiste = () => {
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
-  const { nom, description, influences, style } = useSelector(
-    (store) => store.artiste
-  );
+  const { nom, description, influences, style, loadingArtiste, errorArtiste } =
+    useSelector((store) => store.artiste);
+  const { loadingPhoto, errorPhoto } = useSelector((state) => state.photo);
+
   const [user, setUser] = useState([]);
   const [image, setImage] = useState({ file: null });
   const [previewURL, setPreviewURL] = useState("");
@@ -108,85 +109,92 @@ const CreationArtiste = () => {
       </>
       <Header />
       <main>
-        <section>
-          <h2>Tes informations</h2>
-          <p>
-            Toutes les informations que tu partages ici seront publiées telles
-            quelles dans ta page artiste et éventuellement en page d'accueil si
-            tu es programmé chez nous! Elles seront bien sûr modifiables avant
-            publication et nous nous réservons le droit d'ajuster (corriger les
-            fautes)
-          </p>
-        </section>
-        <section className={`${mc.formSection}`}>
-          <form
-            action=""
-            className={`${mc.artisteForm}`}
-            onSubmit={(e) => {
-              handleSubmit(e);
-            }}
-          >
-            <div>
-              <label htmlFor="nom">Ton nom de scène : </label>
-              <input
-                type="text"
-                value={nom}
-                onChange={(e) => {
-                  handleNom(e.target.value);
+        {loadingPhoto || loadingArtiste ? (
+          <h2>Chargement...</h2>
+        ) : (
+          <>
+            <section>
+              <h2>Tes informations</h2>
+              <p>
+                Toutes les informations que tu partages ici seront publiées
+                telles quelles dans ta page artiste et éventuellement en page
+                d'accueil si tu es programmé chez nous! Elles seront bien sûr
+                modifiables avant publication et nous nous réservons le droit
+                d'ajuster (corriger les fautes)
+              </p>
+            </section>
+            <section className={`${mc.formSection}`}>
+              <form
+                action=""
+                className={`${mc.artisteForm}`}
+                onSubmit={(e) => {
+                  handleSubmit(e);
                 }}
-              />
-            </div>
-            <div>
-              <label htmlFor="descr">
-                Ta description telle qu'elle apparaîtra sur ta page artiste :{" "}
-              </label>
-              <textarea
-                name="description"
-                id="description"
-                cols="30"
-                rows="10"
-                value={description}
-                onChange={(e) => {
-                  handleDescr(e.target.value);
-                }}
-              ></textarea>
-            </div>
-            <div>
-              <label htmlFor="influences">Tes influences musicale : </label>
-              <input
-                type="text"
-                value={influences}
-                onChange={(e) => {
-                  handleInfluences(e.target.value);
-                }}
-              />
-            </div>
-            <div>
-              <label htmlFor="style">
-                Quel(s) style(s) préfère tu jouer :{" "}
-              </label>
-              <input
-                type="text"
-                value={style}
-                onChange={(e) => {
-                  handleStyle(e.target.value);
-                }}
-              />
-            </div>
-            <div>
-              <label htmlFor="photo">Téléverse ta meilleure photo : </label>
-              <input
-                type="file"
-                accept={"image/*"}
-                onChange={(e) => {
-                  handleUpload(e);
-                }}
-              />
-              {image ? <img src={previewURL} alt={`preview`} /> : ""}
-            </div>
-            <Button message={"Envoyer la Demande"} />
-          </form>
-        </section>
+              >
+                <div>
+                  <label htmlFor="nom">Ton nom de scène : </label>
+                  <input
+                    type="text"
+                    value={nom}
+                    onChange={(e) => {
+                      handleNom(e.target.value);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="descr">
+                    Ta description telle qu'elle apparaîtra sur ta page artiste
+                    :{" "}
+                  </label>
+                  <textarea
+                    name="description"
+                    id="description"
+                    cols="30"
+                    rows="10"
+                    value={description}
+                    onChange={(e) => {
+                      handleDescr(e.target.value);
+                    }}
+                  ></textarea>
+                </div>
+                <div>
+                  <label htmlFor="influences">Tes influences musicale : </label>
+                  <input
+                    type="text"
+                    value={influences}
+                    onChange={(e) => {
+                      handleInfluences(e.target.value);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="style">
+                    Quel(s) style(s) préfère tu jouer :{" "}
+                  </label>
+                  <input
+                    type="text"
+                    value={style}
+                    onChange={(e) => {
+                      handleStyle(e.target.value);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="photo">Téléverse ta meilleure photo : </label>
+                  <input
+                    type="file"
+                    accept={"image/*"}
+                    onChange={(e) => {
+                      handleUpload(e);
+                    }}
+                  />
+                  {image ? <img src={previewURL} alt={`preview`} /> : ""}
+                </div>
+                <Button message={"Envoyer la Demande"} />
+              </form>
+            </section>
+          </>
+        )}
       </main>
     </>
   );

@@ -10,7 +10,9 @@ const Collectif = () => {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const { data, loading, error } = useSelector((state) => state.collectifs);
+  const { data, loadingCollectifs, errorCollectifs } = useSelector(
+    (state) => state.collectifs
+  );
   const [collectifs, setCollectifs] = useState([]);
   const token = localStorage.getItem("token");
   const toggleModal = () => {
@@ -33,9 +35,9 @@ const Collectif = () => {
       <Header />
       <main>
         <section>
-          {loading ? (
+          {loadingCollectifs ? (
             <h2>Chargement des données...</h2>
-          ) : error ? (
+          ) : errorCollectifs ? (
             setIsOpen(true)
           ) : collectifs ? (
             <>

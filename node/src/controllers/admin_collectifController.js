@@ -40,11 +40,9 @@ const createAdmin_collectif = async (req, res) => {
         .json({ message: `Collectif introuvable ou inexistant` });
     }
     if (!existingCollectif.confirmation) {
-      return res
-        .status(401)
-        .json({
-          message: `Le collectif doit être validé avant d'accepter des membres`,
-        });
+      return res.status(401).json({
+        message: `Le collectif doit être validé avant d'accepter des membres`,
+      });
     }
     result = await Admin_CollectifDAO.Create(confirmation, userId, collectifId);
     if (user.roleId >= 3) {
@@ -96,9 +94,9 @@ const readAllAdmins = async (req, res) => {
   let result = null;
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
-  if (!admin || admin === 1) {
+  if (!admin) {
     return res.status(401).json({
-      message: `Veuillez vous identifiez ou vous inscrire pour accéder à ces informations`,
+      message: `Veuillez vous identifier ou vous inscrire pour accéder à ces informations`,
     });
   }
   try {
@@ -142,7 +140,7 @@ const readAdminByUserId = async (req, res) => {
   const userId = parseInt(req.params.id);
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
-  if (!admin || admin === 1) {
+  if (!admin) {
     return res.status(401).json({
       message: `Veuillez vous identifiez ou vous inscrire pour accéder à ces informations`,
     });

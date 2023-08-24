@@ -30,7 +30,8 @@ export const fetchUser = createAsyncThunk(
         thunkAPI.dispatch(setArtisteName(artiste.nom));
         url = `${GET_ART_COL_BY_ARTISTE_ID}${artiste.id}`;
         const responseCol = await getRequest(url, token);
-        if (responseCol.status <= 201) {
+        status = responseCol.status;
+        if (status <= 201) {
           const collectifs = responseCol.result.data;
           collectifs.map(async (collectif) => {
             url = `${GET_COL_BY_ID}${collectif.collectifId}`;
@@ -43,12 +44,38 @@ export const fetchUser = createAsyncThunk(
             );
           });
         }
-        if (responseCol.status >= 400) {
+        if (status === 404) {
+          try {
+            url = `${GET_ADMIN_COLLECTIF_BY_USER_ID}${user.id}`;
+            const response = await getRequest(url, token);
+            status = response.status;
+            if (status <= 201) {
+              const collectifs = response.result.data;
+              collectifs.map(async (collectif) => {
+                url = `${GET_COL_BY_ID}${collectif.collectifId}`;
+                const response = await getRequest(url, token);
+                thunkAPI.dispatch(
+                  addCollectif({
+                    id: collectif.collectifId,
+                    nom: response.result.data.nom,
+                  })
+                );
+              });
+            }
+            if (status >= 400) {
+              let { message } = response.error;
+              return thunkAPI.rejectWithValue({ message, status });
+            }
+          } catch (e) {
+            throw e;
+          }
+        }
+        if (status >= 400) {
           let { message } = response.error;
           return thunkAPI.rejectWithValue({ message, status });
         }
       }
-      if (status >= 400) {
+      if (status === 404) {
         try {
           url = `${GET_ADMIN_COLLECTIF_BY_USER_ID}${user.id}`;
           const response = await getRequest(url, token);
@@ -66,6 +93,9 @@ export const fetchUser = createAsyncThunk(
               );
             });
           }
+          if (status === 404) {
+            return;
+          }
           if (status >= 400) {
             let { message } = response.error;
             return thunkAPI.rejectWithValue({ message, status });
@@ -73,6 +103,9 @@ export const fetchUser = createAsyncThunk(
         } catch (e) {
           throw e;
         }
+      }
+      if (status >= 400) {
+        return thunkAPI.rejectWithValue({ error, status });
       }
     } catch (e) {
       throw e;

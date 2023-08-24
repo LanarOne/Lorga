@@ -83,8 +83,8 @@ export const createArtisteSlice = createSlice({
     style: "",
     photoId: "",
     userId: "",
-    loading: false,
-    error: null,
+    loadingArtiste: false,
+    errorArtiste: null,
   },
   reducers: {
     getNom: (state, action) => {
@@ -108,37 +108,37 @@ export const createArtisteSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(postNewArtiste.pending, (state, action) => {
-      if (!state.loading) {
-        state.loading = true;
+      if (!state.loadingArtiste) {
+        state.loadingArtiste = true;
       }
     });
     builder.addCase(postNewArtiste.fulfilled, (state, action) => {
-      if (state.loading) {
-        state.loading = action.payload;
-        state.loading = false;
+      if (state.loadingArtiste) {
+        state.loadingArtiste = action.payload;
+        state.loadingArtiste = false;
       }
     });
     builder.addCase(postNewArtiste.rejected, (state, action) => {
-      if (state.loading) {
-        state.loading = false;
-        state.error = action.payload;
+      if (state.loadingArtiste) {
+        state.loadingArtiste = false;
+        state.errorArtiste = action.payload;
       }
     });
     builder.addCase(getArtisteByName.pending, (state, action) => {
-      if (!state.loading) {
-        state.loading = true;
+      if (!state.loadingArtiste) {
+        state.loadingArtiste = true;
       }
     });
     builder.addCase(getArtisteByName.fulfilled, (state, action) => {
-      if (state.loading) {
-        state.loading = action.payload;
-        state.loading = false;
+      if (state.loadingArtiste) {
+        state.loadingArtiste = action.payload;
+        state.loadingArtiste = false;
       }
     });
     builder.addCase(getArtisteByName.rejected, (state, action) => {
-      if (state.loading) {
-        state.loading = false;
-        state.error = action.payload;
+      if (state.loadingArtiste) {
+        state.loadingArtiste = false;
+        state.errorArtiste = action.payload;
       }
     });
   },

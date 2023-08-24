@@ -5,6 +5,9 @@
 a {
   text-decoration: none;
   color: var(--body-color);
+  &:hover {
+    cursor: pointer;
+  }
 }
 li {
   list-style: none;
@@ -29,4 +32,7 @@ body{
   font-family: var(--body2-ff);
   color: var(--body-color);
   background-color: var(--background-color);
+}
+.orange{
+  color: var(--body-color-bright);
 }

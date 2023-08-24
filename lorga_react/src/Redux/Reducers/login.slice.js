@@ -28,8 +28,8 @@ export const loginSlice = createSlice({
   initialState: {
     email: "",
     password: "",
-    loading: false,
-    error: null,
+    loadingLogin: false,
+    errorLogin: null,
   },
   reducers: {
     getEmail: (state, action) => {
@@ -41,20 +41,20 @@ export const loginSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(postLogin.pending, (state, action) => {
-      if (!state.loading) {
-        state.loading = true;
+      if (!state.loadingLogin) {
+        state.loadingLogin = true;
       }
     });
     builder.addCase(postLogin.fulfilled, (state, action) => {
-      if (state.loading) {
-        state.loading = action.payload;
-        state.loading = false;
+      if (state.loadingLogin) {
+        state.loadingLogin = action.payload;
+        state.loadingLogin = false;
       }
     });
     builder.addCase(postLogin.rejected, (state, action) => {
-      if (state.loading) {
-        state.loading = false;
-        state.error = action.payload;
+      if (state.loadingLogin) {
+        state.loadingLogin = false;
+        state.errorLogin = action.payload;
       }
     });
   },

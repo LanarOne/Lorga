@@ -21,6 +21,7 @@ import { getRequest, postRequest, putRequest } from "../../api/api";
 import {
   CONFIRM_ART_COL,
   CREATE_ART_COL,
+  GET_ART_COL_BY_COL,
   GET_ART_COL_BY_COLLECTIF,
 } from "../../constants/constants";
 const PageCollectif = () => {
@@ -29,12 +30,20 @@ const PageCollectif = () => {
   const { blaze } = useParams();
   const [collectif, setCollectif] = useState([]);
   const [artistesRequests, setArtistesRequests] = useState([]);
+  const [artistes, setArtistes] = useState([]);
+  const [isNotPresent, setIsNotPresent] = useState(true);
   const [message, setMessage] = useState("");
-  const { loading, error } = useSelector((state) => state.upload);
+  const { loadingUpload, errorUpload } = useSelector((state) => state.upload);
   const user = useSelector((state) => state.user);
-  const { nom, style, description, influences } = useSelector(
-    (state) => state.collectif
-  );
+  const { loadingUser, errorUser } = useSelector((state) => state.user);
+  const {
+    nom,
+    style,
+    description,
+    influences,
+    loadingCollectif,
+    errorCollectif,
+  } = useSelector((state) => state.collectif);
   const [img, setImg] = useState("");
   const [image, setImage] = useState({ file: null });
   const [previewURL, setPreviewURL] = useState("");
@@ -122,6 +131,9 @@ const PageCollectif = () => {
             status = response.status;
             error = response.error;
             if (status >= 400) {
+              if (status === 404) {
+                return;
+              }
               let { message } = error;
               setMessage(message);
               toggleModal();
@@ -134,8 +146,39 @@ const PageCollectif = () => {
           }
         }
       };
+      const getArtistes = async () => {
+        let status;
+        let error;
+        if (collectif && collectif.id) {
+          try {
+            let url = `${GET_ART_COL_BY_COL}${collectif.id}`;
+            const response = await getRequest(url, token);
+            status = response.status;
+            error = response.error;
+            if (status <= 201) {
+              setArtistes(response.result.data);
+              artistes.map((artiste) => {
+                if (artiste.nom === user.artisteName) {
+                  setIsNotPresent(false);
+                }
+              });
+            }
+            if (status === 404) {
+              console.log(error);
+              return;
+            }
+            if (status >= 400 || error) {
+              let { message } = error;
+              toggleModal();
+            }
+          } catch (e) {
+            throw new Error(e.message);
+          }
+        }
+      };
       displayUploaded();
       getUnconfirmedArtistesRequest();
+      getArtistes();
     }
   }, [dispatch, collectif, token]);
   useEffect(() => {
@@ -162,7 +205,6 @@ const PageCollectif = () => {
     if (response && image) {
       try {
         const newPhoto = await dispatch(updatePhoto({ image, token, photoId }));
-        console.log(newPhoto);
         if (newPhoto.payload.status <= 201) {
           window.location.href = "/";
         }
@@ -202,10 +244,11 @@ const PageCollectif = () => {
       const response = await putRequest(url, body, token);
       error = response.error;
       status = response.status;
-      console.log(response);
+      if (status === 404) {
+        console.log(error);
+      }
       if (status >= 400 || error) {
         setMessage(error);
-        console.log(message);
         toggleModal();
       }
       if (status <= 201) {
@@ -217,6 +260,7 @@ const PageCollectif = () => {
       throw new Error(e.message);
     }
   };
+  const handleDelete = async (e, requestId) => {};
   return (
     <>
       <>
@@ -227,9 +271,9 @@ const PageCollectif = () => {
       <Header />
       <main>
         <section>
-          {loading ? (
+          {loadingUpload || loadingCollectif || loadingUser ? (
             <h2>Chargement des données...</h2>
-          ) : error ? (
+          ) : errorUpload || errorCollectif || errorUser ? (
             setIsOpen(true)
           ) : adminMode && isAdmin ? (
             <article>
@@ -329,27 +373,60 @@ const PageCollectif = () => {
               />
             </article>
           ) : collectif && img ? (
-            <article>
-              <div>
-                <img src={img} alt={collectif.description} />
-              </div>
-              <div>
-                <h2>{collectif.nom}</h2>
-                <p>{collectif.style}</p>
-                <p>{collectif.description}</p>
-                <p>{collectif.influences}</p>
-              </div>
-              {user && user.artisteName ? (
-                <Button
-                  message={"Demander à rentrer dans le collectif"}
-                  onClick={(e) => {
-                    handleAddRequest(e);
-                  }}
-                />
-              ) : null}
-            </article>
+            <>
+              <article>
+                <div>
+                  <img src={img} alt={collectif.description} />
+                </div>
+                <div>
+                  <h2>{collectif.nom}</h2>
+                  <p>{collectif.style}</p>
+                  <p>{collectif.description}</p>
+                  <p>{collectif.influences}</p>
+                </div>
+                {user && user.artisteName && isNotPresent ? (
+                  <Button
+                    message={"Demander à rentrer dans le collectif"}
+                    onClick={(e) => {
+                      handleAddRequest(e);
+                    }}
+                  />
+                ) : null}
+              </article>
+              <article>
+                <h3>Ils font parti du collectif : </h3>
+                <ul>
+                  {artistes ? (
+                    artistes.map((artiste) => {
+                      if (artiste.nom === user.artisteName) {
+                        return (
+                          <li>
+                            <NavLink
+                              to={`/artistes/${artiste.nom}`}
+                              className={`${mc.orange}`}
+                            >
+                              {artiste.nom}
+                            </NavLink>
+                          </li>
+                        );
+                      } else {
+                        return (
+                          <li>
+                            <NavLink to={`/artistes/${artiste.nom}`}>
+                              {artiste.nom}
+                            </NavLink>
+                          </li>
+                        );
+                      }
+                    })
+                  ) : (
+                    <h3>Chargement...</h3>
+                  )}
+                </ul>
+              </article>
+            </>
           ) : (
-            <p>{error}</p>
+            <p>{errorUpload}</p>
           )}
         </section>
         <section>
@@ -367,19 +444,40 @@ const PageCollectif = () => {
                           {artiste.nom}
                         </NavLink>
                         <Button
-                          message={`♫`}
+                          message={`♪`}
                           onClick={(e) => {
                             handleAccept(e, artiste.requestId);
                           }}
                         />
-                        <Button message={`×`} />
+                        <Button
+                          message={`×`}
+                          className={`${mc.orange}`}
+                          onClick={(e) => {
+                            handleDelete(e, artiste.requestId);
+                          }}
+                        />
                       </li>
                     );
                   })}
                 </ul>
               </article>
               <article>
-                <h3>Ils Font parti de ton collectif : </h3>
+                <h3>Ils font parti de ton collectif : </h3>
+                <ul>
+                  {artistes ? (
+                    artistes.map((artiste) => {
+                      return (
+                        <li>
+                          <NavLink to={`/artistes/${artiste.nom}`}>
+                            {artiste.nom}
+                          </NavLink>
+                        </li>
+                      );
+                    })
+                  ) : (
+                    <h3>Chargement...</h3>
+                  )}
+                </ul>
               </article>
             </>
           ) : null}

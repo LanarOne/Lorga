@@ -19,25 +19,25 @@ export const bookingSlice = createSlice({
   name: "bookings",
   initialState: {
     data: [],
-    loading: false,
+    loadingBooking: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getBookings.pending, (state, action) => {
-      if (state.loading === false) {
-        state.loading = true;
+      if (state.loadingBooking === false) {
+        state.loadingBooking = true;
       }
     });
     builder.addCase(getBookings.fulfilled, (state, action) => {
-      if (state.loading === true) {
+      if (state.loadingBooking === true) {
         state.data = action.payload;
-        state.loading = false;
+        state.loadingBooking = false;
       }
     });
     builder.addCase(getBookings.rejected, (state, action) => {
-      if (state.loading === true) {
-        state.loading = false;
+      if (state.loadingBooking === true) {
+        state.loadingBooking = false;
         state.error = action.payload;
       }
     });

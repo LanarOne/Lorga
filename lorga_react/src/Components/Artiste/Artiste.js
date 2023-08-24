@@ -8,7 +8,9 @@ import Modale from "../smallElts/Modale/Modale";
 
 const Artiste = () => {
   const dispatch = useDispatch();
-  const { data, loading, error } = useSelector((state) => state.artistes);
+  const { data, loadingArtiste, errorArtiste } = useSelector(
+    (state) => state.artistes
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [artistes, setArtistes] = useState([]);
@@ -23,9 +25,6 @@ const Artiste = () => {
   }, [dispatch]);
   useEffect(() => {
     setArtistes(data.data);
-    if (error) {
-      setMessage(error);
-    }
   });
   return (
     <>
@@ -37,9 +36,9 @@ const Artiste = () => {
       <Header />
       <main>
         <section>
-          {loading ? (
+          {loadingArtiste ? (
             <h2>Chargement des données...</h2>
-          ) : error ? (
+          ) : errorArtiste ? (
             toggleModal()
           ) : artistes ? (
             <>

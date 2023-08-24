@@ -12,7 +12,9 @@ import {
 import Modale from "../smallElts/Modale/Modale";
 
 const Login = () => {
-  const { password, email } = useSelector((store) => store.login);
+  const { password, email, loadingLogin, errorLogin } = useSelector(
+    (store) => store.login
+  );
   const dispatch = useDispatch();
   const [alertElt, setAlertElt] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -58,6 +60,7 @@ const Login = () => {
       </>
       <Header />
       <main>
+        {loadingLogin ? <h2>Chargement...</h2> : null}
         <section className={`${mc.formSection}`}>
           <form
             className={`${mc.loginForm}`}

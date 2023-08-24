@@ -15,7 +15,9 @@ const Accueil = () => {
   const [opacity, setOpacity] = useState(1);
 
   const dispatch = useDispatch();
-  const { data, loading, error } = useSelector((state) => state.bookings);
+  const { data, loadingBooking, errorBooking } = useSelector(
+    (state) => state.bookings
+  );
 
   useEffect(() => {
     dispatch(getBookings());
@@ -111,7 +113,7 @@ const Accueil = () => {
       <main className={`${mc.main}`}>
         <section>
           <h2>Les sets à venir : </h2>
-          {loading === "pending" ? (
+          {loadingBooking ? (
             <h3>Informations en cours de chargement...</h3>
           ) : bookings.length > 0 ? (
             bookings.map((article) => {
@@ -131,8 +133,8 @@ const Accueil = () => {
                 </>
               );
             })
-          ) : error ? (
-            <p>{error}</p>
+          ) : errorBooking ? (
+            <p>{errorBooking}</p>
           ) : (
             <h3>Pas de sets prévus pour le moment :(</h3>
           )}
