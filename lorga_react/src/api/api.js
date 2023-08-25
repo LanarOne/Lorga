@@ -92,6 +92,14 @@ async function putRequest(url, body = {}, token = null) {
   if (token) config.headers.Authorization = token;
   return await Request(url, config);
 }
+async function deleteRequest(url, token) {
+  const config = {
+    method: "DELETE",
+    headers: { "Content-type": "application/json; charset=UTF-8" },
+  };
+  if (token) config.headers.Authorization = token;
+  return await Request(url, config);
+}
 
 async function postFileRequest(url, formData = {}, token = null) {
   const config = {
@@ -142,4 +150,5 @@ export {
   putFileRequest,
   getImageRequest,
   putRequest,
+  deleteRequest,
 };

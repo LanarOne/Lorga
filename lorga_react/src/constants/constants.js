@@ -23,3 +23,4 @@ export const PUT_ARTISTE = `artiste/updateone/`;
 export const PUT_COLLECTIF = `collectif/updateone/`;
 export const PUT_PHOTO = `photo/updateone/`;
 export const CONFIRM_ART_COL = `artiste_collectif/confirmation/`;
+export const DELETE_ART_COL = `artiste_collectif/deleteone/`;

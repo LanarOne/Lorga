@@ -36,6 +36,10 @@ const PageArtiste = () => {
   const { nom, style, description, influences, loadingArtiste, errorArtiste } =
     useSelector((state) => state.artiste);
   const [adminMode, setAdminMode] = useState(false);
+
+  if (!token) {
+    window.location.href = "/login";
+  }
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
@@ -94,6 +98,12 @@ const PageArtiste = () => {
       setMessage(message);
       toggleModal();
     }
+    const isCollectifAdmin = () => {
+      if (user && user.collectifs.length > 0) {
+        console.log(user);
+      }
+    };
+    isCollectifAdmin();
   }, [dispatch, token]);
 
   const handleUpdate = async () => {

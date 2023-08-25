@@ -15,6 +15,10 @@ const Collectif = () => {
   );
   const [collectifs, setCollectifs] = useState([]);
   const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "/login";
+  }
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };

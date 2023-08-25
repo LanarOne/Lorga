@@ -17,10 +17,16 @@ import Modale from "../smallElts/Modale/Modale";
 import Button from "../smallElts/Button/Button";
 import mc from "./pageCollectif.module.scss";
 import { getPhotoId } from "../../Redux/Reducers/createArtiste.slice";
-import { getRequest, postRequest, putRequest } from "../../api/api";
+import {
+  deleteRequest,
+  getRequest,
+  postRequest,
+  putRequest,
+} from "../../api/api";
 import {
   CONFIRM_ART_COL,
   CREATE_ART_COL,
+  DELETE_ART_COL,
   GET_ART_COL_BY_COL,
   GET_ART_COL_BY_COLLECTIF,
 } from "../../constants/constants";
@@ -50,19 +56,63 @@ const PageCollectif = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminMode, setAdminMode] = useState(false);
+
+  if (!token) {
+    window.location.href = "/login";
+  }
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
   const toggleAdminMode = async () => {
     let userId = user.userId;
+
     const isRightAdmin = await dispatch(
       getCollectifByCreateur({ userId, token })
     );
     if (isRightAdmin.payload.status <= 201) {
       setAdminMode(!adminMode);
-    }
+    } else setAdminMode(false);
   };
+  useEffect(() => {
+    const isRightAdmin = async () => {
+      let status;
+      let error;
+      if (collectif && user) {
+        try {
+          let userId = user.userId;
+          const response = await dispatch(
+            getCollectifByCreateur({ userId, token })
+          );
+          if (response) {
+            status = await response.payload.status;
+            error = await response.payload.error;
+            if (status <= 201) {
+              let colCrea = await response.payload.result.data.nom;
+              if (colCrea === collectif.nom) {
+                setIsAdmin(true);
+              } else {
+                setIsAdmin(false);
+              }
+            }
+          }
+        } catch (e) {
+          throw new Error(e.message);
+        }
+      }
+    };
 
+    const artisteAddPending = () => {
+      if (user && collectif && user.artisteName) {
+        artistesRequests.map((artiste) => {
+          if (artiste.nom === user.artisteName) {
+            setIsNotPresent(false);
+          }
+        });
+      }
+    };
+    isRightAdmin();
+    artisteAddPending();
+  }, [token, user, collectif]);
   useEffect(() => {
     const getCollectif = async () => {
       let status;
@@ -86,22 +136,8 @@ const PageCollectif = () => {
         throw e;
       }
     };
-
     getCollectif();
   }, [dispatch, blaze, token]);
-  useEffect(() => {
-    const toggleIsAdmin = async () => {
-      if (collectif && user) {
-        let userCol = user.collectifs;
-        userCol.map((admin) => {
-          if (admin.nom === blaze && user.roleId >= 4) {
-            setIsAdmin(true);
-          }
-        });
-      }
-    };
-    toggleIsAdmin();
-  }, [user, collectif]);
   useEffect(() => {
     if (collectif) {
       const displayUploaded = async () => {
@@ -146,41 +182,44 @@ const PageCollectif = () => {
           }
         }
       };
-      const getArtistes = async () => {
-        let status;
-        let error;
-        if (collectif && collectif.id) {
-          try {
-            let url = `${GET_ART_COL_BY_COL}${collectif.id}`;
-            const response = await getRequest(url, token);
-            status = response.status;
-            error = response.error;
-            if (status <= 201) {
-              setArtistes(response.result.data);
-              artistes.map((artiste) => {
-                if (artiste.nom === user.artisteName) {
-                  setIsNotPresent(false);
-                }
-              });
-            }
-            if (status === 404) {
-              console.log(error);
-              return;
-            }
-            if (status >= 400 || error) {
-              let { message } = error;
-              toggleModal();
-            }
-          } catch (e) {
-            throw new Error(e.message);
-          }
-        }
-      };
       displayUploaded();
       getUnconfirmedArtistesRequest();
-      getArtistes();
     }
   }, [dispatch, collectif, token]);
+  useEffect(() => {
+    const getArtistes = async () => {
+      let status;
+      let error;
+      if (collectif && collectif.id) {
+        try {
+          let url = `${GET_ART_COL_BY_COL}${collectif.id}`;
+          const response = await getRequest(url, token);
+          status = response.status;
+          error = response.error;
+          if (status <= 201) {
+            setArtistes(response.result.data);
+            artistes.map((artiste) => {
+              if (artiste.nom === user.artisteName) {
+                setIsNotPresent(false);
+              }
+            });
+          }
+          if (status === 404) {
+            console.log(error);
+            return;
+          }
+          if (status >= 400 || error) {
+            let { message } = error;
+            setMessage(message);
+            toggleModal();
+          }
+        } catch (e) {
+          throw new Error(e.message);
+        }
+      }
+    };
+    getArtistes();
+  }, [user, collectif]);
   useEffect(() => {
     const getData = async () => {
       await dispatch(getNom(collectif.nom));
@@ -224,11 +263,24 @@ const PageCollectif = () => {
 
   const handleAddRequest = async (e) => {
     e.preventDefault();
+    let status;
+    let error;
     try {
       let url = `${CREATE_ART_COL}${parseInt(user.artisteId)}`;
       let collectifId = parseInt(collectif.id);
       const body = { collectifId };
       const response = await postRequest(url, body, token);
+      console.log(response);
+      status = response.status;
+      error = response.error;
+      if (status <= 201) {
+        window.location.reload();
+      }
+      if (status >= 400) {
+        let { message } = error;
+        setMessage(message);
+        toggleModal();
+      }
     } catch (e) {
       throw new Error(e.message);
     }
@@ -260,7 +312,32 @@ const PageCollectif = () => {
       throw new Error(e.message);
     }
   };
-  const handleDelete = async (e, requestId) => {};
+  const handleDelete = async (e, requestId) => {
+    e.preventDefault();
+    let status;
+    let error;
+    try {
+      let url = `${DELETE_ART_COL}${parseInt(requestId)}`;
+      const response = await deleteRequest(url, token);
+      status = response.status;
+      error = response.error;
+      if (status <= 201) {
+        let { message } = response.result;
+        setMessage(message);
+        toggleModal();
+        if (!isOpen) {
+          window.location.reload();
+        }
+      }
+      if (status >= 400) {
+        let { message } = error;
+        setMessage(message);
+        toggleModal();
+      }
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  };
   return (
     <>
       <>
@@ -273,8 +350,6 @@ const PageCollectif = () => {
         <section>
           {loadingUpload || loadingCollectif || loadingUser ? (
             <h2>Chargement des données...</h2>
-          ) : errorUpload || errorCollectif || errorUser ? (
-            setIsOpen(true)
           ) : adminMode && isAdmin ? (
             <article>
               <h2 className={`${mc.disclaimer}`}>
@@ -426,7 +501,7 @@ const PageCollectif = () => {
               </article>
             </>
           ) : (
-            <p>{errorUpload}</p>
+            <p>{message}</p>
           )}
         </section>
         <section>

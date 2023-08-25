@@ -33,11 +33,8 @@ export const updateCollectif = createAsyncThunk(
     let status;
 
     try {
-      console.log(body);
-
       let url = `${PUT_COLLECTIF}${collectifId}`;
       const response = await putRequest(url, body, token);
-      console.log(response);
       status = response.status;
       error = response.error;
       if (status <= 201) {

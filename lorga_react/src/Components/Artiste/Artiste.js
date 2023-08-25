@@ -14,6 +14,10 @@ const Artiste = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [artistes, setArtistes] = useState([]);
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "/login";
+  }
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
