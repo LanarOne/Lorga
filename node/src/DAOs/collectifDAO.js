@@ -1,5 +1,4 @@
 import Collectif from "../models/Collectif.js";
-import Artiste from "../models/Artiste.js";
 
 const Create = async (
   nom,
@@ -9,7 +8,6 @@ const Create = async (
   confirmation,
   createurId,
   photoId
-  // userId,
 ) => {
   let result = null;
   try {
@@ -37,7 +35,6 @@ const ConfirmCollectif = async (id, confirmation) => {
       return result;
     }
     result = await Collectif.update({ confirmation }, { where: { id } });
-    console.log(result, `DAO`);
     return result;
   } catch (error) {
     console.error(error.message);
@@ -156,6 +153,7 @@ const ReadByCreateur = async (createurId) => {
       return;
     }
     return {
+      id: result.id,
       nom: decodeURIComponent(result.nom),
       description: decodeURIComponent(result.description),
       influences: decodeURIComponent(result.influences),

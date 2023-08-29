@@ -19,6 +19,7 @@ export const CREATE_ARTISTE = `artiste/create/`;
 export const CREATE_COLLECTIF = `collectif/create/`;
 export const CREATE_PHOTO = `photo/create`;
 export const CREATE_ART_COL = `artiste_collectif/create/`;
+export const CREATE_BOISSON = `boisson/create`;
 export const PUT_ARTISTE = `artiste/updateone/`;
 export const PUT_COLLECTIF = `collectif/updateone/`;
 export const PUT_PHOTO = `photo/updateone/`;

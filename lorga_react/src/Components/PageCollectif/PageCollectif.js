@@ -270,7 +270,6 @@ const PageCollectif = () => {
       let collectifId = parseInt(collectif.id);
       const body = { collectifId };
       const response = await postRequest(url, body, token);
-      console.log(response);
       status = response.status;
       error = response.error;
       if (status <= 201) {

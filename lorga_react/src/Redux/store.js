@@ -9,6 +9,7 @@ import { uploadsSlice } from "./Reducers/uploads.slice";
 import { createCollectifSlice } from "./Reducers/createCollectif.slice";
 import { collectifsSlice } from "./Reducers/collectifs.slice";
 import { userSlice } from "./Reducers/user.slice";
+import { boissonSlice } from "./Reducers/boisson.slice";
 
 export const store = configureStore({
   reducer: {
@@ -22,5 +23,6 @@ export const store = configureStore({
     collectif: createCollectifSlice.reducer,
     collectifs: collectifsSlice.reducer,
     user: userSlice.reducer,
+    boisson: boissonSlice.reducer,
   },
 });

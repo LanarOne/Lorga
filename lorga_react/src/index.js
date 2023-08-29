@@ -17,6 +17,7 @@ import PageArtiste from "./Components/PageArtiste/PageArtiste";
 import CreationCollectif from "./Components/CreationCollectif/CreationCollectif";
 import Collectif from "./Components/Collectif/Collectif";
 import PageCollectif from "./Components/PageCollectif/PageCollectif";
+import AddBoisson from "./Admin/addBoisson/AddBoisson";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -35,6 +36,7 @@ root.render(
           <Route path={"/collectifs"} element={<Collectif />} />
           <Route path={"/nouveaucollectif"} element={<CreationCollectif />} />
           <Route path={"/collectifs/:blaze"} element={<PageCollectif />} />
+          <Route path={"/admin/addboisson"} element={<AddBoisson />} />
           <Route path={"/*"} element={<EmptyPages />} />
         </Routes>
       </BrowserRouter>

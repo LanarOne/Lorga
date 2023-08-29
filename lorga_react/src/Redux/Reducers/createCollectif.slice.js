@@ -9,19 +9,20 @@ import { getRequest, postRequest, putRequest } from "../../api/api";
 
 export const postNewCollectif = createAsyncThunk(
   "collectif/create",
-  async ({ body, token }) => {
+  async ({ body, token }, thunkAPI) => {
     try {
       let url = `${CREATE_COLLECTIF}${body.userId}`;
       const response = await postRequest(url, body, token);
       const status = response.status;
+      const error = response.error;
       if (status <= 201) {
         return response;
       }
       if (status >= 400) {
-        throw new Error(response.error.message);
+        return thunkAPI.rejectWithValue({ error, status });
       }
     } catch (e) {
-      throw new Error(e.message);
+      throw e;
     }
   }
 );

@@ -73,19 +73,21 @@ const PageArtiste = () => {
     if (artiste) {
       const displayUpload = async () => {
         let photoId = artiste.photoId;
-        const photo = await dispatch(getPhoto({ photoId, token }));
-        if (
-          photo &&
-          photo.payload &&
-          photo.payload.result &&
-          photo.payload.result.data
-        ) {
-          const tempUrl = await photo.payload.result.data.path
-            .replace(/\\/g, "/")
-            .replace("uploads", "uploaded");
-          const url = `photo/${tempUrl}`;
-          const response = await dispatch(getUpload(url));
-          setImg(await response.payload.result);
+        if (photoId) {
+          const photo = await dispatch(getPhoto({ photoId, token }));
+          if (
+            photo &&
+            photo.payload &&
+            photo.payload.result &&
+            photo.payload.result.data
+          ) {
+            const tempUrl = await photo.payload.result.data.path
+              .replace(/\\/g, "/")
+              .replace("uploads", "uploaded");
+            const url = `photo/${tempUrl}`;
+            const response = await dispatch(getUpload(url));
+            setImg(await response.payload.result);
+          }
         }
       };
       displayUpload();
@@ -98,12 +100,6 @@ const PageArtiste = () => {
       setMessage(message);
       toggleModal();
     }
-    const isCollectifAdmin = () => {
-      if (user && user.collectifs.length > 0) {
-        console.log(user);
-      }
-    };
-    isCollectifAdmin();
   }, [dispatch, token]);
 
   const handleUpdate = async () => {
@@ -266,8 +262,6 @@ const PageArtiste = () => {
               <p>{artiste.influences}</p>
             </article>
           </section>
-        ) : user.errorUser ? (
-          <h2>{user.errorUser}</h2>
         ) : (
           <h2>Quelque chose cloche...</h2>
         )}
