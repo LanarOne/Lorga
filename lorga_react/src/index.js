@@ -18,6 +18,7 @@ import CreationCollectif from "./Components/CreationCollectif/CreationCollectif"
 import Collectif from "./Components/Collectif/Collectif";
 import PageCollectif from "./Components/PageCollectif/PageCollectif";
 import AddBoisson from "./Admin/addBoisson/AddBoisson";
+import Carte from "./Components/Carte/Carte";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -37,6 +38,7 @@ root.render(
           <Route path={"/nouveaucollectif"} element={<CreationCollectif />} />
           <Route path={"/collectifs/:blaze"} element={<PageCollectif />} />
           <Route path={"/admin/addboisson"} element={<AddBoisson />} />
+          <Route path={"/carte"} element={<Carte />} />
           <Route path={"/*"} element={<EmptyPages />} />
         </Routes>
       </BrowserRouter>

@@ -6,7 +6,7 @@ import { wrongRoute } from "../../utils/wrongPath.js";
 const BoissonRoutes = (app, sm) => {
   const router = Router();
   router.post("/create", sm, jwtMiddleware, BoissonController.createBoisson);
-  router.get("/readall", sm, jwtMiddleware, BoissonController.readAllBoissons);
+  router.get("/readall", sm, BoissonController.readAllBoissons);
   router.get(
     "/readonebyid/:id",
     sm,

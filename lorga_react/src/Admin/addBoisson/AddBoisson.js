@@ -63,7 +63,7 @@ const AddBoisson = () => {
           toggleModale();
         }
         if (status <= 201) {
-          location.href = "/boisson";
+          location.href = "/carte";
         }
       }
     } catch (e) {

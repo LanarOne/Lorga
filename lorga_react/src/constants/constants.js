@@ -13,6 +13,7 @@ export const GET_COLLECTIF_BY_NOM = `collectif/readbynom/`;
 export const GET_COLLECTIF_BY_CREATEUR = `collectif/readbycreateur/`;
 export const GET_ADMIN_COLLECTIF_BY_USER_ID = `admin_collectif/readbyuserid/`;
 export const GET_PHOTO_BY_ID = `photo/readone/`;
+export const GET_BOISSONS = `boisson/readall`;
 export const LOGIN = `users/signin`;
 export const SIGNUP = `users/signup`;
 export const CREATE_ARTISTE = `artiste/create/`;
