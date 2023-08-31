@@ -11,6 +11,11 @@ import { getRequest } from "../../api/api";
 export const fetchUser = createAsyncThunk(
   "user/getUser",
   async ({ token }, thunkAPI) => {
+    // if (!token) {
+    //   thunkAPI.dispatch(setUserId(null));
+    //   thunkAPI.dispatch(setUsername(null));
+    //   thunkAPI.dispatch(setRoleId(null));
+    // }
     let error;
     let status;
     let url;
@@ -75,36 +80,38 @@ export const fetchUser = createAsyncThunk(
           return thunkAPI.rejectWithValue({ message, status });
         }
       }
-      if (status === 404) {
-        try {
-          url = `${GET_ADMIN_COLLECTIF_BY_USER_ID}${user.id}`;
-          const response = await getRequest(url, token);
-          status = response.status;
-          if (status <= 201) {
-            const collectifs = response.result.data;
-            collectifs.map(async (collectif) => {
-              url = `${GET_COL_BY_ID}${collectif.collectifId}`;
-              const response = await getRequest(url, token);
-              thunkAPI.dispatch(
-                addCollectif({
-                  id: collectif.collectifId,
-                  nom: response.result.data.nom,
-                })
-              );
-            });
-          }
-          if (status === 404) {
-            return;
-          }
-          if (status >= 400) {
-            let { message } = response.error;
-            return thunkAPI.rejectWithValue({ message, status });
-          }
-        } catch (e) {
-          throw e;
-        }
-      }
+
       if (status >= 400) {
+        if (status === 404) {
+          try {
+            url = `${GET_ADMIN_COLLECTIF_BY_USER_ID}${user.id}`;
+            const response = await getRequest(url, token);
+            status = response.status;
+            if (status <= 201) {
+              const collectifs = response.result.data;
+              collectifs.map(async (collectif) => {
+                url = `${GET_COL_BY_ID}${collectif.collectifId}`;
+                const response = await getRequest(url, token);
+                thunkAPI.dispatch(
+                  addCollectif({
+                    id: collectif.collectifId,
+                    nom: response.result.data.nom,
+                  })
+                );
+              });
+            }
+
+            if (status >= 400) {
+              if (status === 404) {
+                return;
+              }
+              let { message } = response.error;
+              return thunkAPI.rejectWithValue({ message, status });
+            }
+          } catch (e) {
+            throw e;
+          }
+        }
         return thunkAPI.rejectWithValue({ error, status });
       }
     } catch (e) {

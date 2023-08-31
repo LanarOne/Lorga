@@ -34,6 +34,7 @@ async function ReadAll() {
     result = await Boisson.findAll();
     return result.map((boisson) => {
       return {
+        id: boisson.id,
         nom: decodeURIComponent(boisson.nom),
         famille: decodeURIComponent(boisson.famille),
         type: decodeURIComponent(boisson.type),

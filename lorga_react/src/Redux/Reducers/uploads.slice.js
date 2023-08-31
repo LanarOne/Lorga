@@ -39,7 +39,6 @@ export const uploadsSlice = createSlice({
     });
     builder.addCase(getUpload.fulfilled, (state, action) => {
       if (state.loadingUpload) {
-        state.loadingUpload = action.payload;
         state.loadingUpload = false;
         state.imageData = action.payload;
       }

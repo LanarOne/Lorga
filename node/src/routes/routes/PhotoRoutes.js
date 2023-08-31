@@ -13,7 +13,7 @@ const PhotoRoutes = (app, sm) => {
     PhotoController.create
   );
   router.get("/readall", sm, jwtMiddleware, PhotoController.readAll);
-  router.get("/readone/:id", sm, jwtMiddleware, PhotoController.readById);
+  router.get("/readone/:id", sm, PhotoController.readById);
   router.put(
     "/updateone/:id",
     sm,

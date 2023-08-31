@@ -9,10 +9,7 @@ import iconSet from "../../Style/IcoMoon/selection.json";
 import Button from "../smallElts/Button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser } from "../../Redux/Reducers/user.slice";
-import {
-  createCollectifSlice,
-  getCollectifByCreateur,
-} from "../../Redux/Reducers/createCollectif.slice";
+import { getCollectifByCreateur } from "../../Redux/Reducers/createCollectif.slice";
 const Header = () => {
   const [displayDate, setDisplayDate] = useState("");
   const user = useSelector((state) => state.user);
@@ -34,7 +31,9 @@ const Header = () => {
     setDisplayDate(manageDisplayDate());
   }, []);
   useEffect(() => {
-    dispatch(fetchUser({ token }));
+    if (token) {
+      dispatch(fetchUser({ token }));
+    }
   }, [token]);
   useEffect(() => {
     const getDatas = async () => {
@@ -79,7 +78,7 @@ const Header = () => {
                 <NavLink to={"/"}>Accueil/Programmation</NavLink>
               </li>
               <li>
-                <NavLink>Carte des boissons</NavLink>
+                <NavLink to={"/carte"}>Carte des boissons</NavLink>
               </li>
               <li>
                 <NavLink to={"/apropos"}>L'équipe/Contact</NavLink>

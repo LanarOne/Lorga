@@ -1,1 +1,37 @@
 @use "src/Style/general";
+
+main {
+  & section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+    & .boisson {
+      width: 100%;
+      display: flex;
+      padding: 2rem;
+      margin: 1rem;
+      & h4 {
+        width: 100%;
+      }
+      & .blocText {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+    & img {
+      width: 50%;
+      height: 100%;
+      margin: 1rem;
+    }
+      & .formSection {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+  }
+}
