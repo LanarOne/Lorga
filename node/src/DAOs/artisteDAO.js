@@ -129,7 +129,6 @@ const ReadByUserId = async (userId) => {
     if (!result || result.length === 0) {
       return;
     }
-    console.log(result);
     return {
       id: result.id,
       nom: decodeURIComponent(result.nom),

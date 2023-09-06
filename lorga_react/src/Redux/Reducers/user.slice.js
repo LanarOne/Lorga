@@ -11,11 +11,6 @@ import { getRequest } from "../../api/api";
 export const fetchUser = createAsyncThunk(
   "user/getUser",
   async ({ token }, thunkAPI) => {
-    // if (!token) {
-    //   thunkAPI.dispatch(setUserId(null));
-    //   thunkAPI.dispatch(setUsername(null));
-    //   thunkAPI.dispatch(setRoleId(null));
-    // }
     let error;
     let status;
     let url;

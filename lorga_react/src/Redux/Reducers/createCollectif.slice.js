@@ -138,7 +138,6 @@ export const createCollectifSlice = createSlice({
       })
       .addCase(postNewCollectif.fulfilled, (state, action) => {
         if (state.loadingCollectif) {
-          state.loadingCollectif = action.payload;
           state.loadingCollectif = false;
         }
       })
@@ -156,7 +155,6 @@ export const createCollectifSlice = createSlice({
       })
       .addCase(getCollectifByName.fulfilled, (state, action) => {
         if (state.loadingCollectif) {
-          state.loadingCollectif = action.payload;
           state.loadingCollectif = false;
         }
       })

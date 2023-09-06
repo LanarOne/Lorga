@@ -1,0 +1,7 @@
+@use "src/Style/general";
+
+main {
+  & article {
+    display: flex;
+  }
+}

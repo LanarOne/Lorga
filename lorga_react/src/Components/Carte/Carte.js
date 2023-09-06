@@ -6,6 +6,8 @@ import Modale from "../smallElts/Modale/Modale";
 import mc from "./carte.module.scss";
 import { getPhoto } from "../../Redux/Reducers/photo.slice";
 import { getUpload } from "../../Redux/Reducers/uploads.slice";
+import Button from "../smallElts/Button/Button";
+import { NavLink } from "react-router-dom";
 
 const Carte = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +29,15 @@ const Carte = () => {
   const [vins, setVins] = useState([]);
   const [divers, setDivers] = useState([]);
   const [selected, setSelected] = useState("null");
+  const [searched, setSearched] = useState("");
   const [images, setImages] = useState([]);
+  const filteredBoissons = boissons.filter((boisson) => {
+    return Object.values(boisson).some(
+      (value) =>
+        value && value.toString().toLowerCase().includes(searched.toLowerCase())
+    );
+  });
+
   const toggleModale = () => {
     setIsOpen(!isOpen);
   };
@@ -132,6 +142,7 @@ const Carte = () => {
     };
     sortDatas();
   }, [boissons]);
+
   return (
     <>
       <>{isOpen ? <Modale message={message} /> : null}</>
@@ -144,6 +155,16 @@ const Carte = () => {
           <section>
             <form action="">
               <div className={`${mc.formSection}`}>
+                <label htmlFor="search">
+                  Tape un nom de boisson, ou une saveur :{" "}
+                </label>
+                <input
+                  type="text"
+                  value={searched}
+                  onChange={(e) => setSearched(e.target.value)}
+                />
+              </div>
+              <div className={`${mc.formSection}`}>
                 <label htmlFor="select">
                   Sélectionne le type de boisson que tu préfères :{" "}
                 </label>
@@ -154,7 +175,7 @@ const Carte = () => {
                     handleSelect(e);
                   }}
                 >
-                  <option value="null">Choisis une famille</option>
+                  <option value="null">Tous</option>
                   <option value="biere">Bière</option>
                   <option value="cocktail">Cocktail</option>
                   <option value="liqueur">Liqueur</option>
@@ -167,7 +188,34 @@ const Carte = () => {
             </form>
           </section>
         )}
-        {boissons.length > 0 ? (
+        {boissons.length > 0 && searched.length > 0 ? (
+          <section>
+            <h2>Résultats de la recherche : </h2>
+            {filteredBoissons.map((boisson) => {
+              return (
+                <article className={`${mc.boisson}`} key={boisson.id}>
+                  {images[boisson.id] && (
+                    <img
+                      src={images[boisson.id]}
+                      alt={boisson.nom}
+                      loading="lazy"
+                    />
+                  )}
+                  <div className={`${mc.blocText}`}>
+                    <h4>
+                      <NavLink to={`/carte/${boisson.id}`}>
+                        {boisson.nom}
+                      </NavLink>
+                    </h4>
+                    <p>{boisson.type}</p>
+                    <p>{boisson.description}</p>
+                    <p>{boisson.saveurs}</p>
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+        ) : boissons.length > 0 ? (
           <>
             {selected === "null" || selected === "biere" ? (
               <section>
@@ -184,7 +232,11 @@ const Carte = () => {
                         />
                       )}
                       <div className={`${mc.blocText}`}>
-                        <h4>{biere.nom}</h4>
+                        <h4>
+                          <NavLink to={`/carte/${biere.id}`}>
+                            {biere.nom}
+                          </NavLink>
+                        </h4>
                         <p>{biere.type}</p>
                         <p>{biere.description}</p>
                         <p>{biere.saveurs}</p>
@@ -208,7 +260,11 @@ const Carte = () => {
                         />
                       )}
                       <div className={`${mc.blocText}`}>
-                        <h4>{cocktail.nom}</h4>
+                        <h4>
+                          <NavLink to={`/carte/${cocktail.id}`}>
+                            {cocktail.nom}
+                          </NavLink>
+                        </h4>{" "}
                         <p>{cocktail.type}</p>
                         <p>{cocktail.description}</p>
                         <p>{cocktail.saveurs}</p>
@@ -232,7 +288,11 @@ const Carte = () => {
                         />
                       )}
                       <div className={`${mc.blocText}`}>
-                        <h4>{liqueur.nom}</h4>
+                        <h4>
+                          <NavLink to={`/carte/${liqueur.id}`}>
+                            {liqueur.nom}
+                          </NavLink>
+                        </h4>{" "}
                         <p>{liqueur.type}</p>
                         <p>{liqueur.description}</p>
                         <p>{liqueur.saveurs}</p>
@@ -256,7 +316,9 @@ const Carte = () => {
                         />
                       )}
                       <div className={`${mc.blocText}`}>
-                        <h4>{shot.nom}</h4>
+                        <h4>
+                          <NavLink to={`/carte/${shot.id}`}>{shot.nom}</NavLink>
+                        </h4>{" "}
                         <p>{shot.type}</p>
                         <p>{shot.description}</p>
                         <p>{shot.saveurs}</p>
@@ -280,7 +342,9 @@ const Carte = () => {
                         />
                       )}
                       <div className={`${mc.blocText}`}>
-                        <h4>{soft.nom}</h4>
+                        <h4>
+                          <NavLink to={`/carte/${soft.id}`}>{soft.nom}</NavLink>
+                        </h4>{" "}
                         <p>{soft.type}</p>
                         <p>{soft.description}</p>
                         <p>{soft.saveurs}</p>
@@ -304,7 +368,11 @@ const Carte = () => {
                         />
                       )}
                       <div className={`${mc.blocText}`}>
-                        <h4>{spirit.nom}</h4>
+                        <h4>
+                          <NavLink to={`/carte/${spirit.id}`}>
+                            {spirit.nom}
+                          </NavLink>
+                        </h4>{" "}
                         <p>{spirit.type}</p>
                         <p>{spirit.description}</p>
                         <p>{spirit.saveurs}</p>
@@ -328,7 +396,9 @@ const Carte = () => {
                         />
                       )}
                       <div className={`${mc.blocText}`}>
-                        <h4>{vin.nom}</h4>
+                        <h4>
+                          <NavLink to={`/carte/${vin.id}`}>{vin.nom}</NavLink>
+                        </h4>{" "}
                         <p>{vin.type}</p>
                         <p>{vin.description}</p>
                         <p>{vin.saveurs}</p>
