@@ -60,7 +60,6 @@ const Login = () => {
       </>
       <Header />
       <main>
-        {loadingLogin ? <h2>Chargement...</h2> : null}
         <section className={`${mc.formSection}`}>
           <form
             className={`${mc.loginForm}`}

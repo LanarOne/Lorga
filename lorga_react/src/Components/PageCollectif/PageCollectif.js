@@ -325,7 +325,9 @@ const PageCollectif = () => {
         setMessage(message);
         toggleModal();
         if (!isOpen) {
-          window.location.reload();
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
         }
       }
       if (status >= 400) {

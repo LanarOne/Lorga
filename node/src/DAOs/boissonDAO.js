@@ -172,6 +172,9 @@ async function DeleteOne(id) {
   let message = `La boisson a bien été supprimée de la base de données`;
   try {
     result = await Boisson.findByPk(id);
+    if (!result) {
+      return;
+    }
     await result.destroy();
     return message;
   } catch (error) {

@@ -2,6 +2,7 @@ import { stringIsFilled } from "../utils/stringUtils.js";
 import Boisson from "../models/Boisson.js";
 import { BoissonDAO } from "../DAOs/boissonDAO.js";
 import { isAdmin } from "../utils/adminUtils.js";
+import { PhotoDAO } from "../DAOs/photoDAO.js";
 
 let result = null;
 async function createBoisson(req, res) {
@@ -191,12 +192,13 @@ async function deleteOneBoisson(req, res) {
     }
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
-    if (admin === 1) {
+    if (admin <= 4) {
       return res
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
     }
     result = await BoissonDAO.DeleteOne(id);
+    const deletePhoto = await PhotoDAO.DeletePhoto(existingBoisson.photoId);
     return res.status(200).json({
       data: result,
     });

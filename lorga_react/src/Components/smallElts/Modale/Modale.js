@@ -11,7 +11,7 @@ const Modale = ({ message, setModaleOpen }) => {
   return (
     <div className={`${mc.overlay}`} onClick={() => setModaleOpen(false)}>
       <section className={`${mc.modale}`} onClick={(e) => e.stopPropagation()}>
-        <article>{message}</article>
+        <article className={`${mc.message}`}>{message}</article>
         <div className={`${mc.buttons}`}>
           <Button message={`retour à l'acceuil`} onClick={retourAcceuil} />
           <Button message={`Fermer`} onClick={closeModale} />{" "}

@@ -1,7 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest, postRequest, putRequest } from "../../api/api";
+import {
+  deleteRequest,
+  getRequest,
+  postRequest,
+  putRequest,
+} from "../../api/api";
 import {
   CREATE_BOISSON,
+  DELETE_BOISSON,
   GET_BOISSONS,
   GET_ONE_BOISSON,
   PUT_BOISSON,
@@ -59,7 +65,6 @@ export const updateBoisson = createAsyncThunk(
   async ({ id, body, token }, thunkAPI) => {
     let error;
     let status;
-
     try {
       let url = `${PUT_BOISSON}${id}`;
       const response = await putRequest(url, body, token);
@@ -71,7 +76,31 @@ export const updateBoisson = createAsyncThunk(
       }
       if (status >= 400 || error) {
         let { message } = error;
+        return thunkAPI.rejectWithValue({ message, status });
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const deleteBoisson = createAsyncThunk(
+  "boisson/delete",
+  async ({ id, token }, thunkAPI) => {
+    let error;
+    let status;
+    try {
+      let url = `${DELETE_BOISSON}${id}`;
+      const response = await deleteRequest(url, token);
+      console.log(response);
+      status = response.status;
+      error = response.error;
+      if (status <= 201) {
+        let message = response.result.data;
         return thunkAPI.fulfillWithValue({ message, status });
+      }
+      if (status >= 400 || error) {
+        return thunkAPI.rejectWithValue({ error, status });
       }
     } catch (e) {
       throw e;

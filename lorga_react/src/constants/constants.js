@@ -28,3 +28,4 @@ export const PUT_PHOTO = `photo/updateone/`;
 export const PUT_BOISSON = `boisson/update/`;
 export const CONFIRM_ART_COL = `artiste_collectif/confirmation/`;
 export const DELETE_ART_COL = `artiste_collectif/deleteone/`;
+export const DELETE_BOISSON = `boisson/deleteone/`;

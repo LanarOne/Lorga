@@ -1,4 +1,5 @@
 import Photo from "../models/Photo.js";
+import fs from "fs";
 
 const Create = async (nom, path, alt) => {
   let result = null;
@@ -85,6 +86,11 @@ const DeletePhoto = async (id) => {
     if (!result) {
       return;
     }
+    fs.unlink(result.path, (err) => {
+      if (err) {
+        message = err;
+      }
+    });
     await result.destroy();
     return message;
   } catch (err) {

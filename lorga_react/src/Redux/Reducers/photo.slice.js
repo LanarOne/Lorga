@@ -47,10 +47,11 @@ export const updatePhoto = createAsyncThunk(
       error = response.error;
       if (status >= 400 || error) {
         const { message } = error;
-        return thunkAPI({ message, status });
+        return thunkAPI.rejectWithValue({ message, status });
       }
       if (status <= 201) {
-        return response;
+        let { data } = response.result;
+        return thunkAPI.fulfillWithValue({ data, status });
       }
     } catch (e) {
       throw e;

@@ -15,11 +15,10 @@ const Carte = () => {
   const { loadingBoissons, errorBoissons } = useSelector(
     (state) => state.boissons
   );
+  const user = useSelector((state) => state.user);
   const { loadingPhoto, errorPhoto } = useSelector((state) => state.photo);
   const [boissons, setBoissons] = useState([]);
   const dispatch = useDispatch();
-  const token = localStorage.getItem("token") || null;
-  const user = useSelector((state) => state.user);
   const [bieres, setBieres] = useState([]);
   const [cocktails, setCocktails] = useState([]);
   const [liqueurs, setLiqueurs] = useState([]);
@@ -153,6 +152,11 @@ const Carte = () => {
           <h3>Chargement des données</h3>
         ) : (
           <section>
+            {user.roleId >= 5 ? (
+              <NavLink to={"/admin/addboisson"}>
+                <Button message={`Ajouter une boisson`} />
+              </NavLink>
+            ) : null}
             <form action="">
               <div className={`${mc.formSection}`}>
                 <label htmlFor="search">
