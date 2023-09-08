@@ -18,6 +18,7 @@ export const GET_ONE_BOISSON = `boisson/readonebyid/`;
 export const LOGIN = `users/signin`;
 export const SIGNUP = `users/signup`;
 export const CREATE_ARTISTE = `artiste/create/`;
+export const CREATE_BOOKING = `booking/create/`;
 export const CREATE_COLLECTIF = `collectif/create/`;
 export const CREATE_PHOTO = `photo/create`;
 export const CREATE_ART_COL = `artiste_collectif/create/`;

@@ -8,7 +8,6 @@ import {
 import {
   CREATE_BOISSON,
   DELETE_BOISSON,
-  GET_BOISSONS,
   GET_ONE_BOISSON,
   PUT_BOISSON,
 } from "../../constants/constants";

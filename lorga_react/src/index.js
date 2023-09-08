@@ -20,6 +20,7 @@ import PageCollectif from "./Components/PageCollectif/PageCollectif";
 import AddBoisson from "./Admin/addBoisson/AddBoisson";
 import Carte from "./Components/Carte/Carte";
 import PageBoisson from "./Components/PageBoisson/PageBoisson";
+import Booking from "./Components/Booking/Booking";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -41,6 +42,7 @@ root.render(
           <Route path={"/admin/addboisson"} element={<AddBoisson />} />
           <Route path={"/carte"} element={<Carte />} />
           <Route path={"/carte/:boissonid"} element={<PageBoisson />} />
+          <Route path={"/booking"} element={<Booking />} />
           <Route path={"/*"} element={<EmptyPages />} />
         </Routes>
       </BrowserRouter>

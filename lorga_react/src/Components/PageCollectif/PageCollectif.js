@@ -508,6 +508,11 @@ const PageCollectif = () => {
         <section>
           {isAdmin ? (
             <>
+              <div>
+                <NavLink to={`/booking`}>
+                  <Button message={`Proposer une date pour une soirée`} />
+                </NavLink>
+              </div>
               <article>
                 <h3>Ils aimeraient faire partie de ton collectif : </h3>
                 <ul>
