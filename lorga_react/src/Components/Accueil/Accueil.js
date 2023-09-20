@@ -3,7 +3,7 @@ import Header from "../Header/Header";
 import mc from "./acceuil.module.scss";
 import { getRequest } from "../../api/api";
 import { manageDate } from "../../Helpers/dates";
-import { GET_BOOKINGS, GET_COL_BY_ID } from "../../constants/constants";
+import { GET_COL_BY_ID } from "../../constants/constants";
 import photoPda from "../../public/medias/photoPda.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { getBookings } from "../../Redux/Reducers/bookings.slice";

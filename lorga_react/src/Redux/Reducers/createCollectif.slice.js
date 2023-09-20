@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   CREATE_COLLECTIF,
+  GET_COL_BY_ID,
   GET_COLLECTIF_BY_CREATEUR,
   GET_COLLECTIF_BY_NOM,
   PUT_COLLECTIF,
@@ -68,6 +69,30 @@ export const getCollectifByName = createAsyncThunk(
       }
       if (status <= 201) {
         return response;
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const getCollectifById = createAsyncThunk(
+  "collectif/getonebyid",
+  async ({ id, token }, thunkAPI) => {
+    let error;
+    let status;
+    try {
+      let url = `${GET_COL_BY_ID}${id}`;
+      const response = await getRequest(url, token);
+      status = response.status;
+      error = response.error;
+      if (status >= 400 || error) {
+        let { message } = error;
+        return thunkAPI.rejectWithValue({ message, status });
+      }
+      if (status <= 201) {
+        const { data } = response.result;
+        return thunkAPI.fulfillWithValue({ data, status });
       }
     } catch (e) {
       throw e;
@@ -159,6 +184,60 @@ export const createCollectifSlice = createSlice({
         }
       })
       .addCase(getCollectifByName.rejected, (state, action) => {
+        if (state.loadingCollectif) {
+          state.loadingCollectif = false;
+          state.errorCollectif = action.payload;
+          state.status = action.payload;
+        }
+      });
+    builder
+      .addCase(getCollectifByCreateur.pending, (state) => {
+        if (!state.loadingCollectif) {
+          state.loadingCollectif = true;
+        }
+      })
+      .addCase(getCollectifByCreateur.fulfilled, (state, action) => {
+        if (state.loadingCollectif) {
+          state.loadingCollectif = false;
+        }
+      })
+      .addCase(getCollectifByCreateur.rejected, (state, action) => {
+        if (state.loadingCollectif) {
+          state.loadingCollectif = false;
+          state.errorCollectif = action.payload;
+          state.status = action.payload;
+        }
+      });
+    builder
+      .addCase(updateCollectif.pending, (state) => {
+        if (!state.loadingCollectif) {
+          state.loadingCollectif = true;
+        }
+      })
+      .addCase(updateCollectif.fulfilled, (state, action) => {
+        if (state.loadingCollectif) {
+          state.loadingCollectif = false;
+        }
+      })
+      .addCase(updateCollectif.rejected, (state, action) => {
+        if (state.loadingCollectif) {
+          state.loadingCollectif = false;
+          state.errorCollectif = action.payload;
+          state.status = action.payload;
+        }
+      });
+    builder
+      .addCase(getCollectifById.pending, (state) => {
+        if (!state.loadingCollectif) {
+          state.loadingCollectif = true;
+        }
+      })
+      .addCase(getCollectifById.fulfilled, (state, action) => {
+        if (state.loadingCollectif) {
+          state.loadingCollectif = false;
+        }
+      })
+      .addCase(getCollectifById.rejected, (state, action) => {
         if (state.loadingCollectif) {
           state.loadingCollectif = false;
           state.errorCollectif = action.payload;

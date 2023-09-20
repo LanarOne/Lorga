@@ -1,5 +1,6 @@
 export const API_URL = `http://localhost:3333/`;
 export const GET_BOOKINGS = `booking/readconfirmedcollectifsbookings`;
+export const GET_UNCONF_BOOKINGS = `booking/readunconfirmed`;
 export const GET_COLLECTIFS = `collectif/readconfirmedcollectifs`;
 export const GET_COL_BY_ID = `collectif/readone/`;
 export const GET_USER = `users/getone`;
@@ -28,5 +29,7 @@ export const PUT_COLLECTIF = `collectif/updateone/`;
 export const PUT_PHOTO = `photo/updateone/`;
 export const PUT_BOISSON = `boisson/update/`;
 export const CONFIRM_ART_COL = `artiste_collectif/confirmation/`;
+export const CONFIRM_BOOKING = `booking/confirmation/`;
 export const DELETE_ART_COL = `artiste_collectif/deleteone/`;
 export const DELETE_BOISSON = `boisson/deleteone/`;
+export const DELETE_BOOKING = `booking/deletebooking/`;

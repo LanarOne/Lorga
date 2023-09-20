@@ -13,8 +13,8 @@ import {
   getUserId,
   postNewBooking,
 } from "../../Redux/Reducers/booking.slice";
-import collectif from "../Collectif/Collectif";
 import { getCollectifByCreateur } from "../../Redux/Reducers/createCollectif.slice";
+import Modale from "../smallElts/Modale/Modale";
 const Booking = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
@@ -64,7 +64,17 @@ const Booking = () => {
     try {
       const body = { date, time, description, nbr_invite, collectifId };
       const response = await dispatch(postNewBooking({ body, token, userId }));
-      console.log(response);
+      status = response.payload.status;
+      error = response.payload.error;
+      if (status <= 201) {
+        window.location.href = "/";
+      }
+      if (status >= 400 || error) {
+        console.log(response);
+        let { message } = response.payload;
+        setMessage(message);
+        toggleModale();
+      }
     } catch (e) {
       throw new Error(e.message);
     }
@@ -79,7 +89,6 @@ const Booking = () => {
           const response = await dispatch(
             getCollectifByCreateur({ userId, token })
           );
-          console.log(response);
           status = response.payload.status;
           if (status <= 201) {
             const collectifId = response.payload.result.data.id;

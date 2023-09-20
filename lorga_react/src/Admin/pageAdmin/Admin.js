@@ -2,14 +2,78 @@ import React, { useEffect, useState } from "react";
 import { getUser } from "../../Helpers/usersHelper";
 import Header from "../../Components/Header/Header";
 import mc from "./admin.module.scss";
-import { DatePicker } from "@gsebdev/react-simple-datepicker";
+import { useDispatch } from "react-redux";
+import { getUnconfirmedBookings } from "../../Redux/Reducers/bookings.slice";
+import { getCollectifById } from "../../Redux/Reducers/createCollectif.slice";
+import iconSet from "../../Style/IcoMoon/selection.json";
+import IcomoonReact from "icomoon-react";
+import {
+  confirmBooking,
+  deleteBooking,
+} from "../../Redux/Reducers/booking.slice";
+import Modale from "../../Components/smallElts/Modale/Modale";
+import Button from "../../Components/smallElts/Button/Button";
 
 const Admin = () => {
   const token = localStorage.getItem("token");
   const [user, setUser] = useState({});
+  const [unconfirmed, setUnconfirmed] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [message, setMessage] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
-  const clickedDate = (e) => {
-    console.log(e);
+  const dispatch = useDispatch();
+
+  const toggleModale = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleConfirm = async (e, id) => {
+    e.preventDefault();
+    let error;
+    let status;
+    const response = await dispatch(confirmBooking({ id, token }));
+    status = response.payload.status;
+    error = response.payload.error || null;
+    if (status <= 201) {
+      let { message } = response.payload;
+      setMessage(message);
+      toggleModale();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    }
+    if (status >= 400 || error) {
+      let { message } = response.payload;
+      setMessage(message);
+      toggleModale();
+    }
+  };
+
+  const handleDelete = async (e, id) => {
+    e.preventDefault();
+    let status;
+    let error;
+    const response = await dispatch(deleteBooking({ id, token }));
+    status = response.payload.status;
+    error = response.error || null;
+    if (status <= 201) {
+      let { message } = response.payload;
+      setMessage(message);
+      toggleModale();
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    }
+    if (status >= 400 || error) {
+      let { message } = response.payload;
+      setMessage(message);
+      toggleModale();
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    }
+    console.log(response);
   };
 
   useEffect(() => {
@@ -26,13 +90,47 @@ const Admin = () => {
     } else {
       getUserDatas();
     }
+    const getUnconf = async () => {
+      const response = await dispatch(getUnconfirmedBookings({ token }));
+      let { data } = response.payload;
+      setUnconfirmed(data);
+    };
+
+    getUnconf();
   }, [token]);
+  useEffect(() => {
+    const displayUnconf = async () => {
+      if (unconfirmed) {
+        const bookings = [];
+        for (const booking of unconfirmed) {
+          let id = booking.collectifId;
+          let response = await dispatch(getCollectifById({ id, token }));
+          const collectif = response.payload.data;
+          if (collectif) {
+            bookings.push({
+              collectifNom: collectif.nom,
+              date: booking.date,
+              time: booking.time,
+              id: booking.id,
+            });
+          }
+        }
+        setBookings(bookings);
+      }
+    };
+    displayUnconf();
+  }, [unconfirmed]);
   if (user.roleId <= 4) {
     window.location.href = "/";
   }
 
   return (
     <div className={`${mc.container}`}>
+      <>
+        {isOpen ? (
+          <Modale message={message} setModaleOpen={toggleModale} />
+        ) : null}
+      </>
       <Header />
       <main>
         <div className="blocArticle">
@@ -77,13 +175,38 @@ const Admin = () => {
               ? "Admin Lorga"
               : `T'as rien à foutre là è_é`}
           </p>
-          <DatePicker
-            id="datepicker"
-            name={"date"}
-            onChange={(e) => {
-              clickedDate(e.target.value);
-            }}
-          />
+          <div>
+            <ul>
+              {bookings.map((booking) => {
+                return (
+                  <>
+                    <li>
+                      {booking.collectifNom},{booking.date},{booking.time} :
+                      <Button
+                        message={
+                          <IcomoonReact
+                            icon={"vynil"}
+                            iconSet={iconSet}
+                            color={"#05F8FF"}
+                            size={20}
+                          />
+                        }
+                        onClick={(e) => {
+                          handleConfirm(e, booking.id);
+                        }}
+                      />
+                      <Button
+                        message={"X"}
+                        onClick={(e) => {
+                          handleDelete(e, booking.id);
+                        }}
+                      />
+                    </li>
+                  </>
+                );
+              })}
+            </ul>
+          </div>
         </aside>
       </main>
     </div>
