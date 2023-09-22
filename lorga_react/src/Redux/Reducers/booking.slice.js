@@ -127,7 +127,7 @@ export const BookingSlice = createSlice({
       })
       .addCase(postNewBooking.rejected, (state, action) => {
         if (state.loadingBooking) {
-          state.error = action.payload;
+          state.errorBooking = action.payload;
           state.loadingBooking = false;
         }
       });
@@ -145,7 +145,7 @@ export const BookingSlice = createSlice({
       })
       .addCase(confirmBooking.rejected, (state, action) => {
         if (state.loadingBooking) {
-          state.error = action.payload;
+          state.errorBooking = action.payload;
           state.loadingBooking = false;
         }
       });
@@ -163,7 +163,7 @@ export const BookingSlice = createSlice({
       })
       .addCase(deleteBooking.rejected, (state, action) => {
         if (state.loadingBooking) {
-          state.error = action.payload;
+          state.errorBooking = action.payload;
           state.loadingBooking = false;
         }
       });

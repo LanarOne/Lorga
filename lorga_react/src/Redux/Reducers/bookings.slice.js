@@ -38,44 +38,44 @@ export const bookingSlice = createSlice({
   name: "bookings",
   initialState: {
     data: [],
-    loadingBooking: false,
+    loadingBookings: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getBookings.pending, (state, action) => {
-        if (!state.loadingBooking) {
-          state.loadingBooking = true;
+        if (!state.loadingBookings) {
+          state.loadingBookings = true;
         }
       })
       .addCase(getBookings.fulfilled, (state, action) => {
-        if (state.loadingBooking) {
+        if (state.loadingBookings) {
           state.data = action.payload;
-          state.loadingBooking = false;
+          state.loadingBookings = false;
         }
       })
       .addCase(getBookings.rejected, (state, action) => {
-        if (state.loadingBooking) {
-          state.loadingBooking = false;
+        if (state.loadingBookings) {
+          state.loadingBookings = false;
           state.error = action.payload;
         }
       });
     builder
       .addCase(getUnconfirmedBookings.pending, (state, action) => {
-        if (!state.loadingBooking) {
-          state.loadingBooking = true;
+        if (!state.loadingBookings) {
+          state.loadingBookings = true;
         }
       })
       .addCase(getUnconfirmedBookings.fulfilled, (state, action) => {
-        if (state.loadingBooking) {
+        if (state.loadingBookings) {
           state.data = action.payload;
-          state.loadingBooking = false;
+          state.loadingBookings = false;
         }
       })
       .addCase(getUnconfirmedBookings.rejected, (state, action) => {
-        if (state.loadingBooking) {
-          state.loadingBooking = false;
+        if (state.loadingBookings) {
+          state.loadingBookings = false;
           state.error = action.payload;
         }
       });

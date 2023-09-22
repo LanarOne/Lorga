@@ -70,7 +70,6 @@ const Booking = () => {
         window.location.href = "/";
       }
       if (status >= 400 || error) {
-        console.log(response);
         let { message } = response.payload;
         setMessage(message);
         toggleModale();

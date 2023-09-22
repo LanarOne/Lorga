@@ -108,6 +108,20 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
+    const existingPhoto = await PhotoDAO.ReadPhotoById(id);
+    if (!existingPhoto) {
+      return res
+        .status(404)
+        .json({ message: `Photo introuvable ou inexistante` });
+    }
+    if (!existingPhoto.path) {
+      fs.unlink(existingPhoto.path, (err) => {
+        if (err) {
+          console.error(`Erreur pendant l'effacement de la photo`, err);
+        }
+        console.log(`Photo supprimée avec succès`);
+      });
+    }
     const result = await PhotoDAO.DeletePhoto(id);
     if (!result) {
       return res
@@ -115,7 +129,7 @@ const remove = async (req, res) => {
         .json({ message: `Photo introuvable ou inexistante` });
     }
     return res.status(200).json({
-      message: `Photo supprimé avec succès`,
+      message: `Photo supprimée avec succès`,
       data: result,
     });
   } catch (error) {

@@ -90,6 +90,7 @@ const ReadUnconfirmedCollectifs = async () => {
     result = await Collectif.findAll({ where: { confirmation } });
     return result.map((collectif) => {
       return {
+        id: collectif.id,
         nom: decodeURIComponent(collectif.nom),
         description: decodeURIComponent(collectif.description),
         influences: decodeURIComponent(collectif.influences),

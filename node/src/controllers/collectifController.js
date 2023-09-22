@@ -104,11 +104,10 @@ const confirmCollectif = async (req, res) => {
     if (!collectif) {
       return res
         .status(404)
-        .json({ message: `Artiste inexistant ou introuvable` });
+        .json({ message: `Collectif inexistant ou introuvable` });
     }
-    let confirmation = !collectif.confirmation;
+    let confirmation = true;
     result = await CollectifDAO.ConfirmCollectif(id, confirmation);
-    console.log(result, `controller`);
     return res
       .status(200)
       .json({ message: `Collectif confirmé avec succès`, data: result });

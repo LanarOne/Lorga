@@ -90,7 +90,7 @@ const Header = () => {
                 {!user.roleId ? (
                   ""
                 ) : user.roleId === 1 ? (
-                  <NavLink>Réserver une table</NavLink>
+                  <NavLink to={"/booking"}>Réserver une table</NavLink>
                 ) : user.roleId === 2 ? (
                   <NavLink to={`/artistes/${user.artisteName}`}>
                     Gérer ma page {user.artisteName}

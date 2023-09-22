@@ -1,7 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest, postFileRequest, putFileRequest } from "../../api/api";
+import {
+  deleteRequest,
+  getRequest,
+  postFileRequest,
+  putFileRequest,
+} from "../../api/api";
 import {
   CREATE_PHOTO,
+  DELETE_PHOTO,
   GET_PHOTO_BY_ID,
   PUT_PHOTO,
 } from "../../constants/constants";
@@ -81,6 +87,30 @@ export const getPhoto = createAsyncThunk(
   }
 );
 
+export const deletePhoto = createAsyncThunk(
+  "photo/delete",
+  async ({ photoId, token }, thunkAPI) => {
+    let status;
+    let error;
+    try {
+      let url = `${DELETE_PHOTO}${photoId}`;
+      const response = await deleteRequest(url, token);
+      status = response.status;
+      error = response.error;
+      if (status <= 201) {
+        let { message } = response.result;
+        return thunkAPI.fulfillWithValue({ message, status });
+      }
+      if (status >= 400 || error) {
+        let { message } = error;
+        return thunkAPI.rejectWithValue({ message, status });
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
 export const photoSlice = createSlice({
   name: "photo",
   initialState: {
@@ -98,7 +128,7 @@ export const photoSlice = createSlice({
     });
     builder.addCase(postPhoto.fulfilled, (state, action) => {
       if (state.loadingPhoto) {
-        state.loadingPhoto = action.payload;
+        state.data = action.payload;
         state.loadingPhoto = false;
       }
     });
@@ -108,6 +138,60 @@ export const photoSlice = createSlice({
         state.errorPhoto = action.payload;
       }
     });
+    builder
+      .addCase(getPhoto.pending, (state) => {
+        if (!state.loadingPhoto) {
+          state.loadingPhoto = true;
+        }
+      })
+      .addCase(getPhoto.fulfilled, (state, action) => {
+        if (state.loadingPhoto) {
+          state.data = action.payload;
+          state.loadingPhoto = false;
+        }
+      })
+      .addCase(getPhoto.rejected, (state, action) => {
+        if (state.loadingPhoto) {
+          state.loadingPhoto = false;
+          state.errorPhoto = action.payload;
+        }
+      });
+    builder
+      .addCase(updatePhoto.pending, (state) => {
+        if (!state.loadingPhoto) {
+          state.loadingPhoto = true;
+        }
+      })
+      .addCase(updatePhoto.fulfilled, (state, action) => {
+        if (state.loadingPhoto) {
+          state.data = action.payload;
+          state.loadingPhoto = false;
+        }
+      })
+      .addCase(updatePhoto.rejected, (state, action) => {
+        if (state.loadingPhoto) {
+          state.loadingPhoto = false;
+          state.errorPhoto = action.payload;
+        }
+      });
+    builder
+      .addCase(deletePhoto.pending, (state) => {
+        if (!state.loadingPhoto) {
+          state.loadingPhoto = true;
+        }
+      })
+      .addCase(deletePhoto.fulfilled, (state, action) => {
+        if (state.loadingPhoto) {
+          state.data = action.payload;
+          state.loadingPhoto = false;
+        }
+      })
+      .addCase(deletePhoto.rejected, (state, action) => {
+        if (state.loadingPhoto) {
+          state.loadingPhoto = false;
+          state.errorPhoto = action.payload;
+        }
+      });
   },
 });
 

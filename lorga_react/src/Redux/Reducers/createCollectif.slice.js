@@ -1,12 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
+  CONFIRM_COLLECTIF,
   CREATE_COLLECTIF,
+  DELETE_COLLECTIF,
   GET_COL_BY_ID,
   GET_COLLECTIF_BY_CREATEUR,
   GET_COLLECTIF_BY_NOM,
   PUT_COLLECTIF,
 } from "../../constants/constants";
-import { getRequest, postRequest, putRequest } from "../../api/api";
+import {
+  deleteRequest,
+  getRequest,
+  postRequest,
+  putRequest,
+} from "../../api/api";
 
 export const postNewCollectif = createAsyncThunk(
   "collectif/create",
@@ -63,7 +70,7 @@ export const getCollectifByName = createAsyncThunk(
       const response = await getRequest(url, token);
       status = response.status;
       error = response.error;
-      if (error) {
+      if (status >= 400 || error) {
         let { message } = error;
         throw rejectWithValue({ message, status });
       }
@@ -115,7 +122,57 @@ export const getCollectifByCreateur = createAsyncThunk(
       }
       if (status >= 400 || error) {
         let { message } = error;
-        throw thunkAPI.rejectWithValue({ message, status });
+        return thunkAPI.rejectWithValue({ message, status });
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const confirmCollectif = createAsyncThunk(
+  "collectif/confirmation",
+  async ({ id, token }, thunkAPI) => {
+    let error;
+    let status;
+    try {
+      let url = `${CONFIRM_COLLECTIF}${id}`;
+      let body = {};
+      const response = await putRequest(url, body, token);
+      status = response.status;
+      error = response.error || null;
+      if (status <= 201) {
+        let { message } = response.result;
+        return thunkAPI.fulfillWithValue({ message, status });
+      }
+      if (status >= 400 || error) {
+        let { message } = error;
+        return thunkAPI.rejectWithValue({ message, status });
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const deleteCollectif = createAsyncThunk(
+  "collectif/delete",
+  async ({ id, token }, thunkAPI) => {
+    let error;
+    let status;
+    try {
+      let url = `${DELETE_COLLECTIF}${id}`;
+      const response = await deleteRequest(url, token);
+      status = response.status;
+      error = response.error || null;
+      if (status <= 201) {
+        console.log(response);
+        let { message } = response.result;
+        return thunkAPI.fulfillWithValue({ message, status });
+      }
+      if (status >= 400 || error) {
+        let { message } = error;
+        return thunkAPI.rejectWithValue({ message, status });
       }
     } catch (e) {
       throw e;
@@ -163,6 +220,7 @@ export const createCollectifSlice = createSlice({
       })
       .addCase(postNewCollectif.fulfilled, (state, action) => {
         if (state.loadingCollectif) {
+          state.data = action.payload;
           state.loadingCollectif = false;
         }
       })
@@ -180,6 +238,7 @@ export const createCollectifSlice = createSlice({
       })
       .addCase(getCollectifByName.fulfilled, (state, action) => {
         if (state.loadingCollectif) {
+          state.data = action.payload;
           state.loadingCollectif = false;
         }
       })
@@ -198,6 +257,7 @@ export const createCollectifSlice = createSlice({
       })
       .addCase(getCollectifByCreateur.fulfilled, (state, action) => {
         if (state.loadingCollectif) {
+          state.data = action.payload;
           state.loadingCollectif = false;
         }
       })
@@ -216,6 +276,7 @@ export const createCollectifSlice = createSlice({
       })
       .addCase(updateCollectif.fulfilled, (state, action) => {
         if (state.loadingCollectif) {
+          state.data = action.payload;
           state.loadingCollectif = false;
         }
       })
@@ -234,10 +295,49 @@ export const createCollectifSlice = createSlice({
       })
       .addCase(getCollectifById.fulfilled, (state, action) => {
         if (state.loadingCollectif) {
+          state.data = action.payload;
           state.loadingCollectif = false;
         }
       })
       .addCase(getCollectifById.rejected, (state, action) => {
+        if (state.loadingCollectif) {
+          state.loadingCollectif = false;
+          state.errorCollectif = action.payload;
+          state.status = action.payload;
+        }
+      });
+    builder
+      .addCase(confirmCollectif.pending, (state) => {
+        if (!state.loadingCollectif) {
+          state.loadingCollectif = true;
+        }
+      })
+      .addCase(confirmCollectif.fulfilled, (state, action) => {
+        if (state.loadingCollectif) {
+          state.data = action.payload;
+          state.loadingCollectif = false;
+        }
+      })
+      .addCase(confirmCollectif.rejected, (state, action) => {
+        if (state.loadingCollectif) {
+          state.loadingCollectif = false;
+          state.errorCollectif = action.payload;
+          state.status = action.payload;
+        }
+      });
+    builder
+      .addCase(deleteCollectif.pending, (state) => {
+        if (!state.loadingCollectif) {
+          state.loadingCollectif = true;
+        }
+      })
+      .addCase(deleteCollectif.fulfilled, (state, action) => {
+        if (state.loadingCollectif) {
+          state.data = action.payload;
+          state.loadingCollectif = false;
+        }
+      })
+      .addCase(deleteCollectif.rejected, (state, action) => {
         if (state.loadingCollectif) {
           state.loadingCollectif = false;
           state.errorCollectif = action.payload;

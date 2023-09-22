@@ -59,6 +59,8 @@ const CreationCollectif = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let status;
+    let error;
     let newPhoto = await dispatch(await postPhoto({ image, token }));
     if (newPhoto.error) {
       setMessage(newPhoto.payload.message);
@@ -72,13 +74,18 @@ const CreationCollectif = () => {
     let body = { nom, description, influences, style, photoId, userId };
     try {
       const response = await dispatch(postNewCollectif({ body, token }));
-      if (response.ok) {
+      console.log(response);
+      status = response.payload.status;
+      if (status <= 201) {
         setMessage(
           `Ta demande sera étudiée et validée très prochaînement par les admins`
         );
         setIsOpen(true);
+        setTimeout(() => {
+          location.href = "/";
+        }, 2000);
       }
-      if (response.error) {
+      if (status >= 400) {
         setMessage(response.error.message);
         setIsOpen(true);
       }
