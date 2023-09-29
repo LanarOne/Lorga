@@ -9,7 +9,11 @@ import {
   getUserId,
   postNewCollectif,
 } from "../../Redux/Reducers/createCollectif.slice";
-import { getPhoto, postPhoto } from "../../Redux/Reducers/photo.slice";
+import {
+  deletePhoto,
+  getPhoto,
+  postPhoto,
+} from "../../Redux/Reducers/photo.slice";
 import { getUser } from "../../Helpers/usersHelper";
 import Header from "../Header/Header";
 import mc from "./creationCollectif.module.scss";
@@ -74,7 +78,6 @@ const CreationCollectif = () => {
     let body = { nom, description, influences, style, photoId, userId };
     try {
       const response = await dispatch(postNewCollectif({ body, token }));
-      console.log(response);
       status = response.payload.status;
       if (status <= 201) {
         setMessage(
@@ -86,6 +89,7 @@ const CreationCollectif = () => {
         }, 2000);
       }
       if (status >= 400) {
+        await dispatch(deletePhoto({ photoId, token }));
         setMessage(response.error.message);
         setIsOpen(true);
       }

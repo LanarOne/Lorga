@@ -42,7 +42,6 @@ export const confirmBooking = createAsyncThunk(
       status = response.status;
       error = response.error;
       if (status <= 201) {
-        console.log(response);
         let { message } = response.result;
         return thunkAPI.fulfillWithValue({ message, status });
       }

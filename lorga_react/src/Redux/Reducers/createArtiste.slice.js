@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getRequest, postRequest, putRequest } from "../../api/api";
 import {
+  CONFIRM_ARTISTE,
   CREATE_ARTISTE,
+  GET_ARTISTE_BY_ID,
   GET_ARTISTE_BY_NOM,
   PUT_ARTISTE,
 } from "../../constants/constants";
@@ -22,6 +24,56 @@ export const postNewArtiste = createAsyncThunk(
       if (status >= 400 || error) {
         const { message } = response.error;
         return rejectWithValue({ message, status });
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const confirmArtiste = createAsyncThunk(
+  "artiste/confirmation",
+  async ({ artisteId, body, token }, thunkAPI) => {
+    let error;
+    let status;
+    try {
+      const url = `${CONFIRM_ARTISTE}${artisteId}`;
+      const body = {};
+      const response = await putRequest(url, body, token);
+      status = response.status;
+      error = response.error;
+      if (status === 200) {
+        let { data } = response.result;
+        let { message } = response.result;
+        return thunkAPI.fulfillWithValue({ data, message, status });
+      }
+      if (status >= 400 || error) {
+        let { message } = error;
+        return thunkAPI.rejectWithValue({ message, status });
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const getArtisteById = createAsyncThunk(
+  "artiste/getOneById",
+  async ({ artisteId, token }, thunkAPI) => {
+    let status;
+    let error;
+    try {
+      const url = `${GET_ARTISTE_BY_ID}${artisteId}`;
+      const response = await getRequest(url, token);
+      status = response.status;
+      error = response.error;
+      if (status === 200) {
+        let { data } = response.result;
+        return thunkAPI.fulfillWithValue({ data, status });
+      }
+      if (status >= 400 || error) {
+        const { message } = error;
+        return thunkAPI.rejectWithValue({ message, status });
       }
     } catch (e) {
       throw e;
@@ -114,7 +166,7 @@ export const createArtisteSlice = createSlice({
     });
     builder.addCase(postNewArtiste.fulfilled, (state, action) => {
       if (state.loadingArtiste) {
-        state.loadingArtiste = action.payload;
+        state.data = action.payload;
         state.loadingArtiste = false;
       }
     });
@@ -131,7 +183,7 @@ export const createArtisteSlice = createSlice({
     });
     builder.addCase(getArtisteByName.fulfilled, (state, action) => {
       if (state.loadingArtiste) {
-        state.loadingArtiste = action.payload;
+        state.data = action.payload;
         state.loadingArtiste = false;
       }
     });
@@ -141,6 +193,60 @@ export const createArtisteSlice = createSlice({
         state.errorArtiste = action.payload;
       }
     });
+    builder
+      .addCase(confirmArtiste.pending, (state) => {
+        if (!state.loadingArtiste) {
+          state.loadingArtiste = true;
+        }
+      })
+      .addCase(confirmArtiste.fulfilled, (state, action) => {
+        if (state.loadingArtiste) {
+          state.data = action.payload;
+          state.loadingArtiste = false;
+        }
+      })
+      .addCase(confirmArtiste.rejected, (state, action) => {
+        if (state.loadingArtiste) {
+          state.loadingArtiste = false;
+          state.errorArtiste = action.payload;
+        }
+      });
+    builder
+      .addCase(updateArtiste.pending, (state) => {
+        if (!state.loadingArtiste) {
+          state.loadingArtiste = true;
+        }
+      })
+      .addCase(updateArtiste.fulfilled, (state, action) => {
+        if (state.loadingArtiste) {
+          state.data = action.payload;
+          state.loadingArtiste = false;
+        }
+      })
+      .addCase(updateArtiste.rejected, (state, action) => {
+        if (state.loadingArtiste) {
+          state.loadingArtiste = false;
+          state.errorArtiste = action.payload;
+        }
+      });
+    builder
+      .addCase(getArtisteById.pending, (state) => {
+        if (!state.loadingArtiste) {
+          state.loadingArtiste = true;
+        }
+      })
+      .addCase(getArtisteById.fulfilled, (state, action) => {
+        if (state.loadingArtiste) {
+          state.data = action.payload;
+          state.loadingArtiste = false;
+        }
+      })
+      .addCase(getArtisteById.rejected, (state, action) => {
+        if (state.loadingArtiste) {
+          state.loadingArtiste = false;
+          state.errorArtiste = action.payload;
+        }
+      });
   },
 });
 

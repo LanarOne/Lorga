@@ -13,7 +13,11 @@ import Button from "../smallElts/Button/Button";
 import mc from "./creationArtiste.module.scss";
 import { getUser } from "../../Helpers/usersHelper";
 import Header from "../Header/Header";
-import { getPhoto, postPhoto } from "../../Redux/Reducers/photo.slice";
+import {
+  deletePhoto,
+  getPhoto,
+  postPhoto,
+} from "../../Redux/Reducers/photo.slice";
 import Modale from "../smallElts/Modale/Modale";
 
 const CreationArtiste = () => {
@@ -56,7 +60,6 @@ const CreationArtiste = () => {
     e.preventDefault();
     try {
       const newPhoto = await dispatch(await postPhoto({ image, token }));
-      console.log(newPhoto);
       let { status, message } = newPhoto.payload;
       if (status >= 400) {
         setMessage(message);
@@ -71,14 +74,21 @@ const CreationArtiste = () => {
         const response = await dispatch(postNewArtiste({ body, token }));
         const { status, message } = response.payload;
         if (status >= 400) {
+          await dispatch(deletePhoto({ photoId, token }));
           setMessage(message);
           toggleModal();
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1500);
         }
         if (status <= 201) {
           setMessage(
             `${response.payload.result.message}, en attente de validation par les admins`
           );
           toggleModal();
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 2000);
         }
       } catch (e) {
         throw new Error(e.message);

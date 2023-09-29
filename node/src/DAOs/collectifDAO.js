@@ -19,7 +19,6 @@ const Create = async (
       confirmation,
       createurId,
       photoId,
-      // userId,
     });
     return result;
   } catch (error) {
@@ -118,6 +117,7 @@ const ReadById = async (id) => {
       influences: decodeURIComponent(result.influences),
       style: decodeURIComponent(result.style),
       confirmation: result.confirmation,
+      createurId: result.createurId,
       photoId: result.photoId,
     };
   } catch (error) {

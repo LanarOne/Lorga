@@ -4,6 +4,7 @@ import Photo from "./Photo.js";
 import Lien from "./Lien.js";
 import Artiste from "./Artiste.js";
 import Artiste_Collectif from "./Artiste_Collectif.js";
+import Booking from "./Booking.js";
 
 const Collectif = sequelize.define(
   "collectif",
@@ -45,13 +46,5 @@ const Collectif = sequelize.define(
     updatedAt: "updated",
   }
 );
-Photo.hasOne(Collectif, {
-  foreignKey: { allowNull: false, name: "photoId", unique: true },
-  sourceKey: "id",
-});
-Collectif.hasMany(Lien, {
-  foreignKey: { allowNull: true, name: "collectifId" },
-  sourceKey: "id",
-});
-Collectif.belongsToMany(Artiste, { through: Artiste_Collectif });
+
 export default Collectif;

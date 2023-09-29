@@ -17,16 +17,10 @@ const Header = () => {
   const dispatch = useDispatch();
   const token = window.localStorage.getItem("token");
   const [collectifName, setCollectifName] = useState("");
-  const [message, setMessage] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
   function deconexion() {
     localStorage.removeItem("token");
     window.location.href = "/";
   }
-  const toggleModale = () => {
-    setIsOpen(!isOpen);
-  };
-
   useEffect(() => {
     setDisplayDate(manageDisplayDate());
   }, []);
@@ -38,6 +32,9 @@ const Header = () => {
   useEffect(() => {
     const getDatas = async () => {
       let userId = user.userId;
+      if (!userId) {
+        return;
+      }
       let error;
       let status;
       if (user.collectifs.length > 0) {
@@ -46,14 +43,12 @@ const Header = () => {
         );
         status = collectif.payload.status;
         error = collectif.payload.message;
-        if (status === 404) {
-          console.log(error);
-          return;
-        }
         if (status >= 400) {
-          let { message } = error;
-          setMessage(message);
-          toggleModale();
+          if (status === 404) {
+            console.log(error);
+            return;
+          }
+          console.error(error);
         }
         setCollectif(collectif.payload.result.data);
       }
@@ -65,11 +60,6 @@ const Header = () => {
   }, [user]);
   return (
     <>
-      {isOpen && message ? (
-        <>
-          <Modale message={message} setModaleOpen={toggleModale} />
-        </>
-      ) : null}
       <header>
         <section className={`${mc.blocLogo}`}>
           <div>
@@ -86,25 +76,37 @@ const Header = () => {
               <li>
                 <NavLink>Galerie</NavLink>
               </li>
-              <li>
-                {!user.roleId ? (
-                  ""
-                ) : user.roleId === 1 ? (
+
+              {!user.roleId ? (
+                ""
+              ) : user.roleId === 1 ? (
+                <li>
                   <NavLink to={"/booking"}>Réserver une table</NavLink>
-                ) : user.roleId === 2 ? (
+                </li>
+              ) : user.roleId === 2 ? (
+                <li>
                   <NavLink to={`/artistes/${user.artisteName}`}>
                     Gérer ma page {user.artisteName}
                   </NavLink>
-                ) : user.roleId === 3 ? (
-                  <NavLink>Gérer un collectif</NavLink>
-                ) : user.roleId === 4 ? (
-                  <NavLink to={`/collectifs/${collectifName}`}>
-                    Gérer mon collectif
-                  </NavLink>
-                ) : (
-                  <NavLink to={"/admin"}>Admin</NavLink>
-                )}
-              </li>
+                </li>
+              ) : user.roleId === 3 ? (
+                <>
+                  <li>
+                    <NavLink>Gérer le collectif {collectif.nom}</NavLink>
+                  </li>
+                  <li>
+                    <NavLink to={`/artistes/${user.artisteName}`}>
+                      Gérer ma page {user.artisteName}
+                    </NavLink>
+                  </li>
+                </>
+              ) : user.roleId <= 5 ? (
+                <NavLink to={`/collectifs/${collectifName}`}>
+                  Gérer mon collectif {collectif.nom}
+                </NavLink>
+              ) : (
+                <NavLink to={"/admin"}>Admin</NavLink>
+              )}
             </ul>
           </div>
           <img src={logo2} alt="Logo de Lorga" />

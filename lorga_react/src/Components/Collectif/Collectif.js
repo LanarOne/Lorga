@@ -9,10 +9,12 @@ import { NavLink } from "react-router-dom";
 const Collectif = () => {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [message, setMessage] = useState("");
   const { data, loadingCollectifs, errorCollectifs } = useSelector(
     (state) => state.collectifs
   );
+  const user = useSelector((state) => state.user);
   const [collectifs, setCollectifs] = useState([]);
   const token = localStorage.getItem("token");
 
@@ -29,6 +31,11 @@ const Collectif = () => {
     };
     getConfirmedCollectifs();
   }, [dispatch]);
+  useEffect(() => {
+    if (user.roleId >= 4) {
+      setIsAdmin(true);
+    }
+  }, [collectifs]);
   return (
     <>
       <>
@@ -38,11 +45,12 @@ const Collectif = () => {
       </>
       <Header />
       <main>
+        {isAdmin ? (
+          <NavLink to="/nouveaucollectif">Créer un nouveau collectif</NavLink>
+        ) : null}
         <section>
           {loadingCollectifs ? (
             <h2>Chargement des données...</h2>
-          ) : errorCollectifs ? (
-            setIsOpen(true)
           ) : collectifs ? (
             <>
               {collectifs.map((collectif) => {

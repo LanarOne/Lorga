@@ -20,6 +20,7 @@ export const Sync = async () => {
     await sequelize.sync();
     console.log("Sync successful");
   } catch (error) {
+    console.error(error);
     throw new Error(error.message);
   }
 };

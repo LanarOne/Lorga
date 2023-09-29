@@ -1,6 +1,8 @@
 import { sequelize } from "../connection/connection.js";
 import { DataTypes } from "sequelize";
 import Collectif from "./Collectif.js";
+import Setlist from "./Setlist.js";
+import Artiste from "./Artiste.js";
 
 const Booking = sequelize.define(
   "booking",
@@ -37,8 +39,5 @@ const Booking = sequelize.define(
     updatedAt: "updated",
   }
 );
-Collectif.hasMany(Booking, {
-  foreignKey: { allowNull: true, name: "collectifId" },
-  sourceKey: "id",
-});
+
 export default Booking;

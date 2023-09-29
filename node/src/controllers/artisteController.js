@@ -56,11 +56,9 @@ const createArtiste = async (req, res) => {
         data: artiste,
       });
     }
-    const updateRoleId = await UserDAO.UpdateRoleId(userId, 2);
     return res.status(201).json({
       message: `Artiste ${artiste.nom} créé avec succès`,
       data: artiste,
-      updateRoleId,
     });
   } catch (error) {
     console.error(error);
@@ -85,11 +83,22 @@ const confirmArtiste = async (req, res) => {
         .status(404)
         .json({ message: `Artiste inexistant ou introuvable` });
     }
-    let confirmation = !artiste.confirmation;
+    let confirmation = true;
     result = await ArtisteDAO.Confirm(id, confirmation);
-    return res
-      .status(200)
-      .json({ message: `Artiste confirmé avec succès`, data: result });
+    const userId = artiste.userId;
+    const user = await UserDAO.ReadUserById(userId);
+    if (user.roleId >= 2) {
+      return res.status(200).json({
+        message: `Artiste confirmé avec succès`,
+        data: result,
+      });
+    }
+    const updateRoleId = await UserDAO.UpdateRoleId(userId, 2);
+    return res.status(200).json({
+      message: `Artiste confirmé avec succès`,
+      data: result,
+      updateRoleId,
+    });
   } catch (error) {
     return res.status(500).json({ message: `Erreur interne`, data: error });
   }
@@ -142,7 +151,7 @@ const readConfirmedArtistes = async (req, res) => {
 const readUnconfirmedArtistes = async (req, res) => {
   const token = req.headers.authorization;
   const admin = await isAdmin(token);
-  if (!admin || admin <= 4) {
+  if (!admin || admin <= 5) {
     return res
       .status(401)
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });

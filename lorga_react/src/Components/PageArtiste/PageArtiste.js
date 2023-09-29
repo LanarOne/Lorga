@@ -95,11 +95,6 @@ const PageArtiste = () => {
   }, [dispatch, artiste, token]);
   useEffect(() => {
     dispatch(fetchUser({ token }));
-    if (errorUser) {
-      let { message } = errorUser;
-      setMessage(message);
-      toggleModal();
-    }
   }, [dispatch, token]);
 
   const handleUpdate = async () => {
@@ -114,7 +109,6 @@ const PageArtiste = () => {
     if (response && image) {
       try {
         const newPhoto = await dispatch(updatePhoto({ image, token, photoId }));
-        console.log(newPhoto);
       } catch (e) {
         console.error(e.message);
       }
@@ -156,12 +150,8 @@ const PageArtiste = () => {
       <main>
         {loadingUpload || loadingUser || loadingArtiste ? (
           <h2>Données en chargement</h2>
-        ) : errorArtiste || errorUser || errorUpload ? (
-          <>
-            <h2>Quelque chose cloche...</h2>
-            <p>Essayes de contacter un admin</p>
-          </>
-        ) : user.artisteName && user.artisteName === blaze && adminMode ? (
+        ) : (user.artisteName && user.artisteName === blaze && adminMode) ||
+          (user.roleId >= 5 && adminMode) ? (
           <section>
             <h2 className={`${mc.disclaimer}`}>
               Une fois le formulaire envoyé, ta page artiste sera désactivée le
@@ -235,7 +225,8 @@ const PageArtiste = () => {
               </div>
             </form>
           </section>
-        ) : user.artisteName && user.artisteName === blaze ? (
+        ) : (user.artisteName && user.artisteName === blaze) ||
+          user.roleId >= 5 ? (
           <>
             <section>
               <div>

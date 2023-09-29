@@ -87,6 +87,7 @@ const ReadUnconfirmedArtistes = async () => {
     result = await Artiste.findAll({ where: { confirmation } });
     return result.map((artiste) => {
       return {
+        id: artiste.id,
         nom: decodeURIComponent(artiste.nom),
         description: decodeURIComponent(artiste.description),
         influences: decodeURIComponent(artiste.influences),
@@ -116,6 +117,7 @@ const ReadById = async (id) => {
       style: decodeURIComponent(result.style),
       confirmation: result.confirmation,
       photoId: result.photoId,
+      userId: result.userId,
     };
   } catch (error) {
     throw new Error(error.message);

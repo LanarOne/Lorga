@@ -40,22 +40,5 @@ const User = sequelize.define(
     updatedAt: "updated",
   }
 );
-User.hasMany(Booking, {
-  foreignKey: { allowNull: false, name: "userId" },
-  sourceKey: "id",
-});
-User.hasOne(Artiste, {
-  foreignKey: {
-    allowNull: false,
-    name: "userId",
-    unique: { message: `Utilisateur déjà lié à un compte artiste` },
-  },
-  sourceKey: "id",
-});
-Role.hasMany(User, {
-  foreignKey: { allowNull: false, name: "roleId" },
-  sourceKey: "id",
-});
-User.belongsToMany(Collectif, { through: Admin_collectif });
 
 export default User;

@@ -45,17 +45,9 @@ const createAdmin_collectif = async (req, res) => {
       });
     }
     result = await Admin_CollectifDAO.Create(confirmation, userId, collectifId);
-    if (user.roleId >= 3) {
-      return res.status(201).json({
-        message: `Admin_collectif créé avec succès`,
-        data: result,
-      });
-    }
-    const changeRoleId = await UserDAO.UpdateRoleId(userId, 3);
     return res.status(201).json({
       message: `Admin_collectif créé avec succès`,
       data: result,
-      changeRoleId,
     });
   } catch (error) {
     console.error(error);
@@ -80,11 +72,22 @@ const confirmAdminCol = async (req, res) => {
         .status(404)
         .json({ message: `Admin du collectif introuvable ou inexistant` });
     }
-    let confirmation = !adminCol.confirmation;
+    let confirmation = true;
     result = await Admin_CollectifDAO.Confirm(id, confirmation);
-    return res
-      .status(200)
-      .json({ message: `Admin confirmé avec succès`, data: result });
+    const userId = adminCol.userId;
+    const user = await UserDAO.ReadUserById(userId);
+    if (user.roleId >= 4) {
+      return res.status(200).json({
+        message: `Admin confirmé avec succès`,
+        data: result,
+      });
+    }
+    const changeRoleId = await UserDAO.UpdateRoleId(userId, 4);
+    return res.status(200).json({
+      message: `Admin confirmé avec succès`,
+      data: result,
+      changeRoleId,
+    });
   } catch (error) {
     return res.status(500).json({ message: `Erreur interne`, data: error });
   }

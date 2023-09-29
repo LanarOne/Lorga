@@ -8,7 +8,6 @@ const Create = async (confirmation, userId, collectifId) => {
       userId,
       collectifId,
     });
-    console.log(result);
     return result;
   } catch (error) {
     console.error(error);

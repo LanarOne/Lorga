@@ -1,8 +1,16 @@
 import { PhotoDAO } from "../DAOs/photoDAO.js";
 import { stringIsFilled } from "../utils/stringUtils.js";
 import * as fs from "fs";
+import { isAdmin } from "../utils/adminUtils.js";
 
 const create = async (req, res) => {
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (!admin) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+  }
   try {
     let { alt } = req.body;
     const nom = req.file.filename;
@@ -69,6 +77,13 @@ const readById = async (req, res) => {
 };
 
 const update = async (req, res) => {
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (!admin || admin <= 1) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+  }
   try {
     const { id } = req.params;
     let { alt } = req.body;
@@ -106,6 +121,13 @@ const update = async (req, res) => {
 };
 
 const remove = async (req, res) => {
+  const token = req.headers.authorization;
+  const admin = await isAdmin(token);
+  if (!admin || admin <= 1) {
+    return res
+      .status(401)
+      .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+  }
   try {
     const { id } = req.params;
     const existingPhoto = await PhotoDAO.ReadPhotoById(id);

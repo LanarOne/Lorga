@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { getUser } from "../../Helpers/usersHelper";
 import Header from "../../Components/Header/Header";
 import mc from "./admin.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { getUnconfirmedBookings } from "../../Redux/Reducers/bookings.slice";
 import {
   confirmCollectif,
-  deleteCollectif,
   getCollectifById,
 } from "../../Redux/Reducers/createCollectif.slice";
 import iconSet from "../../Style/IcoMoon/selection.json";
@@ -19,19 +17,34 @@ import Modale from "../../Components/smallElts/Modale/Modale";
 import Button from "../../Components/smallElts/Button/Button";
 import { getUnconfirmed } from "../../Redux/Reducers/collectifs.slice";
 import { deletePhoto } from "../../Redux/Reducers/photo.slice";
+import {
+  getUserByID,
+  isAdminCol,
+  isArtisteAdmin,
+  isUserArtiste,
+  updateRoleId,
+} from "../../Redux/Reducers/user.slice";
+import { getUnconfirmedArtistes } from "../../Redux/Reducers/artistes.slice";
+import {
+  confirmArtiste,
+  getArtisteById,
+} from "../../Redux/Reducers/createArtiste.slice";
 
 const Admin = () => {
   const token = localStorage.getItem("token");
-  const [user, setUser] = useState({});
   const [unconfirmedBookings, setUnconfirmedBookings] = useState([]);
   const [unconfirmedCollectifs, setUnconfirmedCollectifs] = useState([]);
+  const [unconfirmedArtistes, setUnconfirmedArtistes] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [guestBookings, setGuestBookings] = useState([]);
   const [message, setMessage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const isMounted = true;
+  const user = useSelector((state) => state.user);
   const { loadingBookings } = useSelector((state) => state.bookings);
   const { loadingCollectifs } = useSelector((state) => state.collectifs);
-  console.log(unconfirmedCollectifs);
 
   const dispatch = useDispatch();
 
@@ -69,7 +82,6 @@ const Admin = () => {
       const response = await dispatch(confirmCollectif({ id, token }));
       status = response.payload.status;
       error = response.error || null;
-      console.log(response, id);
       if (status <= 201) {
         let { message } = response.payload;
         setMessage(message);
@@ -82,10 +94,44 @@ const Admin = () => {
         let { message } = response.payload;
         setMessage(message);
         toggleModale();
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
     } catch (e) {
       console.error(e);
       throw new Error(e.message);
+    }
+  };
+
+  const handleArtisteConfirmation = async (e, artisteId) => {
+    e.preventDefault();
+    let error;
+    let status;
+    try {
+      const response = await dispatch(confirmArtiste({ artisteId, token }));
+      console.log(response);
+      status = response.payload.status;
+      error = response.error || null;
+      if (status === 200) {
+        let { message } = response.payload;
+        setMessage(message);
+        toggleModale();
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
+      if (status >= 400 || error) {
+        let { message } = response.payload;
+        setMessage(message);
+        toggleModale();
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
+    } catch (e) {
+      console.error(e.message);
+      throw new Error(e);
     }
   };
   const handleDelete = async (e, id) => {
@@ -123,36 +169,36 @@ const Admin = () => {
     let status;
     let error;
     try {
-      const existingCollectif = await dispatch(getCollectifById({ id, token }));
-      status = existingCollectif.payload.status;
-      if (status <= 201) {
-        const { photoId } = existingCollectif.payload.data;
-        const response = await dispatch(deletePhoto({ photoId, token }));
-        status = response.status;
-        error = response.error || null;
-        if (status <= 201) {
-          let { message } = response.payload;
-          setMessage(message);
-          toggleModale();
-          setTimeout(() => {
-            location.reload();
-          }, 2000);
-        }
-        if (status >= 400 || error) {
-          let { message } = response.payload;
-          setMessage(message);
-          toggleModale();
-          setTimeout(() => {
-            location.reload();
-          }, 2000);
+      const collectif = await dispatch(getCollectifById({ id, token }));
+      status = collectif.payload.status;
+      error = collectif.payload.error;
+      if (status === 200) {
+        const userId = collectif.payload.data.createurId;
+        setUserId(userId);
+        const photoId = collectif.payload.data.photoId;
+        try {
+          const response = await dispatch(deletePhoto({ photoId, token }));
+          status = response.payload.status;
+          error = response.payload.message;
+          if (status === 200) {
+            setIsDeleted(true);
+          }
+          if (status >= 400) {
+            setMessage(error);
+            toggleModale();
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          }
+        } catch (e) {
+          throw new Error(e.message);
         }
       }
-      if (status >= 400 || error) {
-        let { message } = existingCollectif.payload;
-        setMessage(message);
+      if (status >= 400) {
+        setMessage(error);
         toggleModale();
         setTimeout(() => {
-          location.reload();
+          window.location.reload();
         }, 2000);
       }
     } catch (e) {
@@ -160,24 +206,216 @@ const Admin = () => {
       throw new Error(e.message);
     }
   };
+
+  const handleArtisteDelete = async (e, artisteId) => {
+    e.preventDefault();
+    let error;
+    let status;
+    try {
+      const artiste = await dispatch(getArtisteById({ artisteId, token }));
+      status = artiste.payload.status;
+      error = artiste.payload.error;
+      if (status === 200) {
+        setUserId(artiste.payload.data.userId);
+        const photoId = artiste.payload.data.photoId;
+        const deleteArtistePhoto = await dispatch(
+          deletePhoto({ photoId, token })
+        );
+        setIsDeleted(true);
+      }
+      if (status >= 400) {
+        setMessage(error);
+        toggleModale();
+      }
+    } catch (e) {
+      console.error(e.message);
+      throw new Error(e);
+    }
+  };
   useEffect(() => {
-    const getUserDatas = async () => {
-      try {
-        const userDatas = await getUser(token);
-        setUser(userDatas);
-      } catch (error) {
-        throw new Error(error.message);
+    const changeUserRoleId = async () => {
+      let error;
+      let status;
+      if (userId) {
+        const user = await dispatch(getUserByID({ userId, token }));
+        status = user.payload.status;
+        if (status === 200) {
+          if (user.payload.data.roleId >= 6) {
+            return;
+          }
+          try {
+            const isArtiste = await dispatch(isUserArtiste({ userId, token }));
+            status = isArtiste.payload.status;
+            error = isArtiste.error;
+            if (status === 200) {
+              const artisteId = isArtiste.payload.data.id;
+              const isArtisteAdminCol = await dispatch(
+                isArtisteAdmin({ artisteId, token })
+              );
+              status = isArtisteAdminCol.payload.status;
+              if (status === 200) {
+                const roleId = 3;
+                const body = { roleId };
+                const putRoleId = await dispatch(
+                  updateRoleId({ body, userId, token })
+                );
+                status = putRoleId.payload.status;
+                let message = putRoleId.payload.message;
+                if (status === 200) {
+                  setMessage(message);
+                  toggleModale();
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 2000);
+                }
+                if (status >= 400) {
+                  setMessage(message);
+                  toggleModale();
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 2000);
+                }
+              }
+              if (status >= 400) {
+                const roleId = 2;
+                const body = { roleId };
+                const putRoleId = await dispatch(
+                  updateRoleId({ body, userId, token })
+                );
+                status = putRoleId.payload.status;
+                let message = putRoleId.payload.message;
+                if (status === 200) {
+                  setMessage(message);
+                  toggleModale();
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 2000);
+                }
+                if (status >= 400) {
+                  setMessage(message);
+                  toggleModale();
+                }
+              }
+            }
+            if (status >= 400 || error) {
+              if (status === 404) {
+                const isAdmin = await dispatch(isAdminCol({ userId, token }));
+                status = isAdmin.payload.status;
+                if (status === 200) {
+                  const collectifs = isAdmin.payload.data;
+
+                  if (collectifs.length <= 1 || !collectifs) {
+                    const roleId = 1;
+                    const body = { roleId };
+                    const putRoleId = await dispatch(
+                      updateRoleId({ body, userId, token })
+                    );
+                    status = putRoleId.payload.status;
+                    let message = putRoleId.payload.message;
+                    if (status === 200) {
+                      setMessage(message);
+                      toggleModale();
+                      setTimeout(() => {
+                        window.location.reload();
+                      }, 2000);
+                    }
+                    if (status >= 400) {
+                      setMessage(message);
+                      toggleModale();
+                    }
+                  }
+                  if (collectifs.length > 1) {
+                    const roleId = 4;
+                    const body = { roleId };
+                    const putRoleId = await dispatch(
+                      updateRoleId({ body, userId, token })
+                    );
+                    status = putRoleId.payload.status;
+                    let message = putRoleId.payload.message;
+                    if (status === 200) {
+                      setMessage(message);
+                      toggleModale();
+                      setTimeout(() => {
+                        window.location.reload();
+                      }, 2000);
+                    }
+                    if (status >= 400) {
+                      setMessage(message);
+                      toggleModale();
+                    }
+                  }
+                }
+                if (status >= 400) {
+                  if (status === 404) {
+                    const roleId = 1;
+                    const body = { roleId };
+                    const putRoleId = await dispatch(
+                      updateRoleId({ body, userId, token })
+                    );
+                    status = putRoleId.payload.status;
+                    let message = putRoleId.payload.message;
+                    if (status === 200) {
+                      setMessage(message);
+                      toggleModale();
+                      setTimeout(() => {
+                        window.location.reload();
+                      }, 2000);
+                    }
+                    if (status >= 400) {
+                      setMessage(message);
+                      toggleModale();
+                    }
+                  }
+                  let { message } = isAdmin.payload;
+                  setMessage(message);
+                  toggleModale();
+                }
+                return;
+              }
+              let { message } = isArtiste.payload.error;
+              setMessage(message);
+              toggleModale();
+            }
+            setIsDeleted(false);
+          } catch (e) {
+            throw new Error(e.message);
+          }
+        }
+        if (status >= 400) {
+          setMessage(user.payload.error);
+          toggleModale();
+        }
       }
     };
-    if (!token) {
-      window.location.href = "/";
-    } else {
-      getUserDatas();
+    if (isDeleted) {
+      changeUserRoleId();
     }
+  }, [isDeleted]);
+  useEffect(() => {
     const getUnconfirmedBkgs = async () => {
-      const response = await dispatch(getUnconfirmedBookings({ token }));
-      let { data } = response.payload;
-      setUnconfirmedBookings(data);
+      let status;
+      let error;
+
+      try {
+        const response = await dispatch(getUnconfirmedBookings({ token }));
+        status = response.payload.status;
+        error = response.payload.error;
+        if (status === 200) {
+          let { data } = response.payload;
+          setUnconfirmedBookings(data);
+        }
+        if (status >= 400 || error) {
+          if (status === 404) {
+            return;
+          }
+          let { message } = response.payload;
+          setMessage(message);
+          toggleModale();
+        }
+      } catch (e) {
+        console.error(e.message);
+        throw new Error(e);
+      }
     };
     const getUnconfirmedCltfs = async () => {
       let status;
@@ -203,8 +441,36 @@ const Admin = () => {
       }
     };
 
+    const getUnconfirmedArtistesList = async () => {
+      let status;
+      let error;
+      try {
+        const response = await dispatch(getUnconfirmedArtistes({ token }));
+        status = response.payload.status;
+        error = response.error || null;
+        if (status === 200) {
+          let { data } = response.payload;
+          setUnconfirmedArtistes(data);
+        }
+        if (status >= 400 || error) {
+          if (status === 404) {
+            return;
+          }
+          if (error) {
+            let message = response.payload.message;
+            setMessage(message);
+            toggleModale();
+          }
+        }
+      } catch (e) {
+        console.error(e.message);
+        throw new Error(e);
+      }
+    };
+
     getUnconfirmedBkgs();
     getUnconfirmedCltfs();
+    getUnconfirmedArtistesList();
   }, [token]);
   useEffect(() => {
     const displayUnconf = async () => {
@@ -246,9 +512,13 @@ const Admin = () => {
     displayUnconf();
     displayCustomerBookings();
   }, [unconfirmedBookings]);
-  if (user.roleId <= 4) {
-    window.location.href = "/";
-  }
+  useEffect(() => {
+    if (userId) {
+      if (!user.userId) {
+        window.location.href = "/";
+      }
+    }
+  }, [userId]);
 
   return (
     <div className={`${mc.container}`}>
@@ -298,9 +568,9 @@ const Admin = () => {
           <aside>
             <h3>Admin : {user.username}</h3>
             <p>
-              {user.roleId === 6
+              {user.roleId === 7
                 ? "5upaÄaDm!n"
-                : user.roleId === 5
+                : user.roleId === 6
                 ? "Admin Lorga"
                 : `T'as rien à foutre là è_é`}
             </p>
@@ -396,6 +666,36 @@ const Admin = () => {
                         message={"X"}
                         onClick={(e) => {
                           handleCollectifDelete(e, unconfirmedCollectif.id);
+                        }}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+            <div>
+              <ul>
+                {unconfirmedArtistes.map((artiste) => {
+                  return (
+                    <li>
+                      {artiste.nom}, {artiste.description}
+                      <Button
+                        message={
+                          <IcomoonReact
+                            icon={"vynil"}
+                            iconSet={iconSet}
+                            color={"#05F8FF"}
+                            size={20}
+                          />
+                        }
+                        onClick={(e) => {
+                          handleArtisteConfirmation(e, artiste.id);
+                        }}
+                      />
+                      <Button
+                        message={`X`}
+                        onClick={(e) => {
+                          handleArtisteDelete(e, artiste.id);
                         }}
                       />
                     </li>

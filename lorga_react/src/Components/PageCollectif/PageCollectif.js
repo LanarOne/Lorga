@@ -88,7 +88,7 @@ const PageCollectif = () => {
             error = await response.payload.error;
             if (status <= 201) {
               let colCrea = await response.payload.result.data.nom;
-              if (colCrea === collectif.nom) {
+              if (colCrea === collectif.nom || user.roleId >= 6) {
                 setIsAdmin(true);
               } else {
                 setIsAdmin(false);

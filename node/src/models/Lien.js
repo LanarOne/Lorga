@@ -1,5 +1,7 @@
 import { sequelize } from "../connection/connection.js";
 import { DataTypes } from "sequelize";
+import Artiste from "./Artiste.js";
+import Collectif from "./Collectif.js";
 
 const Lien = sequelize.define(
   "lien",

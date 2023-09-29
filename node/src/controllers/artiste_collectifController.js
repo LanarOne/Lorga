@@ -2,6 +2,7 @@ import { ArtisteDAO } from "../DAOs/artisteDAO.js";
 import { isAdmin } from "../utils/adminUtils.js";
 import { CollectifDAO } from "../DAOs/collectifDAO.js";
 import { Artiste_CollectifDAO } from "../DAOs/artiste_collectifDAO.js";
+import { UserDAO } from "../DAOs/userDAO.js";
 
 async function createArtiste_Collectif(req, res) {
   let result = null;
@@ -51,7 +52,7 @@ async function createArtiste_Collectif(req, res) {
       return res.status(500).json({ message: `Erreur interne du server` });
     }
     return res.status(201).json({
-      message: `Artiste ${artiste.nom} lié au collectif ${existingCollectif.nom} avec succès`,
+      message: `Artiste ${artiste.nom} lié au collectif ${existingCollectif.nom} avec succès, en attente de validation`,
       data: result,
     });
   } catch (error) {
@@ -67,7 +68,7 @@ const confirmArtCol = async (req, res) => {
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
 
-    if (!admin || admin === 1) {
+    if (!admin || admin <= 2) {
       return res
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
@@ -78,14 +79,27 @@ const confirmArtCol = async (req, res) => {
         .status(404)
         .json({ message: `Artiste du collectif introuvable ou inexistant` });
     }
-    let confirmation = !art_col.confirmation;
+    let confirmation = true;
     result = await Artiste_CollectifDAO.Confirm(id, confirmation);
     if (!result || result.length === 0) {
       return res.status(500).json({ message: `Erreur interne du server` });
     }
+    const artiste = await ArtisteDAO.ReadById(art_col.artisteId);
+    const userId = artiste.userId;
+    const user = await UserDAO.ReadUserById(userId);
+    if (user.roleId >= 3) {
+      return res.status(200).json({
+        message: `Artiste inclus dans le collectif avec succès`,
+        data: result,
+        artiste,
+      });
+    }
+    const updateRoleId = await UserDAO.UpdateRoleId(userId, 3);
     return res.status(200).json({
-      message: `Artiste dans le collectif confirmé avec succès`,
+      message: `Artiste inclus dans le collectif avec succès`,
       data: result,
+      artiste,
+      updateRoleId,
     });
   } catch (error) {
     console.error(error.message);
