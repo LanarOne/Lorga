@@ -30,6 +30,9 @@ import {
   GET_ART_COL_BY_COL,
   GET_ART_COL_BY_COLLECTIF,
 } from "../../constants/constants";
+import { getBookingsByCollectif } from "../../Redux/Reducers/bookings.slice";
+import booking from "../Booking/Booking";
+import { postSetlist } from "../../Redux/Reducers/setlist.slice";
 const PageCollectif = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
@@ -37,8 +40,12 @@ const PageCollectif = () => {
   const [collectif, setCollectif] = useState([]);
   const [artistesRequests, setArtistesRequests] = useState([]);
   const [artistes, setArtistes] = useState([]);
+  const [collectifBookings, setCollectifBookings] = useState([]);
+  const [bookingId, setBookingId] = useState(null);
+  const [artisteId, setArtisteId] = useState(null);
   const [isNotPresent, setIsNotPresent] = useState(true);
   const [message, setMessage] = useState("");
+  const [selectedArtiste, setSelectedArtiste] = useState(null);
   const { loadingUpload, errorUpload } = useSelector((state) => state.upload);
   const user = useSelector((state) => state.user);
   const { loadingUser, errorUser } = useSelector((state) => state.user);
@@ -70,7 +77,7 @@ const PageCollectif = () => {
       getCollectifByCreateur({ userId, token })
     );
     if (isRightAdmin.payload.status <= 201) {
-      setAdminMode(!adminMode);
+      setAdminMode(true);
     } else setAdminMode(false);
   };
   useEffect(() => {
@@ -110,8 +117,35 @@ const PageCollectif = () => {
         });
       }
     };
+    const getCollectifBookings = async () => {
+      if (isAdmin) {
+        let error;
+        let status;
+        try {
+          const collectifId = collectif.id;
+          const response = await dispatch(
+            getBookingsByCollectif({ token, collectifId })
+          );
+          status = response.payload.status;
+          if (status === 200) {
+            console.log(response);
+            setCollectifBookings(response.payload.data);
+          }
+          if (status >= 400) {
+            error = response.payload.error;
+            console.error(error);
+          }
+        } catch (error) {
+          console.error(error.message);
+          throw new Error(error);
+        }
+      }
+    };
     isRightAdmin();
     artisteAddPending();
+    if (collectif) {
+      getCollectifBookings();
+    }
   }, [token, user, collectif]);
   useEffect(() => {
     const getCollectif = async () => {
@@ -339,6 +373,18 @@ const PageCollectif = () => {
       throw new Error(e.message);
     }
   };
+  const handleArtisteSelection = (e, artisteId) => {
+    e.preventDefault();
+    setArtisteId(artisteId);
+    setBookingId(e.target.value);
+  };
+
+  const handleSetlistConfirmation = async (e) => {
+    e.preventDefault();
+    const body = { bookingId };
+    const response = await dispatch(postSetlist({ artisteId, body, token }));
+    console.log(response);
+  };
   return (
     <>
       <>
@@ -514,6 +560,21 @@ const PageCollectif = () => {
                 </NavLink>
               </div>
               <article>
+                <h3>Nos prochaines dates : </h3>
+                <ul>
+                  {collectifBookings.length >= 1
+                    ? collectifBookings.map((booking) => {
+                        return (
+                          <li>
+                            {booking.date}
+                            {booking.description}
+                          </li>
+                        );
+                      })
+                    : null}
+                </ul>
+              </article>
+              <article>
                 <h3>Ils aimeraient faire partie de ton collectif : </h3>
                 <ul>
                   {artistesRequests.map((artiste) => {
@@ -548,10 +609,39 @@ const PageCollectif = () => {
                   {artistes ? (
                     artistes.map((artiste) => {
                       return (
-                        <li>
+                        <li key={artiste.id}>
                           <NavLink to={`/artistes/${artiste.nom}`}>
                             {artiste.nom}
                           </NavLink>
+                          {selectedArtiste === artiste.id ? (
+                            <form
+                              onSubmit={(e) => {
+                                handleSetlistConfirmation(e);
+                              }}
+                            >
+                              <select
+                                name="date"
+                                onChange={(e) => {
+                                  handleArtisteSelection(e, artiste.id);
+                                }}
+                              >
+                                <option value="null">Choisis une date</option>
+                                {collectifBookings.map((booking) => {
+                                  return (
+                                    <option value={booking.id}>
+                                      {booking.date}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                              <Button message={`Valider`} />
+                            </form>
+                          ) : (
+                            <Button
+                              message={`Ajouter à une setlist`}
+                              onClick={() => setSelectedArtiste(artiste.id)}
+                            />
+                          )}
                         </li>
                       );
                     })

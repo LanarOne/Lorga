@@ -155,6 +155,7 @@ const ReadBookingsByCollectifId = async (collectifId) => {
     result = await Booking.findAll({ where: { collectifId, confirmation } });
     return result.map((booking) => {
       return {
+        id: booking.id,
         date: booking.date,
         time: booking.time,
         description: decodeURIComponent(booking.description),

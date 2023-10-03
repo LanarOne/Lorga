@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getRequest } from "../../api/api";
-import { GET_BOOKINGS, GET_UNCONF_BOOKINGS } from "../../constants/constants";
+import {
+  GET_BOOKINGS,
+  GET_BOOKINGS_BY_COL_ID,
+  GET_UNCONF_BOOKINGS,
+} from "../../constants/constants";
 
 export const getBookings = createAsyncThunk(
   "bookings/getBookings",
@@ -25,6 +29,25 @@ export const getUnconfirmedBookings = createAsyncThunk(
     status = response.status;
     error = response.error;
     if (status <= 201) {
+      let { data } = response.result;
+      return thunkAPI.fulfillWithValue({ data, status });
+    }
+    if (status >= 400 || error) {
+      let { message } = error;
+      return thunkAPI.rejectWithValue({ message, status });
+    }
+  }
+);
+export const getBookingsByCollectif = createAsyncThunk(
+  "bookings/getbycollectif",
+  async ({ token, collectifId }, thunkAPI) => {
+    let error;
+    let status;
+    const url = `${GET_BOOKINGS_BY_COL_ID}${collectifId}`;
+    const response = await getRequest(url, token);
+    status = response.status;
+    error = response.error;
+    if (status === 200) {
       let { data } = response.result;
       return thunkAPI.fulfillWithValue({ data, status });
     }
@@ -74,6 +97,24 @@ export const bookingSlice = createSlice({
         }
       })
       .addCase(getUnconfirmedBookings.rejected, (state, action) => {
+        if (state.loadingBookings) {
+          state.loadingBookings = false;
+          state.error = action.payload;
+        }
+      });
+    builder
+      .addCase(getBookingsByCollectif.pending, (state, action) => {
+        if (!state.loadingBookings) {
+          state.loadingBookings = true;
+        }
+      })
+      .addCase(getBookingsByCollectif.fulfilled, (state, action) => {
+        if (state.loadingBookings) {
+          state.data = action.payload;
+          state.loadingBookings = false;
+        }
+      })
+      .addCase(getBookingsByCollectif.rejected, (state, action) => {
         if (state.loadingBookings) {
           state.loadingBookings = false;
           state.error = action.payload;

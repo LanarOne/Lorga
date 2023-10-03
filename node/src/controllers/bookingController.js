@@ -183,14 +183,14 @@ const readBookingsByCollectifId = async (req, res) => {
   try {
     const collectifId = parseInt(req.params.id);
     const bookings = await BookingDAO.ReadBookingsByCollectifId(collectifId);
-    if (bookings.length === 0) {
+    if (bookings.length === 0 || !bookings) {
       return res
         .status(404)
         .json({ message: `Il n'y a pas de date prévu pour ce collectif` });
     }
     return res
       .status(200)
-      .json({ message: `Date trouvées par collectif`, data: bookings });
+      .json({ message: `Dates trouvées par collectif`, data: bookings });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: `Erreur interne`, data: error });
