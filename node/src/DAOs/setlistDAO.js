@@ -1,9 +1,23 @@
 import Setlist from "../models/Setlist.js";
 
 const Create = async (artisteId, bookingId) => {
-  let result;
+  let result = null;
   try {
-    result = Setlist.create({ artisteId, bookingId });
+    result = await Setlist.create({ artisteId, bookingId });
+    return result;
+  } catch (e) {
+    console.error(e.message);
+    return new Error(e);
+  }
+};
+
+const alreadyExist = async (artisteId, bookingId) => {
+  let result = null;
+  try {
+    result = await Setlist.findAll({ where: { artisteId, bookingId } });
+    if (result.length === 0) {
+      return null;
+    }
     return result;
   } catch (e) {
     console.error(e.message);
@@ -58,4 +72,5 @@ export const SetlistDAO = {
   ReadByBookingId,
   ReadById,
   DeleteOne,
+  alreadyExist,
 };

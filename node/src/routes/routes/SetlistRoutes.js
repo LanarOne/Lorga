@@ -8,12 +8,7 @@ const SetlistRoutes = (app, sm) => {
   router
     .post("/create/:id", sm, jwtMiddleware, SetlistController.createSetlist)
     .get("/getbyid/:id", sm, jwtMiddleware, SetlistController.readSetlistById)
-    .get(
-      "/getbybookingid/:id",
-      sm,
-      jwtMiddleware,
-      SetlistController.readSetlistByBookingId
-    )
+    .get("/getbybookingid/:id", sm, SetlistController.readSetlistByBookingId)
     .get(
       "/getbyartisteid/:id",
       sm,

@@ -103,7 +103,7 @@ export const bookingSlice = createSlice({
         }
       });
     builder
-      .addCase(getBookingsByCollectif.pending, (state, action) => {
+      .addCase(getBookingsByCollectif.pending, (state) => {
         if (!state.loadingBookings) {
           state.loadingBookings = true;
         }

@@ -32,6 +32,7 @@ export const GET_COL_BY_ID = `collectif/readone/`;
 export const GET_COLLECTIF_BY_CREATEUR = `collectif/readbycreateur/`;
 export const GET_ONE_BOISSON = `boisson/readonebyid/`;
 export const GET_PHOTO_BY_ID = `photo/readone/`;
+export const GET_SETLIST_BY_BOOKING = `setlist/getbybookingid/`;
 export const GET_UNCONFIRMED_ARTISTES = `artiste/readunconfirmedartistes`;
 export const GET_UNCONF_BOOKINGS = `booking/readunconfirmed`;
 export const GET_UNCONFIRMED_COLLECTIFS = `collectif/readunconfirmedcollectifs`;

@@ -4,16 +4,19 @@ import { postRequest } from "../../api/api";
 
 export const postSetlist = createAsyncThunk(
   "setlist/create",
-  async ({ artisteId, body, token }, thunkAPI) => {
+  async ({ artisteId, bookingId, token }, thunkAPI) => {
     let error;
     let status;
     try {
       const url = `${CREATE_SETLIST}${artisteId}`;
+      const body = { bookingId };
       const response = await postRequest(url, body, token);
       status = response.status;
       error = response.error;
       if (status === 201) {
-        console.log(response);
+        let { data } = response.result;
+        let { message } = response.result;
+        return thunkAPI.fulfillWithValue({ data, message, status });
       }
       if (status >= 400) {
         console.error(response);
@@ -40,6 +43,26 @@ export const SetlistSlice = createSlice({
     getBookingId: (state, action) => {
       return { ...state, bookingId: action.payload };
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(postSetlist.pending, (state) => {
+        if (!state.loadingSetlist) {
+          state.loadingSetlist = true;
+        }
+      })
+      .addCase(postSetlist.fulfilled, (state, action) => {
+        if (state.loadingSetlist) {
+          state.data = action.payload;
+          state.loadingSetlist = false;
+        }
+      })
+      .addCase(postSetlist.rejected, (state, action) => {
+        if (state.loadingSetlist) {
+          state.errorSetlist = action.payload;
+          state.loadingSetlist = false;
+        }
+      });
   },
 });
 export const { getArtisteId, getBookingId } = SetlistSlice.actions;

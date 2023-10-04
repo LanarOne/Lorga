@@ -22,15 +22,26 @@ const createSetlist = async (req, res) => {
     if (!bookingId || !artisteId) {
       return res.status(406).json({ message: `Il manque des information` });
     }
-    const setlist = await SetlistDAO.Create(bookingId, artisteId);
+    const existingEntry = await SetlistDAO.alreadyExist(artisteId, bookingId);
+    console.log(existingEntry);
+    if (existingEntry) {
+      return res.status(400).json({
+        message: `Artiste déjà présent dans la setlist`,
+        data: existingEntry,
+      });
+    }
+    if (!existingEntry) {
+      const setlist = await SetlistDAO.Create(artisteId, bookingId);
+      return res.status(201).json({
+        message: `Artiste correctement ajouté à la setlist`,
+        data: setlist,
+      });
+    }
     if (!setlist) {
       return res
         .status(500)
-        .json({ message: `Erreur pendant la création de la setlist` });
+        .json({ message: `Erreur pendant l'ajout à la setlist` });
     }
-    return res
-      .status(201)
-      .json({ message: `Setlist correctement créée`, data: setlist });
   } catch (e) {
     return res.status(500).json({ message: `Erreur interne`, data: e });
   }

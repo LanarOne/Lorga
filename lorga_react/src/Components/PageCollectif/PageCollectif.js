@@ -33,6 +33,10 @@ import {
 import { getBookingsByCollectif } from "../../Redux/Reducers/bookings.slice";
 import booking from "../Booking/Booking";
 import { postSetlist } from "../../Redux/Reducers/setlist.slice";
+import { getDate } from "../../Redux/Reducers/booking.slice";
+import { manageDate } from "../../Helpers/dates";
+import { getSetlistByBookingId } from "../../Redux/Reducers/setlists.slice";
+import artiste from "../Artiste/Artiste";
 const PageCollectif = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
@@ -63,6 +67,7 @@ const PageCollectif = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminMode, setAdminMode] = useState(false);
+  const date = manageDate();
 
   if (!token) {
     window.location.href = "/login";
@@ -81,33 +86,6 @@ const PageCollectif = () => {
     } else setAdminMode(false);
   };
   useEffect(() => {
-    const isRightAdmin = async () => {
-      let status;
-      let error;
-      if (collectif && user) {
-        try {
-          let userId = user.userId;
-          const response = await dispatch(
-            getCollectifByCreateur({ userId, token })
-          );
-          if (response) {
-            status = await response.payload.status;
-            error = await response.payload.error;
-            if (status <= 201) {
-              let colCrea = await response.payload.result.data.nom;
-              if (colCrea === collectif.nom || user.roleId >= 6) {
-                setIsAdmin(true);
-              } else {
-                setIsAdmin(false);
-              }
-            }
-          }
-        } catch (e) {
-          throw new Error(e.message);
-        }
-      }
-    };
-
     const artisteAddPending = () => {
       if (user && collectif && user.artisteName) {
         artistesRequests.map((artiste) => {
@@ -117,35 +95,7 @@ const PageCollectif = () => {
         });
       }
     };
-    const getCollectifBookings = async () => {
-      if (isAdmin) {
-        let error;
-        let status;
-        try {
-          const collectifId = collectif.id;
-          const response = await dispatch(
-            getBookingsByCollectif({ token, collectifId })
-          );
-          status = response.payload.status;
-          if (status === 200) {
-            console.log(response);
-            setCollectifBookings(response.payload.data);
-          }
-          if (status >= 400) {
-            error = response.payload.error;
-            console.error(error);
-          }
-        } catch (error) {
-          console.error(error.message);
-          throw new Error(error);
-        }
-      }
-    };
-    isRightAdmin();
     artisteAddPending();
-    if (collectif) {
-      getCollectifBookings();
-    }
   }, [token, user, collectif]);
   useEffect(() => {
     const getCollectif = async () => {
@@ -255,16 +205,91 @@ const PageCollectif = () => {
     getArtistes();
   }, [user, collectif]);
   useEffect(() => {
-    const getData = async () => {
-      await dispatch(getNom(collectif.nom));
-      await dispatch(getStyle(collectif.style));
-      await dispatch(getDescription(collectif.description));
-      await dispatch(getInfluences(collectif.influences));
-      await dispatch(getPhotoId(collectif.photoId));
+    const getArtistesOnSetlist = async () => {
+      let error;
+      let status;
+      let combinedData = [];
+      try {
+        for (const booking of collectifBookings) {
+          let bookingId = booking.id;
+          const response = await dispatch(getSetlistByBookingId({ bookingId }));
+          combinedData.push({
+            booking: booking,
+            artistes: response.payload.data,
+          });
+          return combinedData;
+        }
+      } catch (e) {
+        console.error(e);
+      }
     };
+    getArtistesOnSetlist();
+  }, [collectifBookings]);
+  useEffect(() => {
+    const getCollectifBookings = async () => {
+      let error;
+      let status;
+      try {
+        const collectifId = collectif.id;
+        const response = await dispatch(
+          getBookingsByCollectif({ token, collectifId })
+        );
+        status = response.payload.status;
+        if (status === 200) {
+          setCollectifBookings(response.payload.data);
+        }
+        if (status >= 400) {
+          error = response.payload.error;
+          console.error(error);
+        }
+      } catch (error) {
+        console.error(error.message);
+        throw new Error(error);
+      }
+    };
+    const isRightAdmin = async () => {
+      let status;
+      let error;
+      if (collectif && user) {
+        try {
+          let userId = user.userId;
+          const response = await dispatch(
+            getCollectifByCreateur({ userId, token })
+          );
+          if (response) {
+            status = await response.payload.status;
+            error = await response.payload.error;
+            if (status <= 201) {
+              let colCrea = await response.payload.result.data.nom;
+              if (colCrea === collectif.nom || user.roleId >= 6) {
+                setIsAdmin(true);
+              } else {
+                setIsAdmin(false);
+              }
+            }
+          }
+        } catch (e) {
+          throw new Error(e.message);
+        }
+      }
+    };
+    const getData = async () => {
+      if (isAdmin) {
+        await dispatch(getNom(collectif.nom));
+        await dispatch(getStyle(collectif.style));
+        await dispatch(getDescription(collectif.description));
+        await dispatch(getInfluences(collectif.influences));
+        await dispatch(getPhotoId(collectif.photoId));
+      }
+    };
+    if (collectif) {
+      getCollectifBookings();
+    }
     if (collectif && collectif.nom) {
       getData();
     }
+
+    isRightAdmin();
   }, [collectif]);
 
   const handleSubmit = async (e) => {
@@ -375,15 +400,27 @@ const PageCollectif = () => {
   };
   const handleArtisteSelection = (e, artisteId) => {
     e.preventDefault();
-    setArtisteId(artisteId);
-    setBookingId(e.target.value);
+    setArtisteId(parseInt(artisteId));
+    setBookingId(parseInt(e.target.value));
   };
 
   const handleSetlistConfirmation = async (e) => {
     e.preventDefault();
-    const body = { bookingId };
-    const response = await dispatch(postSetlist({ artisteId, body, token }));
-    console.log(response);
+    const response = await dispatch(
+      postSetlist({ artisteId, bookingId, token })
+    );
+    const status = response.payload.status;
+    const error = response.payload.error;
+    if (status === 201) {
+      setSelectedArtiste(null);
+      setMessage(response.payload.message);
+      toggleModal();
+    }
+    if (status >= 400) {
+      setSelectedArtiste(null);
+      setMessage(error.message);
+      toggleModal();
+    }
   };
   return (
     <>
@@ -516,7 +553,7 @@ const PageCollectif = () => {
                 ) : null}
               </article>
               <article>
-                <h3>Ils font parti du collectif : </h3>
+                <h3>Ils font partie du collectif : </h3>
                 <ul>
                   {artistes ? (
                     artistes.map((artiste) => {
@@ -564,18 +601,23 @@ const PageCollectif = () => {
                 <ul>
                   {collectifBookings.length >= 1
                     ? collectifBookings.map((booking) => {
-                        return (
-                          <li>
-                            {booking.date}
-                            {booking.description}
-                          </li>
-                        );
+                        if (booking.date >= date) {
+                          return (
+                            <li>
+                              {booking.date}
+                              <br />
+                              {booking.description}
+                            </li>
+                          );
+                        }
                       })
                     : null}
                 </ul>
               </article>
               <article>
-                <h3>Ils aimeraient faire partie de ton collectif : </h3>
+                {artistesRequests.length >= 1 ? (
+                  <h3>Ils aimeraient faire partie de ton collectif : </h3>
+                ) : null}
                 <ul>
                   {artistesRequests.map((artiste) => {
                     return (
@@ -626,13 +668,17 @@ const PageCollectif = () => {
                                 }}
                               >
                                 <option value="null">Choisis une date</option>
-                                {collectifBookings.map((booking) => {
-                                  return (
-                                    <option value={booking.id}>
-                                      {booking.date}
-                                    </option>
-                                  );
-                                })}
+                                {collectifBookings.length >= 1
+                                  ? collectifBookings.map((booking) => {
+                                      if (booking.date >= date) {
+                                        return (
+                                          <option value={booking.id}>
+                                            {booking.date}
+                                          </option>
+                                        );
+                                      }
+                                    })
+                                  : null}
                               </select>
                               <Button message={`Valider`} />
                             </form>
