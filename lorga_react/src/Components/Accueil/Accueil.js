@@ -7,6 +7,7 @@ import { GET_COL_BY_ID } from "../../constants/constants";
 import photoPda from "../../public/medias/photoPda.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { getBookings } from "../../Redux/Reducers/bookings.slice";
+import { getSetlistByBookingId } from "../../Redux/Reducers/setlists.slice";
 
 const Accueil = () => {
   const [dateDuJour, setDateDuJour] = useState("");
@@ -31,7 +32,7 @@ const Accueil = () => {
       let status = result.status;
       // let message = result.message;
       if (status >= 400) {
-        return new Error(error.message);
+        return new Error(error);
       }
       return result.result.data;
     } catch (error) {
@@ -55,8 +56,12 @@ const Accueil = () => {
   async function displayBookings() {
     try {
       const toDisplay = sets.map(async (set) => {
-        const { date, time, collectifId, description } = set;
+        const { date, time, collectifId, description, id } = set;
+        const bookingId = parseInt(id);
         const collectif = await getCollectifById(collectifId);
+        const bookings = await dispatch(getSetlistByBookingId({ bookingId }));
+
+        const setlist = bookings.payload.data;
         let dateFr = `${date.slice(8, 10)}-${date.slice(5, 7)}-${date.slice(
           0,
           4
@@ -70,6 +75,7 @@ const Accueil = () => {
           nom,
           description,
           colDescr,
+          setlist,
         };
       });
       return await Promise.all(toDisplay);
@@ -129,6 +135,14 @@ const Accueil = () => {
                     </h3>
                     <p>{article.description}</p>
                     <p>{article.colDescr}</p>
+                    {article.setlist ? <h3>Setlist :</h3> : null}
+                    <ul>
+                      {article.setlist && article.setlist.length >= 1
+                        ? article.setlist.map((artiste) => {
+                            return <li>{artiste.nom}</li>;
+                          })
+                        : null}
+                    </ul>
                   </article>
                 </>
               );

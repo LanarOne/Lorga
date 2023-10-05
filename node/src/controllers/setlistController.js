@@ -78,7 +78,16 @@ const readSetlistByBookingId = async (req, res) => {
     const artistesOnSetlist = [];
     for (const entry of result) {
       const artisteId = entry.artisteId;
-      const artiste = await ArtisteDAO.ReadById(artisteId);
+      const response = await ArtisteDAO.ReadById(artisteId);
+      const artiste = {
+        id: response.id,
+        nom: response.nom,
+        description: response.description,
+        influences: response.influences,
+        style: response.style,
+        photoId: response.photoId,
+        setlistId: entry.id,
+      };
       artistesOnSetlist.push(artiste);
     }
     return res

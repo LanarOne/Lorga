@@ -32,8 +32,8 @@ import {
 } from "../../constants/constants";
 import { getBookingsByCollectif } from "../../Redux/Reducers/bookings.slice";
 import booking from "../Booking/Booking";
-import { postSetlist } from "../../Redux/Reducers/setlist.slice";
-import { getDate } from "../../Redux/Reducers/booking.slice";
+import { deleteSetlist, postSetlist } from "../../Redux/Reducers/setlist.slice";
+import { deleteBooking, getDate } from "../../Redux/Reducers/booking.slice";
 import { manageDate } from "../../Helpers/dates";
 import { getSetlistByBookingId } from "../../Redux/Reducers/setlists.slice";
 import artiste from "../Artiste/Artiste";
@@ -45,6 +45,7 @@ const PageCollectif = () => {
   const [artistesRequests, setArtistesRequests] = useState([]);
   const [artistes, setArtistes] = useState([]);
   const [collectifBookings, setCollectifBookings] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [bookingId, setBookingId] = useState(null);
   const [artisteId, setArtisteId] = useState(null);
   const [isNotPresent, setIsNotPresent] = useState(true);
@@ -204,42 +205,37 @@ const PageCollectif = () => {
     };
     getArtistes();
   }, [user, collectif]);
+
   useEffect(() => {
-    const getArtistesOnSetlist = async () => {
+    const getEventDatas = async () => {
       let error;
       let status;
       let combinedData = [];
       try {
-        for (const booking of collectifBookings) {
-          let bookingId = booking.id;
-          const response = await dispatch(getSetlistByBookingId({ bookingId }));
-          combinedData.push({
-            booking: booking,
-            artistes: response.payload.data,
-          });
-          return combinedData;
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    getArtistesOnSetlist();
-  }, [collectifBookings]);
-  useEffect(() => {
-    const getCollectifBookings = async () => {
-      let error;
-      let status;
-      try {
         const collectifId = collectif.id;
-        const response = await dispatch(
+        const bookingsResponse = await dispatch(
           getBookingsByCollectif({ token, collectifId })
         );
-        status = response.payload.status;
+        status = bookingsResponse.payload.status;
         if (status === 200) {
-          setCollectifBookings(response.payload.data);
+          const bookings = bookingsResponse.payload.data;
+          setBookings(bookings);
+          if (bookings.length >= 1) {
+            for (const booking of bookings) {
+              let bookingId = booking.id;
+              const artistesResponse = await dispatch(
+                getSetlistByBookingId({ bookingId })
+              );
+              combinedData.push({
+                booking: booking,
+                artistes: artistesResponse.payload.data,
+              });
+            }
+          }
+          setCollectifBookings(combinedData);
         }
         if (status >= 400) {
-          error = response.payload.error;
+          error = bookingsResponse.payload.error;
           console.error(error);
         }
       } catch (error) {
@@ -283,7 +279,7 @@ const PageCollectif = () => {
       }
     };
     if (collectif) {
-      getCollectifBookings();
+      getEventDatas();
     }
     if (collectif && collectif.nom) {
       getData();
@@ -420,6 +416,37 @@ const PageCollectif = () => {
       setSelectedArtiste(null);
       setMessage(error.message);
       toggleModal();
+    }
+  };
+  const handleSetlistDelete = async (e, id) => {
+    const response = await dispatch(deleteSetlist({ id, token }));
+    let { status } = response.payload;
+    if (status === 200) {
+      let { message } = response.payload;
+      setMessage(message);
+      toggleModal();
+    }
+  };
+  const handleEventDelete = async (e, id) => {
+    e.preventDefault();
+    try {
+      let bookingId = parseInt(id);
+      const setlistToDelete = await dispatch(
+        getSetlistByBookingId({ bookingId })
+      );
+      let { status } = setlistToDelete.payload;
+      if (status === 200) {
+        const arrayToDelete = setlistToDelete.payload.data;
+        arrayToDelete.map(async (toDelete) => {
+          const id = parseInt(toDelete.setlistId);
+          const deletion = await dispatch(deleteSetlist({ id, token }));
+          console.log(deletion);
+        });
+      }
+
+      // const response = dispatch(deleteBooking({ id, token }));
+    } catch (e) {
+      console.error(e.message);
     }
   };
   return (
@@ -583,6 +610,34 @@ const PageCollectif = () => {
                   )}
                 </ul>
               </article>
+              <article>
+                <h3>Les prochaines dates : </h3>
+                <ul>
+                  {collectifBookings.length >= 1
+                    ? collectifBookings.map((booking) => {
+                        if (booking.booking.date >= date) {
+                          return (
+                            <li>
+                              {booking.booking.date}
+                              <br />
+                              {booking.booking.description}
+                              <br />
+                              {booking.artistes ? <span>Setlist:</span> : null}
+                              <ul>
+                                {booking.artistes &&
+                                booking.artistes.length >= 1
+                                  ? booking.artistes.map((artiste) => {
+                                      return <li>{artiste.nom}</li>;
+                                    })
+                                  : null}
+                              </ul>
+                            </li>
+                          );
+                        }
+                      })
+                    : null}
+                </ul>
+              </article>
             </>
           ) : (
             <p>{message}</p>
@@ -597,16 +652,46 @@ const PageCollectif = () => {
                 </NavLink>
               </div>
               <article>
-                <h3>Nos prochaines dates : </h3>
+                {collectifBookings.length >= 1 ? (
+                  <h3>Nos prochaines dates : </h3>
+                ) : null}
                 <ul>
                   {collectifBookings.length >= 1
                     ? collectifBookings.map((booking) => {
-                        if (booking.date >= date) {
+                        if (booking.booking.date >= date) {
                           return (
-                            <li>
-                              {booking.date}
+                            <li key={booking.booking.id}>
+                              {booking.booking.date}{" "}
+                              <Button
+                                message={"X"}
+                                onClick={(e) => {
+                                  handleEventDelete(e, booking.booking.id);
+                                }}
+                              />
                               <br />
-                              {booking.description}
+                              {booking.booking.description}
+                              <br />
+                              {booking.artistes ? <span>Setlist:</span> : null}
+                              <ul>
+                                {booking.artistes
+                                  ? booking.artistes.map((artiste) => {
+                                      return (
+                                        <li>
+                                          {artiste.nom}{" "}
+                                          <Button
+                                            message={"X"}
+                                            onClick={(e) => {
+                                              handleSetlistDelete(
+                                                e,
+                                                artiste.setlistId
+                                              );
+                                            }}
+                                          />
+                                        </li>
+                                      );
+                                    })
+                                  : null}
+                              </ul>
                             </li>
                           );
                         }
@@ -668,12 +753,12 @@ const PageCollectif = () => {
                                 }}
                               >
                                 <option value="null">Choisis une date</option>
-                                {collectifBookings.length >= 1
+                                {collectifBookings
                                   ? collectifBookings.map((booking) => {
-                                      if (booking.date >= date) {
+                                      if (booking.booking.date >= date) {
                                         return (
-                                          <option value={booking.id}>
-                                            {booking.date}
+                                          <option value={booking.booking.id}>
+                                            {booking.booking.date}
                                           </option>
                                         );
                                       }
