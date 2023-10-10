@@ -31,6 +31,7 @@ export const signupSlice = createSlice({
     confirmation: "",
     username: "",
     zipCode: "",
+    DOB: null,
     loading: false,
     error: null,
   },
@@ -49,6 +50,9 @@ export const signupSlice = createSlice({
     },
     getZipCode: (state, action) => {
       return { ...state, zipCode: action.payload };
+    },
+    getDOB: (state, action) => {
+      return { ...state, DOB: action.payload };
     },
   },
   extraReducers: (builder) => {
@@ -78,5 +82,6 @@ export const {
   getConfirmation,
   getUsername,
   getZipCode,
+  getDOB,
 } = signupSlice.actions;
 export default signupSlice.reducer;

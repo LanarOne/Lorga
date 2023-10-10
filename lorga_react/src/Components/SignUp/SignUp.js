@@ -5,6 +5,7 @@ import mc from "./signup.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getConfirmation,
+  getDOB,
   getEmail,
   getPassword,
   getUsername,
@@ -14,7 +15,7 @@ import {
 import Modale from "../smallElts/Modale/Modale";
 
 const SignUp = () => {
-  const { email, password, confirmation, username, zipCode } = useSelector(
+  const { email, password, confirmation, username, zipCode, DOB } = useSelector(
     (store) => store.signup
   );
   const [isOpen, setIsOpen] = useState(false);
@@ -38,6 +39,9 @@ const SignUp = () => {
   const handleZipCode = (e) => {
     dispatch(getZipCode(e));
   };
+  const handleDOB = (e) => {
+    dispatch(getDOB(e));
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -47,7 +51,7 @@ const SignUp = () => {
     }
     if (password === confirmation) {
       try {
-        const body = { email, password, username, zipCode };
+        const body = { email, password, username, zipCode, DOB };
         const response = await dispatch(postSignup({ body }));
         const { status, message } = response.payload;
         if (status <= 201) {
@@ -126,6 +130,16 @@ const SignUp = () => {
               value={zipCode}
               onChange={(e) => {
                 handleZipCode(e.target.value);
+              }}
+            />
+          </div>
+          <div>
+            <label htmlFor="DOB">Ta date de naissance : </label>
+            <input
+              type="date"
+              value={DOB}
+              onChange={(e) => {
+                handleDOB(e.target.value);
               }}
             />
           </div>

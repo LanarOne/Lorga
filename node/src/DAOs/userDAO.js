@@ -1,10 +1,26 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 
-const Create = async (email, password, username, zipCode, roleId) => {
+const Create = async (
+  email,
+  password,
+  username,
+  zipCode,
+  DOB,
+  confirmationToken,
+  roleId
+) => {
   let result = null;
   try {
-    result = User.create({ email, password, username, zipCode, roleId });
+    result = User.create({
+      email,
+      password,
+      username,
+      zipCode,
+      DOB,
+      confirmationToken,
+      roleId,
+    });
     return result;
   } catch (error) {
     console.error(error);
@@ -14,8 +30,9 @@ const Create = async (email, password, username, zipCode, roleId) => {
 const ReadUserByEmail = async (email) => {
   let result = null;
   try {
+    let confirmation = true;
     result = await User.findOne({
-      where: { email: email },
+      where: { email: email, confirmation: confirmation },
     });
     if (!result) {
       return result;
@@ -25,6 +42,7 @@ const ReadUserByEmail = async (email) => {
       email: result.email,
       password: result.password,
       username: decodeURIComponent(result.username),
+      confirmation: result.confirmation,
     };
   } catch (err) {
     console.error(err.message);

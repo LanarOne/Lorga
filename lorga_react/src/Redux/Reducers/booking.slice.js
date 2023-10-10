@@ -55,6 +55,8 @@ export const confirmBooking = createAsyncThunk(
   }
 );
 
+// export const updateBooking = createAsyncThunk("booking/update", async({}));
+
 export const deleteBooking = createAsyncThunk(
   "booking/delete",
   async ({ id, token }, thunkAPI) => {

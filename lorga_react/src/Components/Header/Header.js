@@ -16,7 +16,6 @@ const Header = () => {
   const [collectif, setCollectif] = useState([]);
   const dispatch = useDispatch();
   const token = window.localStorage.getItem("token");
-  const [collectifName, setCollectifName] = useState("");
   function deconexion() {
     localStorage.removeItem("token");
     window.location.href = "/";
@@ -25,9 +24,7 @@ const Header = () => {
     setDisplayDate(manageDisplayDate());
   }, []);
   useEffect(() => {
-    if (token) {
-      dispatch(fetchUser({ token }));
-    }
+    dispatch(fetchUser({ token }));
   }, [token]);
   useEffect(() => {
     const getDatas = async () => {
@@ -54,7 +51,6 @@ const Header = () => {
       }
     };
     if (user) {
-      setCollectifName(encodeURIComponent(collectif.nom));
       getDatas();
     }
   }, [user]);
@@ -95,18 +91,22 @@ const Header = () => {
                     <NavLink>Gérer le collectif {collectif.nom}</NavLink>
                   </li>
                   <li>
-                    <NavLink to={`/artistes/${user.artisteName}`}>
+                    <NavLink
+                      to={`/artistes/${encodeURIComponent(user.artisteName)}`}
+                    >
                       Gérer ma page {user.artisteName}
                     </NavLink>
                   </li>
                 </>
               ) : user.roleId <= 5 ? (
-                <NavLink to={`/collectifs/${collectifName}`}>
+                <NavLink
+                  to={`/collectifs/${encodeURIComponent(collectif.nom)}`}
+                >
                   Gérer mon collectif {collectif.nom}
                 </NavLink>
-              ) : (
+              ) : user.roleId >= 6 ? (
                 <NavLink to={"/admin"}>Admin</NavLink>
-              )}
+              ) : null}
             </ul>
           </div>
           <img src={logo2} alt="Logo de Lorga" />

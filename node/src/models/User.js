@@ -33,6 +33,18 @@ const User = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    DOB: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    confirmationToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    confirmation: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     timestamps: true,

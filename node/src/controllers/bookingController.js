@@ -46,7 +46,7 @@ const confirmBooking = async (req, res) => {
     const id = parseInt(req.params.id);
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
-    if (!admin || admin <= 5) {
+    if (!admin || admin <= 2) {
       return res
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });

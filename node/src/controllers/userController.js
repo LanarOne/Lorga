@@ -5,12 +5,14 @@ import { UserDAO } from "../DAOs/userDAO.js";
 import { jwtSign, jwtVerify } from "../jwt/jwtUtils.js";
 import { stringIsFilled } from "../utils/stringUtils.js";
 import { isAdmin } from "../utils/adminUtils.js";
+import { generateConfirmationToken } from "../utils/generateConfirmationToken.js";
+import sendEmail from "../services/emailService.js";
 
 const signUp = async (req, res) => {
   try {
     const roleId = 1;
     const password = await bcrypt.hash(req.body.password, 10);
-    let { email, username, zipCode } = req.body;
+    let { email, username, zipCode, DOB } = req.body;
     email = decodeURIComponent(email);
     if (!emailIsValid(email)) {
       return res
@@ -27,25 +29,31 @@ const signUp = async (req, res) => {
       !stringIsFilled(email) ||
       !stringIsFilled(username) ||
       !stringIsFilled(password) ||
-      !zipCode
+      !zipCode ||
+      !DOB
     ) {
       return res
         .status(400)
         .json({ message: `Veuillez remplir tous les champs` });
     }
+    const confirmationToken = generateConfirmationToken();
     const user = await UserDAO.Create(
       email,
       password,
       username,
       zipCode,
+      DOB,
+      confirmationToken,
       roleId
     );
-    const id = user.id;
-    const token = jwtSign(id);
+    const confirmationLink = `http://localhost:3000/confirmationemail/${user.confirmationToken}`;
+    const emailContent = `<h2>Bienvenue à Lorganiq!</h2>
+<p>Confirme ton adresse mail en cliquant le lien ci-dessous :</p>
+<a href="${confirmationLink}">Confirmation!</a>`;
+    await sendEmail(user.email, "Confirme ton mail!", emailContent);
     return res.status(201).json({
       message: `utilisateur ${user.username} créé avec succès`,
       data: user,
-      token,
     });
   } catch (error) {
     console.error(error.message);

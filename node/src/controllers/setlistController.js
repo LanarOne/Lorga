@@ -23,7 +23,6 @@ const createSetlist = async (req, res) => {
       return res.status(406).json({ message: `Il manque des information` });
     }
     const existingEntry = await SetlistDAO.alreadyExist(artisteId, bookingId);
-    console.log(existingEntry);
     if (existingEntry) {
       return res.status(400).json({
         message: `Artiste déjà présent dans la setlist`,

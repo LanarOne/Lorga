@@ -31,12 +31,10 @@ import {
   GET_ART_COL_BY_COLLECTIF,
 } from "../../constants/constants";
 import { getBookingsByCollectif } from "../../Redux/Reducers/bookings.slice";
-import booking from "../Booking/Booking";
 import { deleteSetlist, postSetlist } from "../../Redux/Reducers/setlist.slice";
-import { deleteBooking, getDate } from "../../Redux/Reducers/booking.slice";
+import { deleteBooking } from "../../Redux/Reducers/booking.slice";
 import { manageDate } from "../../Helpers/dates";
 import { getSetlistByBookingId } from "../../Redux/Reducers/setlists.slice";
-import artiste from "../Artiste/Artiste";
 const PageCollectif = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
@@ -434,7 +432,7 @@ const PageCollectif = () => {
       const setlistToDelete = await dispatch(
         getSetlistByBookingId({ bookingId })
       );
-      let { status } = setlistToDelete.payload;
+      let status = setlistToDelete.payload.status;
       if (status === 200) {
         const arrayToDelete = setlistToDelete.payload.data;
         arrayToDelete.map(async (toDelete) => {
@@ -444,7 +442,18 @@ const PageCollectif = () => {
         });
       }
 
-      // const response = dispatch(deleteBooking({ id, token }));
+      const response = await dispatch(deleteBooking({ id, token }));
+      status = response.payload.status;
+      if (status === 200) {
+        let message = response.payload.message;
+        setMessage(message);
+        toggleModal();
+      }
+      if (status >= 400) {
+        let { error } = response.payload;
+        setMessage(error.message);
+        toggleModal();
+      }
     } catch (e) {
       console.error(e.message);
     }

@@ -102,9 +102,10 @@ const Accueil = () => {
     manageData();
   }, [data, sets.length]);
   async function sortBookings() {
-    return data.filter(
+    const filteredBookings = data.filter(
       (booking) => booking.collectifId && booking.date >= dateDuJour
     );
+    return filteredBookings.sort((a, b) => new Date(a.date) - new Date(b.date));
   }
 
   return (
