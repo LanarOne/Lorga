@@ -13,7 +13,6 @@ export const getBookings = createAsyncThunk(
     let error = response.error;
     let status = response.status;
     if (error) {
-      console.error(error, status);
       return { data: status, error };
     }
     return response.result.data;

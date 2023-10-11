@@ -1,10 +1,5 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../connection/connection.js";
-import Role from "./Role.js";
-import Booking from "./Booking.js";
-import Collectif from "./Collectif.js";
-import Admin_collectif from "./Admin_collectif.js";
-import Artiste from "./Artiste.js";
 
 const User = sequelize.define(
   "user",

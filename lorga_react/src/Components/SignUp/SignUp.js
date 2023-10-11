@@ -55,7 +55,6 @@ const SignUp = () => {
         const response = await dispatch(postSignup({ body }));
         const { status, message } = response.payload;
         if (status <= 201) {
-          localStorage.setItem("token", response.payload.result.token);
           window.location.href = "/";
         }
         if (status >= 400) {

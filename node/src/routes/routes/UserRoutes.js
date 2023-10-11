@@ -17,6 +17,11 @@ const userRoutes = (app, sm) => {
     jwtMiddleware,
     UserController.updateRoleId
   );
+  router.put(
+    "/confirmationemail/:confirmationToken",
+    sm,
+    UserController.emailConfirmation
+  );
   router.delete("/delete/:id", sm, jwtMiddleware, UserController.deleteOne);
   router.post("/*", sm, wrongRoute.wrongPath);
   router.get("/*", sm, wrongRoute.wrongPath);

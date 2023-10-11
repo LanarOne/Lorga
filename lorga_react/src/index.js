@@ -21,6 +21,7 @@ import AddBoisson from "./Admin/addBoisson/AddBoisson";
 import Carte from "./Components/Carte/Carte";
 import PageBoisson from "./Components/PageBoisson/PageBoisson";
 import Booking from "./Components/Booking/Booking";
+import ConfirmationEmail from "./Components/ConfirmationEmail/ConfirmationEmail";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -43,6 +44,10 @@ root.render(
           <Route path={"/carte"} element={<Carte />} />
           <Route path={"/carte/:boissonid"} element={<PageBoisson />} />
           <Route path={"/booking"} element={<Booking />} />
+          <Route
+            path={"/confirmationemail/:confirmationToken"}
+            element={<ConfirmationEmail />}
+          />
           <Route path={"/*"} element={<EmptyPages />} />
         </Routes>
       </BrowserRouter>

@@ -3,6 +3,7 @@ export const CONFIRM_ARTISTE = `artiste/confirmation/`;
 export const CONFIRM_ART_COL = `artiste_collectif/confirmation/`;
 export const CONFIRM_BOOKING = `booking/confirmation/`;
 export const CONFIRM_COLLECTIF = `collectif/confirmation/`;
+export const CONFIRM_USER = `users/confirmationemail/`;
 export const CREATE_ARTISTE = `artiste/create/`;
 export const CREATE_ART_COL = `artiste_collectif/create/`;
 export const CREATE_BOISSON = `boisson/create`;

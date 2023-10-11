@@ -39,11 +39,12 @@ const Login = () => {
       const body = { email, password };
       const response = await dispatch(postLogin({ body }));
       const { status, message } = response.payload;
-      if (status <= 201) {
+      const isConfirmedUser = response.payload.result.data.confirmation;
+      if (status <= 201 && isConfirmedUser) {
         localStorage.setItem("token", response.payload.result.token);
         return response;
       }
-      if (status >= 400) {
+      if (status >= 400 || !isConfirmedUser) {
         setAlertElt(<h2>{message}</h2>);
         toggleModal();
       }

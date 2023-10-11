@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
+import user from "../models/User.js";
 
 const Create = async (
   email,
@@ -25,6 +26,27 @@ const Create = async (
   } catch (error) {
     console.error(error);
     return Error(error.message);
+  }
+};
+
+const Confirm = async (confirmationToken) => {
+  let result;
+  try {
+    const confirmation = true;
+    result = await User.findOne({
+      where: { confirmationToken: confirmationToken },
+    });
+    if (!result || result.length === 0) {
+      return result;
+    }
+    const user = await User.update(
+      { confirmation },
+      { where: { confirmationToken: confirmationToken } }
+    );
+    return result, user;
+  } catch (error) {
+    console.error(error.message);
+    throw new Error(error);
   }
 };
 const ReadUserByEmail = async (email) => {
@@ -80,6 +102,7 @@ const ReadUserById = async (id) => {
       email: result.email,
       username: decodeURIComponent(result.username),
       zipcode: result.zipCode,
+      confirmation: result.confirmation,
       roleId: result.roleId,
     };
   } catch (error) {
@@ -141,6 +164,7 @@ const DeleteUser = async (id) => {
 };
 export const UserDAO = {
   Create,
+  Confirm,
   ReadUserById,
   ReadAllUsers,
   ReadUserByEmail,

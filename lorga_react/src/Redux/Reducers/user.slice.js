@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getUser } from "../../Helpers/usersHelper";
 import {
+  CONFIRM_USER,
   GET_ADMIN_COLLECTIF_BY_USER_ID,
   GET_ART_COL_BY_ARTISTE_ID,
   GET_ARTISTE_BY_USERID,
@@ -111,6 +112,7 @@ export const fetchUser = createAsyncThunk(
     let url;
     try {
       const user = await getUser(token);
+      console.log(user);
       thunkAPI.dispatch(setUserId(user.id));
       thunkAPI.dispatch(setUsername(user.username));
       thunkAPI.dispatch(setRoleId(user.roleId));
@@ -228,6 +230,30 @@ export const updateRoleId = createAsyncThunk(
       if (status >= 400) {
         let { message } = error;
         return thunkAPI.rejectWithValue({ message, status });
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const emailConfirmation = createAsyncThunk(
+  "user/emailconfirmation",
+  async ({ confirmationToken }, thunkAPI) => {
+    let error;
+    let status;
+    try {
+      let body = {};
+      const url = `${CONFIRM_USER}${confirmationToken}`;
+      const response = await putRequest(url, body);
+      console.log(response);
+      status = response.status;
+      error = response.error;
+      if (status === 200) {
+        return thunkAPI.fulfillWithValue(response);
+      }
+      if (status >= 400 || error) {
+        return thunkAPI.rejectWithValue({ error, status });
       }
     } catch (e) {
       throw e;

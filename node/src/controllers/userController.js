@@ -75,6 +75,11 @@ const signIn = async (req, res) => {
         message: `Email ou mot de passe non valide`,
       });
     }
+    if (!user.confirmation) {
+      return res.status(401).json({
+        message: `Valide ton compte en cliquant sur le lien reçu sur ${email}`,
+      });
+    }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res
@@ -85,7 +90,7 @@ const signIn = async (req, res) => {
       const token = jwtSign(user.id);
       return res.status(201).json({
         message: `Utilisateur ${user.username} connecté avec succès`,
-        data: user.email,
+        data: user,
         token,
       });
     } else {
@@ -94,6 +99,29 @@ const signIn = async (req, res) => {
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: `erreur interne`, data: error });
+  }
+};
+
+const emailConfirmation = async (req, res) => {
+  try {
+    const confirmationToken = req.params.confirmationToken;
+    if (!confirmationToken) {
+      return res.status(400).json({ message: `Token manquant` });
+    }
+    const confirm = await UserDAO.Confirm(confirmationToken);
+    console.log(confirm);
+    if (!confirm || confirm.length === 0) {
+      return res.status(404).json({
+        message: `Confirmation impossible, utilisateur ou token manquant`,
+        data: confirm,
+      });
+    }
+    return res
+      .status(200)
+      .json({ message: `Utilisateur confirmé avec succès`, data: confirm });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: `Erreur interne`, data: error });
   }
 };
 const readAll = async (req, res) => {
@@ -132,7 +160,7 @@ const readOne = async (req, res) => {
     }
     const id = req.params.id;
     const user = await UserDAO.ReadUserById(id);
-    if (!user) {
+    if (!user || !user.confirmation) {
       return res
         .status(404)
         .json({ message: `Utilisateur introuvable ou inexistant` });
@@ -261,6 +289,7 @@ const deleteOne = async (req, res) => {
 export const UserController = {
   signUp,
   signIn,
+  emailConfirmation,
   readAll,
   readOne,
   getUser,
