@@ -112,7 +112,6 @@ export const fetchUser = createAsyncThunk(
     let url;
     try {
       const user = await getUser(token);
-      console.log(user);
       thunkAPI.dispatch(setUserId(user.id));
       thunkAPI.dispatch(setUsername(user.username));
       thunkAPI.dispatch(setRoleId(user.roleId));

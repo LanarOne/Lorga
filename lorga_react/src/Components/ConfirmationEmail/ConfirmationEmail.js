@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { emailConfirmation } from "../../Redux/Reducers/user.slice";
 import Button from "../smallElts/Button/Button";
 import Header from "../Header/Header";
+import mc from "./confirmationEmail.module.scss";
 
 const ConfirmationEmail = () => {
   const dispatch = useDispatch();
@@ -14,7 +15,6 @@ const ConfirmationEmail = () => {
     let status;
     try {
       const response = await dispatch(emailConfirmation({ confirmationToken }));
-      console.log(response);
       status = response.payload.status;
       if (status === 200) {
         const { message } = response.payload.result;

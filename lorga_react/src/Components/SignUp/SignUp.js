@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../Header/Header";
 import Button from "../smallElts/Button/Button";
 import mc from "./signup.module.scss";
@@ -21,6 +21,7 @@ const SignUp = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [alertElt, setAlertElt] = useState(null);
   const dispatch = useDispatch();
+  const userDOB = localStorage.getItem("userDOB");
   const toggleModale = () => {
     setIsOpen(!isOpen);
   };
@@ -43,6 +44,11 @@ const SignUp = () => {
     dispatch(getDOB(e));
   };
 
+  useEffect(() => {
+    if (userDOB) {
+      dispatch(getDOB(userDOB));
+    }
+  }, []);
   async function handleSubmit(e) {
     e.preventDefault();
     if (password !== confirmation) {

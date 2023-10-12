@@ -43,12 +43,12 @@ const PageCollectif = () => {
   const [artistesRequests, setArtistesRequests] = useState([]);
   const [artistes, setArtistes] = useState([]);
   const [collectifBookings, setCollectifBookings] = useState([]);
-  const [bookings, setBookings] = useState([]);
   const [bookingId, setBookingId] = useState(null);
   const [artisteId, setArtisteId] = useState(null);
   const [isNotPresent, setIsNotPresent] = useState(true);
   const [message, setMessage] = useState("");
   const [selectedArtiste, setSelectedArtiste] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const { loadingUpload, errorUpload } = useSelector((state) => state.upload);
   const user = useSelector((state) => state.user);
   const { loadingUser, errorUser } = useSelector((state) => state.user);
@@ -217,7 +217,6 @@ const PageCollectif = () => {
         status = bookingsResponse.payload.status;
         if (status === 200) {
           const bookings = bookingsResponse.payload.data;
-          setBookings(bookings);
           if (bookings.length >= 1) {
             for (const booking of bookings) {
               let bookingId = booking.id;
@@ -304,6 +303,11 @@ const PageCollectif = () => {
         console.error(e.message);
       }
     }
+  };
+
+  const handleBookingUpdate = async (e, bookingId) => {
+    e.preventDefault();
+    console.log(e, bookingId);
   };
   const handleUpdload = async (e) => {
     let image = e.target.files[0];
@@ -670,18 +674,80 @@ const PageCollectif = () => {
                         if (booking.booking.date >= date) {
                           return (
                             <li key={booking.booking.id}>
-                              {booking.booking.date}{" "}
                               <Button
-                                message={"X"}
+                                message={`Update Booking`}
                                 onClick={(e) => {
-                                  handleEventDelete(e, booking.booking.id);
+                                  setSelectedBooking(booking.booking.id);
                                 }}
                               />
-                              <br />
-                              {booking.booking.description}
-                              <br />
-                              {booking.artistes ? <span>Setlist:</span> : null}
+
                               <ul>
+                                {selectedBooking === booking.booking.id ? (
+                                  <form
+                                    action=""
+                                    onSubmit={(e) => {
+                                      handleBookingUpdate(
+                                        e,
+                                        booking.booking.id
+                                      );
+                                    }}
+                                  >
+                                    <div>
+                                      <label htmlFor="date">
+                                        Change la date:
+                                      </label>
+                                      <input
+                                        type="date"
+                                        value={booking.booking.date}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label htmlFor="time">
+                                        Change l'heure:
+                                      </label>
+                                      <input
+                                        type="time"
+                                        value={booking.booking.time}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label htmlFor="descr">
+                                        Change la description:
+                                      </label>
+                                      <textarea
+                                        name="description"
+                                        id="description"
+                                        cols="30"
+                                        rows="10"
+                                        value={booking.booking.description}
+                                      ></textarea>
+                                    </div>
+                                    <Button message={`Confirmer`} />
+                                  </form>
+                                ) : (
+                                  <>
+                                    <ul>
+                                      <li>{booking.booking.date}</li>
+                                      <li>{booking.booking.description}</li>
+                                      <li>
+                                        <Button
+                                          message={"X"}
+                                          onClick={(e) => {
+                                            handleEventDelete(
+                                              e,
+                                              booking.booking.id
+                                            );
+                                          }}
+                                        />
+                                      </li>
+                                    </ul>
+                                  </>
+                                )}
+                                <li>
+                                  {booking.artistes ? (
+                                    <span>Setlist:</span>
+                                  ) : null}
+                                </li>
                                 {booking.artistes
                                   ? booking.artistes.map((artiste) => {
                                       return (

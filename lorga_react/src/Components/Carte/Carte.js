@@ -8,9 +8,11 @@ import { getPhoto } from "../../Redux/Reducers/photo.slice";
 import { getUpload } from "../../Redux/Reducers/uploads.slice";
 import Button from "../smallElts/Button/Button";
 import { NavLink } from "react-router-dom";
+import AgeModal from "../smallElts/AgeModal/AgeModal";
 
 const Carte = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [message, setMessage] = useState(null);
   const { loadingBoissons, errorBoissons } = useSelector(
     (state) => state.boissons
@@ -40,6 +42,9 @@ const Carte = () => {
   const toggleModale = () => {
     setIsOpen(!isOpen);
   };
+  const toggleAgeModale = () => {
+    setModalOpen(!modalOpen);
+  };
   const handleSelect = (e) => {
     setSelected(e.target.value);
   };
@@ -64,6 +69,12 @@ const Carte = () => {
       }));
     }
   };
+  useEffect(() => {
+    const DOB = localStorage.getItem("userDOB");
+    if (!DOB) {
+      setModalOpen(true);
+    }
+  }, []);
   useEffect(() => {
     const getDatas = async () => {
       let status;
@@ -145,6 +156,7 @@ const Carte = () => {
   return (
     <>
       <>{isOpen ? <Modale message={message} /> : null}</>
+      {modalOpen ? <AgeModal setModalOpen={toggleAgeModale} /> : null}
       <Header />
       <main>
         <h2>La carte des boissons</h2>

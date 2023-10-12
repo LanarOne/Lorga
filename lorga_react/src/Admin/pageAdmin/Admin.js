@@ -110,7 +110,6 @@ const Admin = () => {
     let status;
     try {
       const response = await dispatch(confirmArtiste({ artisteId, token }));
-      console.log(response);
       status = response.payload.status;
       error = response.error || null;
       if (status === 200) {

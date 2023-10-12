@@ -215,12 +215,13 @@ const UpdateOneBooking = async (id, data) => {
   let result = null;
   try {
     let booking = await Booking.findByPk(id);
-    const { date, time, description, nbr_invite, collectifId } = data;
+    const { date, time, description, nbr_invite, confirmation, collectifId } =
+      data;
     if (!booking) {
       return;
     }
     result = await Booking.update(
-      { date, time, description, nbr_invite, collectifId },
+      { date, time, description, nbr_invite, confirmation, collectifId },
       { where: { id } }
     );
     return result;

@@ -1,6 +1,5 @@
 import mc from "./modale.module.scss";
 import Button from "../Button/Button";
-import { current } from "@reduxjs/toolkit";
 const Modale = ({ message, setModaleOpen }) => {
   const retourAcceuil = () => {
     window.location.href = "/";

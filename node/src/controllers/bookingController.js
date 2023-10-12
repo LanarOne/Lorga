@@ -264,7 +264,7 @@ const updateOneBooking = async (req, res) => {
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
 
-    if (!admin) {
+    if (!admin || admin <= 2) {
       return res
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
@@ -276,7 +276,15 @@ const updateOneBooking = async (req, res) => {
         .status(400)
         .json({ message: `Tous les champs doivent être remplis` });
     }
-    const data = { date, time, description, nbr_invite, collectifId };
+    const confirmation = false;
+    const data = {
+      date,
+      time,
+      description,
+      nbr_invite,
+      confirmation,
+      collectifId,
+    };
     const booking = await BookingDAO.UpdateOneBooking(id, data);
     if (!booking) {
       return res.status(404).json({ message: `Réservation introuvable` });
