@@ -32,7 +32,16 @@ import {
 } from "../../constants/constants";
 import { getBookingsByCollectif } from "../../Redux/Reducers/bookings.slice";
 import { deleteSetlist, postSetlist } from "../../Redux/Reducers/setlist.slice";
-import { deleteBooking } from "../../Redux/Reducers/booking.slice";
+import {
+  deleteBooking,
+  getBookingDescription,
+  getCollectifId,
+  getDate,
+  getNbrInvite,
+  getTime,
+  getUserId,
+  updateBooking,
+} from "../../Redux/Reducers/booking.slice";
 import { manageDate } from "../../Helpers/dates";
 import { getSetlistByBookingId } from "../../Redux/Reducers/setlists.slice";
 const PageCollectif = () => {
@@ -66,7 +75,13 @@ const PageCollectif = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminMode, setAdminMode] = useState(false);
-  const date = manageDate();
+  const [collectifId, setCollectifId] = useState(null);
+  const [date, setDate] = useState("");
+  const [descriptionBooking, setDescriptionBooking] = useState("");
+  const [nbr_invite, setNbr_invite] = useState(null);
+  const [time, setTime] = useState("");
+  const [userId, setUserId] = useState(null);
+  const dateToday = manageDate();
 
   if (!token) {
     window.location.href = "/login";
@@ -307,7 +322,64 @@ const PageCollectif = () => {
 
   const handleBookingUpdate = async (e, bookingId) => {
     e.preventDefault();
-    console.log(e, bookingId);
+    let status;
+    let error;
+    try {
+      const colBook = collectifBookings.find(
+        (booking) => booking.booking.id === bookingId
+      );
+      const thisBooking = colBook.booking;
+      if (!descriptionBooking && !time && !date) {
+        setSelectedBooking(null);
+        return;
+      }
+      if (!descriptionBooking) {
+        setDescriptionBooking(thisBooking.description);
+      }
+      if (!time) {
+        setTime(thisBooking.time);
+      }
+      if (!date) {
+        setDate(thisBooking.date);
+      }
+      setNbr_invite(colBook.artistes.length);
+      setCollectifId(thisBooking.collectifId);
+      setUserId(thisBooking.userId);
+      if (
+        collectifId &&
+        date &&
+        descriptionBooking &&
+        nbr_invite &&
+        time &&
+        userId
+      ) {
+        let description = descriptionBooking;
+        const body = {
+          description,
+          time,
+          date,
+          nbr_invite,
+          collectifId,
+          userId,
+        };
+        const response = await dispatch(
+          updateBooking({ bookingId, body, token })
+        );
+        console.log(response);
+        status = response.payload.status;
+        if (status === 200) {
+          const { message } = response.payload;
+          setMessage(message);
+          toggleModal();
+          setTimeout(() => {
+            location.reload();
+          }, 1000);
+        }
+      }
+    } catch (error) {
+      console.error(error.message);
+      throw new Error(error);
+    }
   };
   const handleUpdload = async (e) => {
     let image = e.target.files[0];
@@ -628,7 +700,7 @@ const PageCollectif = () => {
                 <ul>
                   {collectifBookings.length >= 1
                     ? collectifBookings.map((booking) => {
-                        if (booking.booking.date >= date) {
+                        if (booking.booking.date >= dateToday) {
                           return (
                             <li>
                               {booking.booking.date}
@@ -671,7 +743,7 @@ const PageCollectif = () => {
                 <ul>
                   {collectifBookings.length >= 1
                     ? collectifBookings.map((booking) => {
-                        if (booking.booking.date >= date) {
+                        if (booking.booking.date >= dateToday) {
                           return (
                             <li key={booking.booking.id}>
                               <Button
@@ -698,7 +770,11 @@ const PageCollectif = () => {
                                       </label>
                                       <input
                                         type="date"
-                                        value={booking.booking.date}
+                                        name="date"
+                                        placeholder={booking.booking.date}
+                                        onChange={(e) => {
+                                          setDate(e.target.value);
+                                        }}
                                       />
                                     </div>
                                     <div>
@@ -707,7 +783,11 @@ const PageCollectif = () => {
                                       </label>
                                       <input
                                         type="time"
-                                        value={booking.booking.time}
+                                        name="date"
+                                        placeholder={booking.booking.time}
+                                        onChange={(e) => {
+                                          setTime(e.target.value);
+                                        }}
                                       />
                                     </div>
                                     <div>
@@ -719,7 +799,12 @@ const PageCollectif = () => {
                                         id="description"
                                         cols="30"
                                         rows="10"
-                                        value={booking.booking.description}
+                                        placeholder={
+                                          booking.booking.description
+                                        }
+                                        onChange={(e) => {
+                                          setDescriptionBooking(e.target.value);
+                                        }}
                                       ></textarea>
                                     </div>
                                     <Button message={`Confirmer`} />
@@ -830,7 +915,7 @@ const PageCollectif = () => {
                                 <option value="null">Choisis une date</option>
                                 {collectifBookings
                                   ? collectifBookings.map((booking) => {
-                                      if (booking.booking.date >= date) {
+                                      if (booking.booking.date >= dateToday) {
                                         return (
                                           <option value={booking.booking.id}>
                                             {booking.booking.date}

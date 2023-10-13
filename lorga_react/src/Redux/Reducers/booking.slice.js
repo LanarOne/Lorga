@@ -3,6 +3,7 @@ import {
   CONFIRM_BOOKING,
   CREATE_BOOKING,
   DELETE_BOOKING,
+  PUT_BOOKING,
 } from "../../constants/constants";
 import { deleteRequest, postRequest, putRequest } from "../../api/api";
 
@@ -55,7 +56,30 @@ export const confirmBooking = createAsyncThunk(
   }
 );
 
-// export const updateBooking = createAsyncThunk("booking/update", async({}));
+export const updateBooking = createAsyncThunk(
+  "booking/update",
+  async ({ bookingId, body, token }, thunkAPI) => {
+    console.log(body);
+    let error;
+    let status;
+    try {
+      const url = `${PUT_BOOKING}${bookingId}`;
+      const response = await putRequest(url, body, token);
+      console.log(response);
+      status = response.status;
+      error = response.error;
+      if (status === 200) {
+        const { message } = response.result;
+        return thunkAPI.fulfillWithValue({ message, status });
+      }
+      if (status >= 400) {
+        return thunkAPI.rejectWithValue({ error, status });
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+);
 
 export const deleteBooking = createAsyncThunk(
   "booking/delete",
@@ -100,7 +124,7 @@ export const BookingSlice = createSlice({
     getTime: (state, action) => {
       return { ...state, time: action.payload };
     },
-    getDescription: (state, action) => {
+    getBookingDescription: (state, action) => {
       return { ...state, description: action.payload };
     },
     getNbrInvite: (state, action) => {
@@ -168,13 +192,31 @@ export const BookingSlice = createSlice({
           state.loadingBooking = false;
         }
       });
+    builder
+      .addCase(updateBooking.pending, (state) => {
+        if (!state.loadingBooking) {
+          state.loadingBooking = true;
+        }
+      })
+      .addCase(updateBooking.fulfilled, (state, action) => {
+        if (state.loadingBooking) {
+          state.data = action.payload;
+          state.loadingBooking = false;
+        }
+      })
+      .addCase(updateBooking.rejected, (state, action) => {
+        if (state.loadingBooking) {
+          state.errorBooking = action.payload;
+          state.loadingBooking = false;
+        }
+      });
   },
 });
 
 export const {
   getCollectifId,
   getDate,
-  getDescription,
+  getBookingDescription,
   getNbrInvite,
   getTime,
   getUserId,

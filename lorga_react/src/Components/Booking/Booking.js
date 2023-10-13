@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getCollectifId,
   getDate,
-  getDescription,
+  getBookingDescription,
   getNbrInvite,
   getTime,
   getUserId,
@@ -200,7 +200,7 @@ const Booking = () => {
               <input
                 type="text"
                 onChange={(e) => {
-                  dispatch(getDescription(e.target.value));
+                  dispatch(getBookingDescription(e.target.value));
                 }}
               />
             </div>

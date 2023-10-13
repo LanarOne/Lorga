@@ -123,6 +123,7 @@ const ReadBookingById = async (id) => {
       nbr_invite: result.nbr_invite,
       confirmation: result.confirmation,
       collectifId: result.collectifId,
+      userId: result.userId,
     };
   } catch (error) {
     return Error(error.message);
@@ -161,6 +162,7 @@ const ReadBookingsByCollectifId = async (collectifId) => {
         description: decodeURIComponent(booking.description),
         nbr_invite: booking.nbr_invite,
         collectifId: booking.collectifId,
+        userId: booking.userId,
       };
     });
   } catch (error) {

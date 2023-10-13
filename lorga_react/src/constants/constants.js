@@ -43,6 +43,7 @@ export const GET_USER_BY_ID = `users/getone/`;
 export const LOGIN = `users/signin`;
 export const PUT_ARTISTE = `artiste/updateone/`;
 export const PUT_BOISSON = `boisson/update/`;
+export const PUT_BOOKING = `booking/updatebooking/`;
 export const PUT_COLLECTIF = `collectif/updateone/`;
 export const PUT_PHOTO = `photo/updateone/`;
 export const PUT_USER = `users/updateroleid/`;
