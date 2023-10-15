@@ -1,19 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { loginSlice } from "./Reducers/login.slice";
-import { signupSlice } from "./Reducers/signup.slice";
-import { artisteSlice } from "./Reducers/artistes.slice";
-import { bookingSlice } from "./Reducers/bookings.slice";
-import { createArtisteSlice } from "./Reducers/createArtiste.slice";
-import { photoSlice } from "./Reducers/photo.slice";
-import { uploadsSlice } from "./Reducers/uploads.slice";
-import { createCollectifSlice } from "./Reducers/createCollectif.slice";
-import { collectifsSlice } from "./Reducers/collectifs.slice";
-import { userSlice } from "./Reducers/user.slice";
-import { boissonSlice } from "./Reducers/boisson.slice";
-import { boissonsSlice } from "./Reducers/boissons.slice";
-import { BookingSlice } from "./Reducers/booking.slice";
-import { SetlistSlice } from "./Reducers/setlist.slice";
-import { setlistsSlice } from "./Reducers/setlists.slice";
+import { loginSlice } from "./reducers/login.slice";
+import { signupSlice } from "./reducers/signup.slice";
+import { artisteSlice } from "./reducers/artistes.slice";
+import { bookingSlice } from "./reducers/bookings.slice";
+import { createArtisteSlice } from "./reducers/createArtiste.slice";
+import { photoSlice } from "./reducers/photo.slice";
+import { uploadsSlice } from "./reducers/uploads.slice";
+import { createCollectifSlice } from "./reducers/createCollectif.slice";
+import { collectifsSlice } from "./reducers/collectifs.slice";
+import { userSlice } from "./reducers/user.slice";
+import { boissonSlice } from "./reducers/boisson.slice";
+import { boissonsSlice } from "./reducers/boissons.slice";
+import { BookingSlice } from "./reducers/booking.slice";
+import { SetlistSlice } from "./reducers/setlist.slice";
+import { setlistsSlice } from "./reducers/setlists.slice";
 
 export const store = configureStore({
   reducer: {

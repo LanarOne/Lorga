@@ -1,9 +1,9 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { emailConfirmation } from "../../Redux/Reducers/user.slice";
-import Button from "../smallElts/Button/Button";
-import Header from "../Header/Header";
+import { emailConfirmation } from "../../redux/reducers/user.slice";
+import Button from "../smallElts/button/button";
+import Header from "../header/header";
 import mc from "./confirmationEmail.module.scss";
 
 const ConfirmationEmail = () => {

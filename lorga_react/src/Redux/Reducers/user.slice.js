@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getUser } from "../../Helpers/usersHelper";
+import { getUser } from "../../helpers/usersHelper";
 import {
   CONFIRM_USER,
   GET_ADMIN_COLLECTIF_BY_USER_ID,

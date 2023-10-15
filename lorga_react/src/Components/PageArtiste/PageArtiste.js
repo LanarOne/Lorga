@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Header from "../Header/Header";
+import Header from "../header/header";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -10,12 +10,12 @@ import {
   getPhotoId,
   getStyle,
   updateArtiste,
-} from "../../Redux/Reducers/createArtiste.slice";
-import { getPhoto, updatePhoto } from "../../Redux/Reducers/photo.slice";
-import { getUpload } from "../../Redux/Reducers/uploads.slice";
-import Modale from "../smallElts/Modale/Modale";
-import { fetchUser } from "../../Redux/Reducers/user.slice";
-import Button from "../smallElts/Button/Button";
+} from "../../redux/reducers/createArtiste.slice";
+import { getPhoto, updatePhoto } from "../../redux/reducers/photo.slice";
+import { getUpload } from "../../redux/reducers/uploads.slice";
+import Modale from "../smallElts/modale/modale";
+import { fetchUser } from "../../redux/reducers/user.slice";
+import Button from "../smallElts/button/button";
 import mc from "./pageArtiste.module.scss";
 
 const PageArtiste = () => {

@@ -1,7 +1,7 @@
 import React from "react";
 import clubJesus from "../../public/medias/clubJesus.png";
 import mc from "./emptyPages.module.scss";
-import Header from "../Header/Header";
+import Header from "../header/header";
 
 const EmptyPages = () => {
   return (

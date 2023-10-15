@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Header from "../Header/Header";
+import Header from "../header/header";
 import { useDispatch, useSelector } from "react-redux";
-import { getBoissons } from "../../Redux/Reducers/boissons.slice";
-import Modale from "../smallElts/Modale/Modale";
+import { getBoissons } from "../../redux/reducers/boissons.slice";
+import Modale from "../smallElts/modale/modale";
 import mc from "./carte.module.scss";
-import { getPhoto } from "../../Redux/Reducers/photo.slice";
-import { getUpload } from "../../Redux/Reducers/uploads.slice";
-import Button from "../smallElts/Button/Button";
+import { getPhoto } from "../../redux/reducers/photo.slice";
+import { getUpload } from "../../redux/reducers/uploads.slice";
+import Button from "../smallElts/button/button";
 import { NavLink } from "react-router-dom";
-import AgeModal from "../smallElts/AgeModal/AgeModal";
+import AgeModal from "../smallElts/ageModal/ageModal";
 
 const Carte = () => {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,34 +1,34 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../components/Header/Header";
+import Header from "../../components/header/header";
 import mc from "./admin.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { getUnconfirmedBookings } from "../../Redux/Reducers/bookings.slice";
+import { getUnconfirmedBookings } from "../../redux/reducers/bookings.slice";
 import {
   confirmCollectif,
   getCollectifById,
-} from "../../Redux/Reducers/createCollectif.slice";
+} from "../../redux/reducers/createCollectif.slice";
 import iconSet from "../../style/IcoMoon/selection.json";
 import IcomoonReact from "icomoon-react";
 import {
   confirmBooking,
   deleteBooking,
-} from "../../Redux/Reducers/booking.slice";
-import Modale from "../../components/smallElts/Modale/Modale";
-import Button from "../../components/smallElts/Button/Button";
-import { getUnconfirmed } from "../../Redux/Reducers/collectifs.slice";
-import { deletePhoto } from "../../Redux/Reducers/photo.slice";
+} from "../../redux/reducers/booking.slice";
+import Modale from "../../components/smallElts/modale/modale";
+import Button from "../../components/smallElts/button/button";
+import { getUnconfirmed } from "../../redux/reducers/collectifs.slice";
+import { deletePhoto } from "../../redux/reducers/photo.slice";
 import {
   getUserByID,
   isAdminCol,
   isArtisteAdmin,
   isUserArtiste,
   updateRoleId,
-} from "../../Redux/Reducers/user.slice";
-import { getUnconfirmedArtistes } from "../../Redux/Reducers/artistes.slice";
+} from "../../redux/reducers/user.slice";
+import { getUnconfirmedArtistes } from "../../redux/reducers/artistes.slice";
 import {
   confirmArtiste,
   getArtisteById,
-} from "../../Redux/Reducers/createArtiste.slice";
+} from "../../redux/reducers/createArtiste.slice";
 
 const Admin = () => {
   const token = localStorage.getItem("token");

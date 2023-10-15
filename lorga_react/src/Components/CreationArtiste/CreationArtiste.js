@@ -8,17 +8,17 @@ import {
   getStyle,
   getUserId,
   postNewArtiste,
-} from "../../Redux/Reducers/createArtiste.slice";
-import Button from "../smallElts/Button/Button";
+} from "../../redux/reducers/createArtiste.slice";
+import Button from "../smallElts/button/button";
 import mc from "./creationArtiste.module.scss";
-import { getUser } from "../../Helpers/usersHelper";
-import Header from "../Header/Header";
+import { getUser } from "../../helpers/usersHelper";
+import Header from "../header/header";
 import {
   deletePhoto,
   getPhoto,
   postPhoto,
-} from "../../Redux/Reducers/photo.slice";
-import Modale from "../smallElts/Modale/Modale";
+} from "../../redux/reducers/photo.slice";
+import Modale from "../smallElts/modale/modale";
 
 const CreationArtiste = () => {
   const token = localStorage.getItem("token");

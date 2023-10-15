@@ -8,17 +8,17 @@ import {
   getStyle,
   getUserId,
   postNewCollectif,
-} from "../../Redux/Reducers/createCollectif.slice";
+} from "../../redux/reducers/createCollectif.slice";
 import {
   deletePhoto,
   getPhoto,
   postPhoto,
-} from "../../Redux/Reducers/photo.slice";
-import { getUser } from "../../Helpers/usersHelper";
-import Header from "../Header/Header";
+} from "../../redux/reducers/photo.slice";
+import { getUser } from "../../helpers/usersHelper";
+import Header from "../header/header";
 import mc from "./creationCollectif.module.scss";
-import Button from "../smallElts/Button/Button";
-import Modale from "../smallElts/Modale/Modale";
+import Button from "../smallElts/button/button";
+import Modale from "../smallElts/modale/modale";
 
 const CreationCollectif = () => {
   const token = localStorage.getItem("token");

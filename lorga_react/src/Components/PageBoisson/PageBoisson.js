@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Header from "../Header/Header";
+import Header from "../header/header";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import mc from "./pageBoisson.module.scss";
@@ -13,11 +13,11 @@ import {
   getSaveurs,
   getType,
   updateBoisson,
-} from "../../Redux/Reducers/boisson.slice";
-import Modale from "../smallElts/Modale/Modale";
-import { getPhoto, updatePhoto } from "../../Redux/Reducers/photo.slice";
-import { getUpload } from "../../Redux/Reducers/uploads.slice";
-import Button from "../smallElts/Button/Button";
+} from "../../redux/reducers/boisson.slice";
+import Modale from "../smallElts/modale/modale";
+import { getPhoto, updatePhoto } from "../../redux/reducers/photo.slice";
+import { getUpload } from "../../redux/reducers/uploads.slice";
+import Button from "../smallElts/button/button";
 
 const PageBoisson = () => {
   const { boissonid } = useParams();

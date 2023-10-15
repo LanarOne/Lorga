@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../Header/Header";
+import Header from "../header/header";
 import will from "../../public/medias/will.png";
 import yula from "../../public/medias/yula.png";
 import fruckie from "../../public/medias/clubJesus.png";

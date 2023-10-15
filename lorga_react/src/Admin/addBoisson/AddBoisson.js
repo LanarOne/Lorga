@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import mc from "./addBoisson.module.scss";
-import Header from "../../components/Header/Header";
+import Header from "../../components/header/header";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getDescription,
@@ -11,10 +11,10 @@ import {
   getSaveurs,
   getType,
   postNewBoisson,
-} from "../../Redux/Reducers/boisson.slice";
-import Button from "../../components/smallElts/Button/Button";
-import { getPhoto, postPhoto } from "../../Redux/Reducers/photo.slice";
-import Modale from "../../components/smallElts/Modale/Modale";
+} from "../../redux/reducers/boisson.slice";
+import Button from "../../components/smallElts/button/button";
+import { getPhoto, postPhoto } from "../../redux/reducers/photo.slice";
+import Modale from "../../components/smallElts/modale/modale";
 
 const AddBoisson = () => {
   const dispatch = useDispatch();

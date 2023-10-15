@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import mc from "./booking.module.scss";
 import { DatePicker } from "@gsebdev/react-simple-datepicker";
-import Button from "../smallElts/Button/Button";
-import Header from "../Header/Header";
+import Button from "../smallElts/button/button";
+import Header from "../header/header";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCollectifId,
@@ -12,9 +12,9 @@ import {
   getTime,
   getUserId,
   postNewBooking,
-} from "../../Redux/Reducers/booking.slice";
-import { getCollectifByCreateur } from "../../Redux/Reducers/createCollectif.slice";
-import Modale from "../smallElts/Modale/Modale";
+} from "../../redux/reducers/booking.slice";
+import { getCollectifByCreateur } from "../../redux/reducers/createCollectif.slice";
+import Modale from "../smallElts/modale/modale";
 const Booking = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");

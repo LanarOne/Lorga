@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import mc from "./collectif.module.scss";
-import { getCollectifs } from "../../Redux/Reducers/collectifs.slice";
-import Header from "../Header/Header";
-import Modale from "../smallElts/Modale/Modale";
+import { getCollectifs } from "../../redux/reducers/collectifs.slice";
+import Header from "../header/header";
+import Modale from "../smallElts/modale/modale";
 import { NavLink } from "react-router-dom";
 
 const Collectif = () => {

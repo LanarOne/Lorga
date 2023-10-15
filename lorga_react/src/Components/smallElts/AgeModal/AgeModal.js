@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import mc from "./ageModal.module.scss";
-import Button from "../Button/Button";
+import Button from "../button/button";
 
 const AgeModal = ({ setModalOpen }) => {
   const [dob, setDob] = useState("");

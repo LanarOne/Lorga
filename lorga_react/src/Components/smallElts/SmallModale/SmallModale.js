@@ -1,4 +1,4 @@
-import Button from "../Button/Button";
+import Button from "../button/button";
 import mc from "./smallModale.module.scss";
 
 export const SmallModale = ({ isPoped, onClose, children, position }) => {

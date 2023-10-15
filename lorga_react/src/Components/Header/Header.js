@@ -3,13 +3,13 @@ import logo from "../../public/medias/lorgaLogo.jpg";
 import logo2 from "../../public/medias/lorgaLogo2.jpg";
 import mc from "./header.module.scss";
 import { NavLink } from "react-router-dom";
-import { manageDisplayDate } from "../../Helpers/dates";
+import { manageDisplayDate } from "../../helpers/dates";
 import IcomoonReact from "icomoon-react";
 import iconSet from "../../style/IcoMoon/selection.json";
-import Button from "../smallElts/Button/Button";
+import Button from "../smallElts/button/button";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser } from "../../Redux/Reducers/user.slice";
-import { getCollectifByCreateur } from "../../Redux/Reducers/createCollectif.slice";
+import { fetchUser } from "../../redux/reducers/user.slice";
+import { getCollectifByCreateur } from "../../redux/reducers/createCollectif.slice";
 const Header = () => {
   const [displayDate, setDisplayDate] = useState("");
   const user = useSelector((state) => state.user);

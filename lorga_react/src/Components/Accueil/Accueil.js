@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import Header from "../Header/Header";
+import Header from "../header/header";
 import mc from "./acceuil.module.scss";
 import { getRequest } from "../../api/api";
-import { manageDate } from "../../Helpers/dates";
+import { manageDate } from "../../helpers/dates";
 import { GET_COL_BY_ID } from "../../constants/constants";
 import photoPda from "../../public/medias/photoPda.jpg";
 import { useDispatch, useSelector } from "react-redux";
-import { getBookings } from "../../Redux/Reducers/bookings.slice";
-import { getSetlistByBookingId } from "../../Redux/Reducers/setlists.slice";
+import { getBookings } from "../../redux/reducers/bookings.slice";
+import { getSetlistByBookingId } from "../../redux/reducers/setlists.slice";
 
 const Accueil = () => {
   const [dateDuJour, setDateDuJour] = useState("");

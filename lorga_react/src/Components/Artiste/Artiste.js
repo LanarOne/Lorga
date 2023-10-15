@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Header from "../Header/Header";
+import Header from "../header/header";
 import { useDispatch, useSelector } from "react-redux";
-import { getArtistes } from "../../Redux/Reducers/artistes.slice";
+import { getArtistes } from "../../redux/reducers/artistes.slice";
 import mc from "./artiste.module.scss";
 import { NavLink } from "react-router-dom";
-import Modale from "../smallElts/Modale/Modale";
+import Modale from "../smallElts/modale/modale";
 
 const Artiste = () => {
   const dispatch = useDispatch();

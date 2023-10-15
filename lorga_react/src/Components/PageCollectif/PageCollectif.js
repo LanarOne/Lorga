@@ -9,14 +9,14 @@ import {
   getNom,
   getStyle,
   updateCollectif,
-} from "../../Redux/Reducers/createCollectif.slice";
-import { getPhoto, updatePhoto } from "../../Redux/Reducers/photo.slice";
-import { getUpload } from "../../Redux/Reducers/uploads.slice";
-import Header from "../Header/Header";
-import Modale from "../smallElts/Modale/Modale";
-import Button from "../smallElts/Button/Button";
+} from "../../redux/reducers/createCollectif.slice";
+import { getPhoto, updatePhoto } from "../../redux/reducers/photo.slice";
+import { getUpload } from "../../redux/reducers/uploads.slice";
+import Header from "../header/header";
+import Modale from "../smallElts/modale/modale";
+import Button from "../smallElts/button/button";
 import mc from "./pageCollectif.module.scss";
-import { getPhotoId } from "../../Redux/Reducers/createArtiste.slice";
+import { getPhotoId } from "../../redux/reducers/createArtiste.slice";
 import {
   deleteRequest,
   getRequest,
@@ -30,8 +30,8 @@ import {
   GET_ART_COL_BY_COL,
   GET_ART_COL_BY_COLLECTIF,
 } from "../../constants/constants";
-import { getBookingsByCollectif } from "../../Redux/Reducers/bookings.slice";
-import { deleteSetlist, postSetlist } from "../../Redux/Reducers/setlist.slice";
+import { getBookingsByCollectif } from "../../redux/reducers/bookings.slice";
+import { deleteSetlist, postSetlist } from "../../redux/reducers/setlist.slice";
 import {
   deleteBooking,
   getBookingDescription,
@@ -41,9 +41,9 @@ import {
   getTime,
   getUserId,
   updateBooking,
-} from "../../Redux/Reducers/booking.slice";
-import { manageDate } from "../../Helpers/dates";
-import { getSetlistByBookingId } from "../../Redux/Reducers/setlists.slice";
+} from "../../redux/reducers/booking.slice";
+import { manageDate } from "../../helpers/dates";
+import { getSetlistByBookingId } from "../../redux/reducers/setlists.slice";
 const PageCollectif = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");

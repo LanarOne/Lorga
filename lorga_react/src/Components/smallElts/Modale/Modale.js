@@ -1,5 +1,5 @@
 import mc from "./modale.module.scss";
-import Button from "../Button/Button";
+import Button from "../button/button";
 const Modale = ({ message, setModaleOpen }) => {
   const retourAcceuil = () => {
     window.location.href = "/";

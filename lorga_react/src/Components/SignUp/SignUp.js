@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Header from "../Header/Header";
-import Button from "../smallElts/Button/Button";
+import Header from "../header/header";
+import Button from "../smallElts/button/button";
 import mc from "./signup.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -11,8 +11,8 @@ import {
   getUsername,
   getZipCode,
   postSignup,
-} from "../../Redux/Reducers/signup.slice";
-import Modale from "../smallElts/Modale/Modale";
+} from "../../redux/reducers/signup.slice";
+import Modale from "../smallElts/modale/modale";
 
 const SignUp = () => {
   const { email, password, confirmation, username, zipCode, DOB } = useSelector(
