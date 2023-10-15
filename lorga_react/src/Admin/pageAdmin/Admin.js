@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../Components/Header/Header";
+import Header from "../../components/Header/Header";
 import mc from "./admin.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { getUnconfirmedBookings } from "../../Redux/Reducers/bookings.slice";
@@ -13,8 +13,8 @@ import {
   confirmBooking,
   deleteBooking,
 } from "../../Redux/Reducers/booking.slice";
-import Modale from "../../Components/smallElts/Modale/Modale";
-import Button from "../../Components/smallElts/Button/Button";
+import Modale from "../../components/smallElts/Modale/Modale";
+import Button from "../../components/smallElts/Button/Button";
 import { getUnconfirmed } from "../../Redux/Reducers/collectifs.slice";
 import { deletePhoto } from "../../Redux/Reducers/photo.slice";
 import {
