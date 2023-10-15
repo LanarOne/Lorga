@@ -7,7 +7,7 @@ import {
   confirmCollectif,
   getCollectifById,
 } from "../../Redux/Reducers/createCollectif.slice";
-import iconSet from "../../Style/IcoMoon/selection.json";
+import iconSet from "../../style/IcoMoon/selection.json";
 import IcomoonReact from "icomoon-react";
 import {
   confirmBooking,

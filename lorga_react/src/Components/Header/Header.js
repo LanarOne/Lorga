@@ -5,7 +5,7 @@ import mc from "./header.module.scss";
 import { NavLink } from "react-router-dom";
 import { manageDisplayDate } from "../../Helpers/dates";
 import IcomoonReact from "icomoon-react";
-import iconSet from "../../Style/IcoMoon/selection.json";
+import iconSet from "../../style/IcoMoon/selection.json";
 import Button from "../smallElts/Button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser } from "../../Redux/Reducers/user.slice";
