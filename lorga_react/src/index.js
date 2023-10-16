@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Accueil from "./components/Accueil/accueil";
+import Accueil from "./components/accueil/accueil";
 import Login from "./components/login/login";
 import SignUp from "./components/signUp/signUp";
 import Admin from "./admin/pageAdmin/admin";
