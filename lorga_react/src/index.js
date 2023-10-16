@@ -10,7 +10,7 @@ import Admin from "./admin/pageAdmin/admin";
 import EmptyPages from "./components/emptyPages/emptyPages";
 import Apropos from "./components/apropos/apropos";
 import Artiste from "./components/artiste/Artiste";
-import { store } from "./redux/store";
+import { store } from "./redux/store.js";
 import { Provider } from "react-redux";
 import CreationArtiste from "./components/creationArtiste/creationArtiste";
 import PageArtiste from "./components/pageArtiste/pageArtiste";
