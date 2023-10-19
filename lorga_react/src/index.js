@@ -18,9 +18,9 @@ import CreationCollectif from "./components/creationCollectif/creationCollectif"
 import Collectif from "./components/collectif/collectif";
 import PageCollectif from "./components/pageCollectif/pageCollectif";
 import AddBoisson from "./admin/addBoisson/addBoisson";
-import Carte from "./components/Carte/carte";
+import Carte from "./components/carte/carte";
 import PageBoisson from "./components/pageBoisson/pageBoisson";
-import Booking from "./components/Booking/booking";
+import Booking from "./components/booking/booking";
 import ConfirmationEmail from "./components/confirmationEmail/confirmationEmail";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

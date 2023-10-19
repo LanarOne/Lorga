@@ -11,7 +11,11 @@ import {
   getStyle,
   updateArtiste,
 } from "../../redux/reducers/createArtiste.slice";
-import { getPhoto, updatePhoto } from "../../redux/reducers/photo.slice";
+import {
+  getAlt,
+  getPhoto,
+  updatePhoto,
+} from "../../redux/reducers/photo.slice";
 import { getUpload } from "../../redux/reducers/uploads.slice";
 import Modale from "../smallElts/modale/modale";
 import { fetchUser } from "../../redux/reducers/user.slice";
@@ -25,10 +29,12 @@ const PageArtiste = () => {
   const [artiste, setArtiste] = useState([]);
   const [message, setMessage] = useState(null);
   const [image, setImage] = useState({ file: null });
+  const [photoAlt, setPhotoAlt] = useState("");
   const [previewURL, setPreviewURL] = useState("");
   const { imageData, loadingUpload, errorUpload } = useSelector(
     (state) => state.upload
   );
+  const { alt } = useSelector((state) => state.photo);
   const { loadingUser, errorUser } = useSelector((state) => state.user);
   const user = useSelector((state) => state.user);
   const [img, setImg] = useState("");
@@ -81,6 +87,7 @@ const PageArtiste = () => {
             photo.payload.result &&
             photo.payload.result.data
           ) {
+            setPhotoAlt(photo.payload.result.data.alt);
             const tempUrl = await photo.payload.result.data.path
               .replace(/\\/g, "/")
               .replace("uploads", "uploaded");
@@ -108,9 +115,13 @@ const PageArtiste = () => {
     const response = await dispatch(updateArtiste({ artisteId, body, token }));
     if (response && image) {
       try {
-        const newPhoto = await dispatch(updatePhoto({ image, token, photoId }));
+        const newPhoto = await dispatch(
+          updatePhoto({ image, alt, token, photoId })
+        );
       } catch (e) {
         console.error(e.message);
+        setMessage(e.message);
+        toggleModal();
       }
     }
   };
@@ -151,7 +162,7 @@ const PageArtiste = () => {
         {loadingUpload || loadingUser || loadingArtiste ? (
           <h2>Données en chargement</h2>
         ) : (user.artisteName && user.artisteName === blaze && adminMode) ||
-          (user.roleId >= 5 && adminMode) ? (
+          (user.roleId >= 6 && adminMode) ? (
           <section>
             <h2 className={`${mc.disclaimer}`}>
               Une fois le formulaire envoyé, ta page artiste sera désactivée le
@@ -219,6 +230,20 @@ const PageArtiste = () => {
                 />
                 {previewURL ? <img src={previewURL} /> : null}
               </div>
+              <div>
+                <label htmlFor="alt">
+                  Décris ta photo pour l'accessibilité
+                </label>
+                <textarea
+                  name="alt"
+                  id="alt"
+                  cols="30"
+                  rows="10"
+                  onChange={(e) => {
+                    dispatch(getAlt(e.target.value));
+                  }}
+                ></textarea>
+              </div>
               <div className={`${mc.buttons}`}>
                 <Button message={`Valider`} />
                 <Button message={`Retour`} onClick={toggleAdminMode} />
@@ -226,11 +251,11 @@ const PageArtiste = () => {
             </form>
           </section>
         ) : (user.artisteName && user.artisteName === blaze) ||
-          user.roleId >= 5 ? (
+          user.roleId >= 6 ? (
           <>
             <section>
               <div>
-                <img src={img} alt={artiste.description} />
+                <img src={img} alt={photoAlt} />
               </div>
               <article>
                 <h2>{artiste.nom}</h2>

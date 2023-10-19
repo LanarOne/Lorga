@@ -1,0 +1,12 @@
+@use "src/style/general";
+
+footer {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  bottom: -300px;
+  z-index: 10;
+  background-color: black;
+  padding: 2rem;
+}

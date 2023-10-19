@@ -4,16 +4,15 @@
 header {
   z-index: 1;
   position: relative;
-  //float: top;
   bottom: 1px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: var(--background-color);
+  background-color: black;
   & .blocLogo {
     padding: 1rem;
-    background-color: var(--background-color);
+    background-color: black;
     z-index: 1;
     position: fixed;
     top: 0;

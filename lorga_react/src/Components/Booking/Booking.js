@@ -15,6 +15,7 @@ import {
 } from "../../redux/reducers/booking.slice";
 import { getCollectifByCreateur } from "../../redux/reducers/createCollectif.slice";
 import Modale from "../smallElts/modale/modale";
+import { getDescription } from "../../redux/reducers/boisson.slice";
 const Booking = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");

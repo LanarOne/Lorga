@@ -15,6 +15,7 @@ import { getUser } from "../../helpers/usersHelper";
 import Header from "../header/header";
 import {
   deletePhoto,
+  getAlt,
   getPhoto,
   postPhoto,
 } from "../../redux/reducers/photo.slice";
@@ -25,7 +26,7 @@ const CreationArtiste = () => {
   const dispatch = useDispatch();
   const { nom, description, influences, style, loadingArtiste, errorArtiste } =
     useSelector((store) => store.artiste);
-  const { loadingPhoto, errorPhoto } = useSelector((state) => state.photo);
+  const { alt, loadingPhoto } = useSelector((state) => state.photo);
 
   const [user, setUser] = useState([]);
   const [image, setImage] = useState({ file: null });
@@ -48,6 +49,9 @@ const CreationArtiste = () => {
   const handleStyle = (e) => {
     dispatch(getStyle(e));
   };
+  const handleAlt = (e) => {
+    dispatch(getAlt(e));
+  };
   const handleUpload = async (e) => {
     let image = e.target.files[0];
     setImage(image);
@@ -59,7 +63,7 @@ const CreationArtiste = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const newPhoto = await dispatch(await postPhoto({ image, token }));
+      const newPhoto = await dispatch(await postPhoto({ image, alt, token }));
       let { status, message } = newPhoto.payload;
       if (status >= 400) {
         setMessage(message);
@@ -199,6 +203,20 @@ const CreationArtiste = () => {
                     }}
                   />
                   {image ? <img src={previewURL} alt={`preview`} /> : ""}
+                </div>
+                <div>
+                  <label htmlFor="alt">
+                    Décris ta photo pour l'accessibilité
+                  </label>
+                  <textarea
+                    name="alt"
+                    id="alt"
+                    cols="30"
+                    rows="10"
+                    onChange={(e) => {
+                      handleAlt(e.target.value);
+                    }}
+                  ></textarea>
                 </div>
                 <Button message={"Envoyer la Demande"} />
               </form>

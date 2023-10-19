@@ -85,35 +85,41 @@ const update = async (req, res) => {
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
   }
   try {
+    console.log(req.file);
     const { id } = req.params;
     let { alt } = req.body;
-    const nom = req.file.filename;
-    const path = req.file.path;
-    const existingPhoto = await PhotoDAO.ReadPhotoById(id);
-    if (!existingPhoto) {
-      return res
-        .status(404)
-        .json({ message: `Photo introuvable ou inexistante` });
-    }
-    if (existingPhoto.path !== path) {
-      fs.unlink(existingPhoto.path, (err) => {
-        if (err) {
-          console.error(`Erreur pendant l'effacement de la photo`, err);
-        }
-        console.log(`Photo supprimée avec succès`);
+    if (req.file) {
+      const nom = req.file.filename;
+      const path = req.file.path;
+      const existingPhoto = await PhotoDAO.ReadPhotoById(id);
+      if (!existingPhoto) {
+        return res
+          .status(404)
+          .json({ message: `Photo introuvable ou inexistante` });
+      }
+      if (existingPhoto.path !== path) {
+        fs.unlink(existingPhoto.path, (err) => {
+          if (err) {
+            console.error(`Erreur pendant l'effacement de la photo`, err);
+          }
+          console.log(`Photo supprimée avec succès`);
+        });
+      }
+      const data = { nom, path, alt };
+      const updatedPhoto = await PhotoDAO.UpdatePhoto(id, data);
+      if (!updatedPhoto) {
+        return res
+          .status(404)
+          .json({ message: `Photo introuvable ou inexistante` });
+      }
+      return res.status(200).json({
+        message: `Photo mis à jour avec succès`,
+        data: updatedPhoto,
       });
     }
-    const data = { nom, path, alt };
-    const updatedPhoto = await PhotoDAO.UpdatePhoto(id, data);
-    if (!updatedPhoto) {
-      return res
-        .status(404)
-        .json({ message: `Photo introuvable ou inexistante` });
-    }
-    return res.status(200).json({
-      message: `Photo mis à jour avec succès`,
-      data: updatedPhoto,
-    });
+    const data = { alt };
+    const updateAlt = await PhotoDAO.UpdatePhoto(id, data);
+    console.log(updateAlt);
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: `Erreur interne`, data: error });

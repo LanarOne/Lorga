@@ -10,7 +10,11 @@ import {
   getStyle,
   updateCollectif,
 } from "../../redux/reducers/createCollectif.slice";
-import { getPhoto, updatePhoto } from "../../redux/reducers/photo.slice";
+import {
+  getAlt,
+  getPhoto,
+  updatePhoto,
+} from "../../redux/reducers/photo.slice";
 import { getUpload } from "../../redux/reducers/uploads.slice";
 import Header from "../header/header";
 import Modale from "../smallElts/modale/modale";
@@ -34,12 +38,6 @@ import { getBookingsByCollectif } from "../../redux/reducers/bookings.slice";
 import { deleteSetlist, postSetlist } from "../../redux/reducers/setlist.slice";
 import {
   deleteBooking,
-  getBookingDescription,
-  getCollectifId,
-  getDate,
-  getNbrInvite,
-  getTime,
-  getUserId,
   updateBooking,
 } from "../../redux/reducers/booking.slice";
 import { manageDate } from "../../helpers/dates";
@@ -58,18 +56,15 @@ const PageCollectif = () => {
   const [message, setMessage] = useState("");
   const [selectedArtiste, setSelectedArtiste] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const { loadingUpload, errorUpload } = useSelector((state) => state.upload);
+  const { loadingUpload } = useSelector((state) => state.upload);
   const user = useSelector((state) => state.user);
-  const { loadingUser, errorUser } = useSelector((state) => state.user);
-  const {
-    nom,
-    style,
-    description,
-    influences,
-    loadingCollectif,
-    errorCollectif,
-  } = useSelector((state) => state.collectif);
+  const { loadingUser } = useSelector((state) => state.user);
+  const { nom, style, description, influences, loadingCollectif } = useSelector(
+    (state) => state.collectif
+  );
+  const { alt } = useSelector((state) => state.photo);
   const [img, setImg] = useState("");
+  const [photoAlt, setPhotoAlt] = useState("");
   const [image, setImage] = useState({ file: null });
   const [previewURL, setPreviewURL] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -147,6 +142,7 @@ const PageCollectif = () => {
           photo.payload.result &&
           photo.payload.result.data
         ) {
+          setPhotoAlt(photo.payload.result.data.alt);
           const tempUrl = await photo.payload.result.data.path
             .replace(/\\/g, "/")
             .replace("uploads", "uploaded");
@@ -310,7 +306,9 @@ const PageCollectif = () => {
     );
     if (response && image) {
       try {
-        const newPhoto = await dispatch(updatePhoto({ image, token, photoId }));
+        const newPhoto = await dispatch(
+          updatePhoto({ image, alt, token, photoId })
+        );
         if (newPhoto.payload.status <= 201) {
           window.location.href = "/";
         }
@@ -618,7 +616,21 @@ const PageCollectif = () => {
                       handleUpdload(e);
                     }}
                   />
-                  {previewURL ? <img src={previewURL} alt="" /> : null}
+                  {previewURL ? <img src={previewURL} alt={alt} /> : null}
+                </div>
+                <div>
+                  <label htmlFor="alt">
+                    Décris ta photo pour l'accessibilité
+                  </label>
+                  <textarea
+                    name="alt"
+                    id="alt"
+                    cols="30"
+                    rows="10"
+                    onChange={(e) => {
+                      dispatch(getAlt(e.target.value));
+                    }}
+                  ></textarea>
                 </div>
                 <div className={`${mc.buttons}`}>
                   <Button message={`Envoyer`} />
@@ -647,7 +659,7 @@ const PageCollectif = () => {
             <>
               <article>
                 <div>
-                  <img src={img} alt={collectif.description} />
+                  <img src={img} alt={photoAlt} />
                 </div>
                 <div>
                   <h2>{collectif.nom}</h2>

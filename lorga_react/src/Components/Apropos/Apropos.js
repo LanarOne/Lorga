@@ -6,6 +6,7 @@ import fruckie from "../../public/medias/clubJesus.png";
 import lanar from "../../public/medias/laptopCatLogo2.png";
 import mc from "./apropos.module.scss";
 import { NavLink } from "react-router-dom";
+import Footer from "../footer/footer";
 
 const Apropos = () => {
   const token = window.localStorage.getItem("token");
@@ -93,6 +94,7 @@ const Apropos = () => {
           </section>
         </main>
       )}
+      <Footer />
     </>
   );
 };

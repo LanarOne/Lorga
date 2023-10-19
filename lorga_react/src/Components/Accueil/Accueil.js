@@ -8,6 +8,7 @@ import photoPda from "../../public/medias/photoPda.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { getBookings } from "../../redux/reducers/bookings.slice";
 import { getSetlistByBookingId } from "../../redux/reducers/setlists.slice";
+import Footer from "../footer/footer";
 
 const Accueil = () => {
   const [dateDuJour, setDateDuJour] = useState("");
@@ -155,6 +156,7 @@ const Accueil = () => {
           )}
         </section>
       </main>
+      <Footer />
     </>
   );
 };

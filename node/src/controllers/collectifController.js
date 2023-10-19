@@ -56,7 +56,7 @@ const createCollectif = async (req, res) => {
       photoId
     );
     const user = await UserDAO.ReadUserById(userId);
-    if (user.roleId >= 5) {
+    if (user.roleId >= 6) {
       const collectifId = collectif.id;
       const admin_collectif = await Admin_CollectifDAO.Create(
         confirmation,
@@ -105,6 +105,15 @@ const confirmCollectif = async (req, res) => {
     }
     let confirmation = true;
     result = await CollectifDAO.ConfirmCollectif(id, confirmation);
+    const isLorgaAdmin = await UserDAO.ReadUserById(collectif.createurId);
+    console.log(isLorgaAdmin);
+    if (isLorgaAdmin.roleId >= 6) {
+      return res.status(200).json({
+        message: `Collectif confirmé avec succès`,
+        data: result,
+        updateRoleId,
+      });
+    }
     const updateRoleId = await UserDAO.UpdateRoleId(collectif.createurId, 5);
     return res.status(200).json({
       message: `Collectif confirmé avec succès`,

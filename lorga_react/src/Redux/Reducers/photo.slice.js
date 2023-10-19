@@ -14,12 +14,11 @@ import {
 
 export const postPhoto = createAsyncThunk(
   "photo/create",
-  async ({ image, token }, { rejectWithValue }) => {
+  async ({ image, alt, token }, { rejectWithValue }) => {
     let error;
     let status;
     try {
       const formData = new FormData();
-      let alt = `ntm`;
       formData.append("image", image);
       formData.append("alt", alt);
       const response = await postFileRequest(CREATE_PHOTO, formData, token);
@@ -39,12 +38,11 @@ export const postPhoto = createAsyncThunk(
 );
 export const updatePhoto = createAsyncThunk(
   "photo/put",
-  async ({ image, token, photoId }, thunkAPI) => {
+  async ({ image, alt, token, photoId }, thunkAPI) => {
     let error;
     let status;
     try {
       const formData = new FormData();
-      let alt = `ntm`;
       formData.append("image", image);
       formData.append("alt", alt);
       const url = `${PUT_PHOTO}${photoId}`;
@@ -119,7 +117,11 @@ export const photoSlice = createSlice({
     loadingPhoto: false,
     errorPhoto: null,
   },
-  reducers: {},
+  reducers: {
+    getAlt: (state, action) => {
+      return { ...state, alt: action.payload };
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(postPhoto.pending, (state, action) => {
       if (!state.loadingPhoto) {
@@ -195,5 +197,5 @@ export const photoSlice = createSlice({
   },
 });
 
-export const {} = photoSlice.actions;
+export const { getAlt } = photoSlice.actions;
 export default photoSlice.reducer;

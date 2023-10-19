@@ -11,6 +11,7 @@ import {
 } from "../../redux/reducers/createCollectif.slice";
 import {
   deletePhoto,
+  getAlt,
   getPhoto,
   postPhoto,
 } from "../../redux/reducers/photo.slice";
@@ -31,7 +32,7 @@ const CreationCollectif = () => {
     loadingCollectif,
     errorCollectif,
   } = useSelector((state) => state.collectif);
-  const { loadingPhoto, errorPhoto } = useSelector((state) => state.photo);
+  const { alt, loadingPhoto, errorPhoto } = useSelector((state) => state.photo);
   const [user, setUser] = useState([]);
   const [image, setImage] = useState({ file: null });
   const [previewURL, setPreviewURL] = useState("");
@@ -65,7 +66,7 @@ const CreationCollectif = () => {
     e.preventDefault();
     let status;
     let error;
-    let newPhoto = await dispatch(await postPhoto({ image, token }));
+    let newPhoto = await dispatch(await postPhoto({ image, alt, token }));
     if (newPhoto.error) {
       setMessage(newPhoto.payload.message);
       setIsOpen(true);
@@ -199,6 +200,20 @@ const CreationCollectif = () => {
                     }}
                   />
                   {image ? <img src={previewURL} alt="preview" /> : null}
+                </div>
+                <div>
+                  <label htmlFor="alt">
+                    Décris ta photo pour l'accessibilité
+                  </label>
+                  <textarea
+                    name="alt"
+                    id="alt"
+                    cols="30"
+                    rows="10"
+                    onChange={(e) => {
+                      dispatch(getAlt(e.target.value));
+                    }}
+                  ></textarea>
                 </div>
                 <Button message={"Envoyer la demande"} />
               </form>

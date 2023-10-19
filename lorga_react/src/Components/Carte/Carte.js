@@ -9,6 +9,7 @@ import { getUpload } from "../../redux/reducers/uploads.slice";
 import Button from "../smallElts/button/button";
 import { NavLink } from "react-router-dom";
 import AgeModal from "../smallElts/ageModal/ageModal";
+import Footer from "../footer/footer";
 
 const Carte = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -164,7 +165,7 @@ const Carte = () => {
           <h3>Chargement des données</h3>
         ) : (
           <section>
-            {user.roleId >= 5 ? (
+            {user.roleId >= 6 ? (
               <NavLink to={"/admin/addboisson"}>
                 <Button message={`Ajouter une boisson`} />
               </NavLink>
@@ -429,6 +430,7 @@ const Carte = () => {
           <h2>Quelque chose cloche?</h2>
         )}
       </main>
+      <Footer />
     </>
   );
 };

@@ -58,7 +58,7 @@ const Header = () => {
     <>
       <header>
         <section className={`${mc.blocLogo}`}>
-          <div>
+          <nav>
             <ul>
               <li>
                 <NavLink to={"/"}>Accueil/Programmation</NavLink>
@@ -69,16 +69,25 @@ const Header = () => {
               <li>
                 <NavLink to={"/apropos"}>L'équipe/Contact</NavLink>
               </li>
-              <li>
-                <NavLink>Galerie</NavLink>
-              </li>
+              {user.roleId >= 1 ? (
+                <>
+                  <li>
+                    <NavLink to={"/collectifs"}>Les collectifs</NavLink>
+                  </li>
+                  <li>
+                    <NavLink to={"/artistes"}>Les artistes</NavLink>
+                  </li>
+                </>
+              ) : null}
 
               {!user.roleId ? (
                 ""
               ) : user.roleId === 1 ? (
-                <li>
-                  <NavLink to={"/booking"}>Réserver une table</NavLink>
-                </li>
+                <>
+                  <li>
+                    <NavLink to={"/booking"}>Réserver une table</NavLink>
+                  </li>
+                </>
               ) : user.roleId === 2 ? (
                 <li>
                   <NavLink to={`/artistes/${user.artisteName}`}>
@@ -108,7 +117,7 @@ const Header = () => {
                 <NavLink to={"/admin"}>Admin</NavLink>
               ) : null}
             </ul>
-          </div>
+          </nav>
           <img src={logo2} alt="Logo de Lorga" />
           <div>
             {" "}
