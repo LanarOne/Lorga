@@ -106,12 +106,10 @@ const confirmCollectif = async (req, res) => {
     let confirmation = true;
     result = await CollectifDAO.ConfirmCollectif(id, confirmation);
     const isLorgaAdmin = await UserDAO.ReadUserById(collectif.createurId);
-    console.log(isLorgaAdmin);
     if (isLorgaAdmin.roleId >= 6) {
       return res.status(200).json({
         message: `Collectif confirmé avec succès`,
         data: result,
-        updateRoleId,
       });
     }
     const updateRoleId = await UserDAO.UpdateRoleId(collectif.createurId, 5);
@@ -283,7 +281,7 @@ const updateOneCollectif = async (req, res) => {
       });
     }
     const id = req.params.id;
-    const collectif = CollectifDAO.ReadById(id);
+    const collectif = await CollectifDAO.ReadById(id);
     if (!collectif) {
       return res
         .status(404)
@@ -304,9 +302,8 @@ const updateOneCollectif = async (req, res) => {
     const confirmation = false;
     const data = { nom, description, influences, style, confirmation, photoId };
     result = await CollectifDAO.UpdateOne(id, data);
-    console.log(result);
     return res.status(200).json({
-      message: `Collectif ${result.collectif.nom} mis à jour avec succès`,
+      message: `Collectif ${collectif.nom} mis à jour avec succès`,
       data: result,
     });
   } catch (error) {

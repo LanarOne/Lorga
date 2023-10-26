@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useParams } from "react-router-dom";
+import { FaFacebookF, FaInstagram } from "react-icons/fa";
 import {
   getCollectifByCreateur,
   getCollectifByName,
@@ -42,6 +43,11 @@ import {
 } from "../../redux/reducers/booking.slice";
 import { manageDate } from "../../helpers/dates";
 import { getSetlistByBookingId } from "../../redux/reducers/setlists.slice";
+import { getUrl, postNewLien } from "../../redux/reducers/lien.slice";
+import { BsCheck } from "react-icons/bs";
+import { BiLogoTiktok } from "react-icons/bi";
+import { RiCloseFill } from "react-icons/ri";
+import { getLiensByCollectif } from "../../redux/reducers/liens.slice";
 const PageCollectif = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
@@ -63,6 +69,7 @@ const PageCollectif = () => {
     (state) => state.collectif
   );
   const { alt } = useSelector((state) => state.photo);
+  const { url } = useSelector((state) => state.lien);
   const [img, setImg] = useState("");
   const [photoAlt, setPhotoAlt] = useState("");
   const [image, setImage] = useState({ file: null });
@@ -76,6 +83,9 @@ const PageCollectif = () => {
   const [nbr_invite, setNbr_invite] = useState(null);
   const [time, setTime] = useState("");
   const [userId, setUserId] = useState(null);
+  const [fbUrl, setFbUrl] = useState("");
+  const [instaUrl, setInstaUrl] = useState("");
+  const [tiktokUrl, setTiktokUrl] = useState("");
   const dateToday = manageDate();
 
   if (!token) {
@@ -146,7 +156,7 @@ const PageCollectif = () => {
           const tempUrl = await photo.payload.result.data.path
             .replace(/\\/g, "/")
             .replace("uploads", "uploaded");
-          const url = `photo/${tempUrl}`;
+          let url = `photo/${tempUrl}`;
           const response = await dispatch(getUpload(url));
           setImg(await response.payload.result);
         }
@@ -286,35 +296,130 @@ const PageCollectif = () => {
         await dispatch(getPhotoId(collectif.photoId));
       }
     };
+
     if (collectif) {
       getEventDatas();
     }
+
     if (collectif && collectif.nom) {
       getData();
     }
-
     isRightAdmin();
   }, [collectif]);
+  useEffect(() => {
+    const getCollectifUrls = async () => {
+      let error;
+      let status;
+      if (collectif) {
+        let collectifId = collectif.id;
+        const response = await dispatch(
+          getLiensByCollectif({ collectifId, token })
+        );
+        status = response.payload.status;
+        console.log(response);
+        if (status === 200) {
+          const { data } = response.payload;
+          const fb = data.filter((url) => url.url.includes("facebook"));
+          const insta = data.filter((url) => url.url.includes("instagram"));
+          const tiktok = data.filter((url) => url.url.includes("tiktok"));
+          if (fb.length > 0) {
+            setFbUrl(fb[0].url);
+          }
+          if (insta.length > 0) {
+            setInstaUrl(insta[0].url);
+          }
+          if (tiktok.length > 0) {
+            setTiktokUrl(tiktok[0].url);
+          }
+        }
+        if (status >= 400) {
+          error = response.payload.error;
+          setMessage(error.message);
+          toggleModal();
+        }
+      }
+    };
+    if (collectif && collectif.id) {
+      getCollectifUrls();
+    }
+  }, [collectif]);
 
-  const handleSubmit = async (e) => {
+  const handleCollectifUpdate = async (e) => {
     e.preventDefault();
+    let error;
+    let status;
     const photoId = parseInt(collectif.photoId);
     const collectifId = parseInt(collectif.id);
     const body = { nom, style, description, influences, photoId };
-    const response = await dispatch(
-      updateCollectif({ collectifId, body, token })
-    );
-    if (response && image) {
-      try {
-        const newPhoto = await dispatch(
-          updatePhoto({ image, alt, token, photoId })
-        );
-        if (newPhoto.payload.status <= 201) {
-          window.location.href = "/";
+    try {
+      const response = await dispatch(
+        updateCollectif({ collectifId, body, token })
+      );
+      status = response.payload.status;
+      error = response.payload.error;
+      if (status === 200) {
+        if (image.file) {
+          const newPhoto = await dispatch(
+            updatePhoto({ image, alt, token, photoId })
+          );
+          status = newPhoto.payload.status;
+          error = newPhoto.payload.error;
+          if (status <= 201) {
+            let { message } = response.payload;
+            setMessage(message);
+            toggleModal();
+            setTimeout(() => {
+              location.href = "/";
+            }, 1200);
+          }
+          if (status >= 400) {
+            let { message } = response.payload;
+            setMessage(message);
+            toggleModal();
+            setTimeout(() => {
+              location.href = "/";
+            }, 1200);
+          }
         }
-      } catch (e) {
-        console.error(e.message);
+        setMessage(response.payload.message);
+        toggleModal();
+        setTimeout(() => {
+          location.reload();
+        }, 1200);
       }
+      if (status >= 400 || error) {
+        setMessage(error);
+        toggleModal();
+        setTimeout(() => {
+          window.history.back();
+        }, 1200);
+      }
+    } catch (e) {
+      console.error(e.message);
+    }
+  };
+
+  const newLien = async (e) => {
+    e.preventDefault();
+    let status;
+    let error;
+    let collectifId = collectif.id;
+    const body = { url, collectifId };
+    const response = await dispatch(postNewLien({ body, token }));
+    console.log(response);
+    status = response.payload.status;
+    if (status === 201) {
+      let message = `Lien ajouté avec succès`;
+      setMessage(message);
+      toggleModal();
+      setTimeout(() => {
+        location.reload();
+      }, 1200);
+    }
+    if (status >= 400) {
+      error = response.payload.error;
+      setMessage(error.message);
+      toggleModal();
     }
   };
 
@@ -363,7 +468,6 @@ const PageCollectif = () => {
         const response = await dispatch(
           updateBooking({ bookingId, body, token })
         );
-        console.log(response);
         status = response.payload.status;
         if (status === 200) {
           const { message } = response.payload;
@@ -372,6 +476,11 @@ const PageCollectif = () => {
           setTimeout(() => {
             location.reload();
           }, 1000);
+        }
+        if (status >= 400) {
+          error = response.payload.error;
+          setMessage(error);
+          toggleModal();
         }
       }
     } catch (error) {
@@ -544,6 +653,8 @@ const PageCollectif = () => {
         <section>
           {loadingUpload || loadingCollectif || loadingUser ? (
             <h2>Chargement des données...</h2>
+          ) : !collectif.confirmation ? (
+            <h2>Votre collectif est en attente de validation</h2>
           ) : adminMode && isAdmin ? (
             <article>
               <h2 className={`${mc.disclaimer}`}>
@@ -553,7 +664,7 @@ const PageCollectif = () => {
               <form
                 action=""
                 onSubmit={(e) => {
-                  handleSubmit(e);
+                  handleCollectifUpdate(e);
                 }}
               >
                 <div>
@@ -661,12 +772,12 @@ const PageCollectif = () => {
                 <div>
                   <img src={img} alt={photoAlt} />
                 </div>
-                <div>
+                <section>
                   <h2>{collectif.nom}</h2>
                   <p>{collectif.style}</p>
                   <p>{collectif.description}</p>
                   <p>{collectif.influences}</p>
-                </div>
+                </section>
                 {user && user.artisteName && isNotPresent ? (
                   <Button
                     message={"Demander à rentrer dans le collectif"}
@@ -676,11 +787,11 @@ const PageCollectif = () => {
                   />
                 ) : null}
               </article>
-              <article>
-                <h3>Ils font partie du collectif : </h3>
-                <ul>
-                  {artistes ? (
-                    artistes.map((artiste) => {
+              {artistes ? (
+                <article>
+                  <h3>Ils font partie du collectif : </h3>
+                  <ul>
+                    {artistes.map((artiste) => {
                       if (artiste.nom === user.artisteName) {
                         return (
                           <li>
@@ -701,47 +812,44 @@ const PageCollectif = () => {
                           </li>
                         );
                       }
-                    })
-                  ) : (
-                    <h3>Chargement...</h3>
-                  )}
-                </ul>
-              </article>
-              <article>
-                <h3>Les prochaines dates : </h3>
-                <ul>
-                  {collectifBookings.length >= 1
-                    ? collectifBookings.map((booking) => {
-                        if (booking.booking.date >= dateToday) {
-                          return (
-                            <li>
-                              {booking.booking.date}
-                              <br />
-                              {booking.booking.description}
-                              <br />
-                              {booking.artistes ? <span>Setlist:</span> : null}
-                              <ul>
-                                {booking.artistes &&
-                                booking.artistes.length >= 1
-                                  ? booking.artistes.map((artiste) => {
-                                      return <li>{artiste.nom}</li>;
-                                    })
-                                  : null}
-                              </ul>
-                            </li>
-                          );
-                        }
-                      })
-                    : null}
-                </ul>
-              </article>
+                    })}
+                  </ul>
+                </article>
+              ) : null}
+              {collectifBookings.length >= 1 ? (
+                <article>
+                  <h3>Les prochaines dates : </h3>
+                  <ul>
+                    {collectifBookings.map((booking) => {
+                      if (booking.booking.date >= dateToday) {
+                        return (
+                          <li>
+                            {booking.booking.date}
+                            <br />
+                            {booking.booking.description}
+                            <br />
+                            {booking.artistes ? <span>Setlist:</span> : null}
+                            <ul>
+                              {booking.artistes && booking.artistes.length >= 1
+                                ? booking.artistes.map((artiste) => {
+                                    return <li>{artiste.nom}</li>;
+                                  })
+                                : null}
+                            </ul>
+                          </li>
+                        );
+                      }
+                    })}
+                  </ul>
+                </article>
+              ) : null}
             </>
           ) : (
             <p>{message}</p>
           )}
         </section>
         <section>
-          {isAdmin ? (
+          {isAdmin && collectif.confirmation ? (
             <>
               <div>
                 <NavLink to={`/booking`}>
@@ -902,11 +1010,11 @@ const PageCollectif = () => {
                   })}
                 </ul>
               </article>
-              <article>
-                <h3>Ils font parti de ton collectif : </h3>
-                <ul>
-                  {artistes ? (
-                    artistes.map((artiste) => {
+              {artistes.length >= 1 ? (
+                <article>
+                  <h3>Ils font parti de ton collectif : </h3>
+                  <ul>
+                    {artistes.map((artiste) => {
                       return (
                         <li key={artiste.id}>
                           <NavLink to={`/artistes/${artiste.nom}`}>
@@ -947,14 +1055,98 @@ const PageCollectif = () => {
                           )}
                         </li>
                       );
-                    })
-                  ) : (
-                    <h3>Chargement...</h3>
-                  )}
-                </ul>
-              </article>
+                    })}
+                  </ul>
+                </article>
+              ) : null}
             </>
           ) : null}
+        </section>
+        <section>
+          {!fbUrl ? (
+            <form
+              action="nouveauLien"
+              onSubmit={(e) => {
+                newLien(e);
+              }}
+            >
+              <div className={`${mc.input}`}>
+                <label htmlFor="url">
+                  <FaFacebookF className={`${mc.sprites}`} />
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getUrl(e.target.value));
+                  }}
+                />
+                <Button message={<BsCheck />} />
+                <Button message={<RiCloseFill />} />
+              </div>
+            </form>
+          ) : (
+            <article>
+              <NavLink to={fbUrl}>
+                <FaFacebookF className={`${mc.sprites}`} />
+              </NavLink>
+            </article>
+          )}
+          {instaUrl ? (
+            <article>
+              <NavLink to={instaUrl}>
+                <FaInstagram className={`${mc.sprites}`} />
+              </NavLink>
+            </article>
+          ) : (
+            <form
+              action=""
+              onSubmit={(e) => {
+                newLien(e);
+              }}
+            >
+              <div className={`${mc.input}`}>
+                <label htmlFor="">
+                  <FaInstagram className={`${mc.sprites}`} />
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getUrl(e.target.value));
+                  }}
+                />
+                <Button message={<BsCheck />} />
+                <Button message={<RiCloseFill />} />
+              </div>
+            </form>
+          )}
+          {tiktokUrl ? (
+            <article>
+              <NavLink to={tiktokUrl}>
+                <BiLogoTiktok className={`${mc.sprites}`} />
+              </NavLink>
+            </article>
+          ) : (
+            <form
+              action=""
+              onSubmit={(e) => {
+                newLien(e);
+              }}
+            >
+              <div className={`${mc.input}`}>
+                <label htmlFor="">
+                  <BiLogoTiktok className={`${mc.sprites}`} />
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getUrl(e.target.value));
+                  }}
+                />
+                <Button message={<BsCheck />} />
+                <Button message={<RiCloseFill />} />
+              </div>
+            </form>
+          )}
         </section>
       </main>
     </>

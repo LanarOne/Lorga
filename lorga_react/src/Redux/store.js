@@ -14,6 +14,8 @@ import { boissonsSlice } from "./reducers/boissons.slice";
 import { BookingSlice } from "./reducers/booking.slice";
 import { SetlistSlice } from "./reducers/setlist.slice";
 import { setlistsSlice } from "./reducers/setlists.slice";
+import { lienSlice } from "./reducers/lien.slice";
+import { liensSlice } from "./reducers/liens.slice";
 
 export const store = configureStore({
   reducer: {
@@ -32,5 +34,7 @@ export const store = configureStore({
     boissons: boissonsSlice.reducer,
     setlist: SetlistSlice.reducer,
     setlists: setlistsSlice.reducer,
+    lien: lienSlice.reducer,
+    liens: liensSlice.reducer,
   },
 });

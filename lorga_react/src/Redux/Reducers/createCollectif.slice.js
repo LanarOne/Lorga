@@ -47,8 +47,8 @@ export const updateCollectif = createAsyncThunk(
       status = response.status;
       error = response.error;
       if (status <= 201) {
-        let { data } = response.result;
-        return thunkAPI.fulfillWithValue({ data, status });
+        let { data, message } = response.result;
+        return thunkAPI.fulfillWithValue({ data, message, status });
       }
       if (status >= 400 || error) {
         let { message } = error;

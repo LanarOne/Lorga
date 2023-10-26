@@ -109,7 +109,6 @@ const emailConfirmation = async (req, res) => {
       return res.status(400).json({ message: `Token manquant` });
     }
     const confirm = await UserDAO.Confirm(confirmationToken);
-    console.log(confirm);
     if (!confirm || confirm.length === 0) {
       return res.status(404).json({
         message: `Confirmation impossible, utilisateur ou token manquant`,

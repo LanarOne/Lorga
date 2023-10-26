@@ -126,27 +126,25 @@ const Accueil = () => {
           ) : bookings.length > 0 ? (
             bookings.map((article) => {
               return (
-                <>
-                  <article
-                    key={`${article.id}${article.nom}`}
-                    className={`${mc.article}`}
-                  >
-                    <h2>{article.nom}</h2>
-                    <h3>
-                      le {article.date} à {article.time}
-                    </h3>
-                    <p>{article.description}</p>
-                    <p>{article.colDescr}</p>
-                    {article.setlist ? <h3>Setlist :</h3> : null}
-                    <ul>
-                      {article.setlist && article.setlist.length >= 1
-                        ? article.setlist.map((artiste) => {
-                            return <li>{artiste.nom}</li>;
-                          })
-                        : null}
-                    </ul>
-                  </article>
-                </>
+                <article
+                  key={`${article.id}${article.nom}`}
+                  className={`${mc.article}`}
+                >
+                  <h2>{article.nom}</h2>
+                  <h3>
+                    le {article.date} à {article.time}
+                  </h3>
+                  <p>{article.description}</p>
+                  <p>{article.colDescr}</p>
+                  {article.setlist ? <h3>Setlist :</h3> : null}
+                  <ul>
+                    {article.setlist && article.setlist.length >= 1
+                      ? article.setlist.map((artiste) => {
+                          return <li>{artiste.nom}</li>;
+                        })
+                      : null}
+                  </ul>
+                </article>
               );
             })
           ) : errorBooking ? (

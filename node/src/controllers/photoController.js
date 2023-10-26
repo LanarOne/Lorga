@@ -85,7 +85,6 @@ const update = async (req, res) => {
       .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
   }
   try {
-    console.log(req.file);
     const { id } = req.params;
     let { alt } = req.body;
     if (req.file) {
@@ -119,7 +118,6 @@ const update = async (req, res) => {
     }
     const data = { alt };
     const updateAlt = await PhotoDAO.UpdatePhoto(id, data);
-    console.log(updateAlt);
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: `Erreur interne`, data: error });

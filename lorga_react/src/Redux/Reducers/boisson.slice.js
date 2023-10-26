@@ -25,7 +25,6 @@ export const postNewBoisson = createAsyncThunk(
         return thunkAPI.rejectWithValue({ status, error });
       }
       if (status <= 201) {
-        console.log(response);
         const data = response.result.data;
         return thunkAPI.fulfillWithValue({ data, status });
       }

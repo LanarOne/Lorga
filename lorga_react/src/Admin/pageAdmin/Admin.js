@@ -82,13 +82,14 @@ const Admin = () => {
       const response = await dispatch(confirmCollectif({ id, token }));
       status = response.payload.status;
       error = response.error || null;
+      console.log(response);
       if (status <= 201) {
         let { message } = response.payload;
         setMessage(message);
         toggleModale();
         setTimeout(() => {
           window.location.reload();
-        }, 2000);
+        }, 1000);
       }
       if (status >= 400 || error) {
         let { message } = response.payload;
@@ -96,7 +97,7 @@ const Admin = () => {
         toggleModale();
         setTimeout(() => {
           window.location.reload();
-        }, 2000);
+        }, 1000);
       }
     } catch (e) {
       console.error(e);

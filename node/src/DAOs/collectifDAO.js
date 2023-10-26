@@ -175,15 +175,18 @@ const UpdateOne = async (id, data) => {
     if (!collectif) {
       return;
     }
-    result = await collectif.update({
-      nom,
-      description,
-      influences,
-      style,
-      confirmation,
-      photoId,
-    });
-    return result;
+    result = await Collectif.update(
+      {
+        nom,
+        description,
+        influences,
+        style,
+        confirmation,
+        photoId,
+      },
+      { where: { id } }
+    );
+    return result, collectif;
   } catch (error) {
     return Error(error.message);
   }
