@@ -50,6 +50,7 @@ const ReadByArtisteId = async function lienById(artisteId) {
     result = await Lien.findAll({ where: { artisteId } });
     return result.map((lien) => {
       return {
+        id: lien.id,
         url: decodeURIComponent(lien.url),
         artisteId: lien.artisteId,
         collectifId: lien.collectifId,
@@ -67,6 +68,7 @@ const ReadByCollectifId = async function lienByCoId(collectifId) {
     result = await Lien.findAll({ where: { collectifId } });
     return result.map((lien) => {
       return {
+        id: lien.id,
         url: decodeURIComponent(lien.url),
         artisteId: lien.artisteId,
         collectifId: lien.collectifId,

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { postRequest } from "../../api/api";
-import { CREATE_LIEN } from "../../constants/constants";
+import { postRequest, putRequest } from "../../api/api";
+import { CREATE_LIEN, PUT_LIEN } from "../../constants/constants";
 
 export const postNewLien = createAsyncThunk(
   "lien/create",
@@ -19,7 +19,26 @@ export const postNewLien = createAsyncThunk(
     }
   }
 );
-
+export const updateLien = createAsyncThunk(
+  "lien/update",
+  async ({ id, body, token }, thunkAPI) => {
+    let status;
+    let error;
+    let url = `${PUT_LIEN}${id}`;
+    const response = await putRequest(url, body, token);
+    console.log(response);
+    status = response.status;
+    error = response.error;
+    if (status === 200) {
+      const { data } = response.result;
+      const { message } = response.result;
+      return thunkAPI.fulfillWithValue({ data, message, status });
+    }
+    if (status >= 400) {
+      return thunkAPI.rejectWithValue({ error, status });
+    }
+  }
+);
 export const lienSlice = createSlice({
   name: "lien",
   initialState: {
@@ -39,6 +58,44 @@ export const lienSlice = createSlice({
     getCollectifId: (state, action) => {
       return { ...state, collectifId: action.payload };
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(postNewLien.pending, (state) => {
+        if (!state.loadingLien) {
+          state.loadingLien = true;
+        }
+      })
+      .addCase(postNewLien.fulfilled, (state, action) => {
+        if (state.loadingLien) {
+          state.data = action.payload;
+          state.loadingLien = false;
+        }
+      })
+      .addCase(postNewLien.rejected, (state, action) => {
+        if (state.loadingLien) {
+          state.error = action.payload;
+          state.loadingLien = false;
+        }
+      });
+    builder
+      .addCase(updateLien.pending, (state) => {
+        if (!state.loadingLien) {
+          state.loadingLien = true;
+        }
+      })
+      .addCase(updateLien.fulfilled, (state, action) => {
+        if (state.loadingLien) {
+          state.data = action.payload;
+          state.loadingLien = false;
+        }
+      })
+      .addCase(updateLien.rejected, (state, action) => {
+        if (state.loadingLien) {
+          state.error = action.payload;
+          state.loadingLien = false;
+        }
+      });
   },
 });
 

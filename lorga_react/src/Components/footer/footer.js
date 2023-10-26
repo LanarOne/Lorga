@@ -2,6 +2,7 @@ import React from "react";
 import iconSet from "../../style/IcoMoon/selection.json";
 import IcomoonReact from "icomoon-react";
 import mc from "./footer.module.scss";
+import { FaFacebookF, FaInstagram } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -21,12 +22,10 @@ const Footer = () => {
       </nav>
       <div className="blocSprites">
         <a href="https://instagram.com/lorganiq.bdx?igshid=NTc4MTIwNjQ2YQ==">
-          <IcomoonReact
-            icon={"instagram"}
-            iconSet={iconSet}
-            color={"#05F8FF"}
-            size={40}
-          />
+          <FaInstagram />
+        </a>
+        <a href="https://facebook.com/lorganiq">
+          <FaFacebookF />
         </a>
       </div>
     </footer>

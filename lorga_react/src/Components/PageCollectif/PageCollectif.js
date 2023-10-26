@@ -43,7 +43,11 @@ import {
 } from "../../redux/reducers/booking.slice";
 import { manageDate } from "../../helpers/dates";
 import { getSetlistByBookingId } from "../../redux/reducers/setlists.slice";
-import { getUrl, postNewLien } from "../../redux/reducers/lien.slice";
+import {
+  getUrl,
+  postNewLien,
+  updateLien,
+} from "../../redux/reducers/lien.slice";
 import { BsCheck } from "react-icons/bs";
 import { BiLogoTiktok } from "react-icons/bi";
 import { RiCloseFill } from "react-icons/ri";
@@ -84,8 +88,12 @@ const PageCollectif = () => {
   const [time, setTime] = useState("");
   const [userId, setUserId] = useState(null);
   const [fbUrl, setFbUrl] = useState("");
+  const [fbId, setFbId] = useState(null);
   const [instaUrl, setInstaUrl] = useState("");
+  const [instaId, setInstaId] = useState(null);
   const [tiktokUrl, setTiktokUrl] = useState("");
+  const [tiktokId, setTiktokId] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
   const dateToday = manageDate();
 
   if (!token) {
@@ -316,24 +324,31 @@ const PageCollectif = () => {
           getLiensByCollectif({ collectifId, token })
         );
         status = response.payload.status;
-        console.log(response);
         if (status === 200) {
           const { data } = response.payload;
           const fb = data.filter((url) => url.url.includes("facebook"));
           const insta = data.filter((url) => url.url.includes("instagram"));
           const tiktok = data.filter((url) => url.url.includes("tiktok"));
           if (fb.length > 0) {
+            console.log(fb);
             setFbUrl(fb[0].url);
+            setFbId(fb[0].id);
           }
           if (insta.length > 0) {
             setInstaUrl(insta[0].url);
+            setInstaId(insta[0].id);
           }
           if (tiktok.length > 0) {
             setTiktokUrl(tiktok[0].url);
+            setTiktokId(tiktok[0].id);
           }
         }
         if (status >= 400) {
           error = response.payload.error;
+          if (status === 404) {
+            console.log(error.message);
+            return;
+          }
           setMessage(error.message);
           toggleModal();
         }
@@ -406,7 +421,6 @@ const PageCollectif = () => {
     let collectifId = collectif.id;
     const body = { url, collectifId };
     const response = await dispatch(postNewLien({ body, token }));
-    console.log(response);
     status = response.payload.status;
     if (status === 201) {
       let message = `Lien ajouté avec succès`;
@@ -416,13 +430,33 @@ const PageCollectif = () => {
         location.reload();
       }, 1200);
     }
+    if (status === 404) {
+      console.log(`pas de liens trouvés pour ce collectif`);
+      return;
+    }
     if (status >= 400) {
       error = response.payload.error;
       setMessage(error.message);
       toggleModal();
     }
   };
-
+  const updateColLien = async (e, id) => {
+    e.preventDefault();
+    let error;
+    let status;
+    let collectifId = collectif.id;
+    const body = { url, collectifId };
+    const response = await dispatch(updateLien({ id, body, token }));
+    status = response.payload.status;
+    console.log(response);
+    if (status === 200) {
+      setMessage(response.payload.message);
+      toggleModal();
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+    }
+  };
   const handleBookingUpdate = async (e, bookingId) => {
     e.preventDefault();
     let status;
@@ -1063,7 +1097,8 @@ const PageCollectif = () => {
           ) : null}
         </section>
         <section>
-          {!fbUrl ? (
+          <h2>Nos réseaux</h2>
+          {!fbUrl && isAdmin ? (
             <form
               action="nouveauLien"
               onSubmit={(e) => {
@@ -1084,20 +1119,43 @@ const PageCollectif = () => {
                 <Button message={<RiCloseFill />} />
               </div>
             </form>
+          ) : isAdmin && adminMode ? (
+            <form
+              action="nouveauLien"
+              onSubmit={(e) => {
+                updateColLien(e, fbId);
+              }}
+            >
+              <div className={`${mc.input}`}>
+                <label htmlFor="url">
+                  <FaFacebookF className={`${mc.sprites}`} />
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getUrl(e.target.value));
+                  }}
+                />
+                <Button message={<BsCheck />} />
+                <Button message={<RiCloseFill />} />
+              </div>
+            </form>
           ) : (
             <article>
               <NavLink to={fbUrl}>
-                <FaFacebookF className={`${mc.sprites}`} />
+                <FaFacebookF
+                  className={`${mc.sprites}`}
+                  onMouseEnter={() => {
+                    setIsHovered(true);
+                  }}
+                  onMouseLeave={(e) => {
+                    setIsHovered(false);
+                  }}
+                />
               </NavLink>
             </article>
           )}
-          {instaUrl ? (
-            <article>
-              <NavLink to={instaUrl}>
-                <FaInstagram className={`${mc.sprites}`} />
-              </NavLink>
-            </article>
-          ) : (
+          {!instaUrl && isAdmin ? (
             <form
               action=""
               onSubmit={(e) => {
@@ -1118,14 +1176,35 @@ const PageCollectif = () => {
                 <Button message={<RiCloseFill />} />
               </div>
             </form>
-          )}
-          {tiktokUrl ? (
+          ) : isAdmin && adminMode ? (
+            <form
+              action="nouveauLien"
+              onSubmit={(e) => {
+                updateColLien(e, instaId);
+              }}
+            >
+              <div className={`${mc.input}`}>
+                <label htmlFor="url">
+                  <FaInstagram className={`${mc.sprites}`} />
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getUrl(e.target.value));
+                  }}
+                />
+                <Button message={<BsCheck />} />
+                <Button message={<RiCloseFill />} />
+              </div>
+            </form>
+          ) : (
             <article>
-              <NavLink to={tiktokUrl}>
-                <BiLogoTiktok className={`${mc.sprites}`} />
+              <NavLink to={instaUrl}>
+                <FaInstagram className={`${mc.sprites}`} />
               </NavLink>
             </article>
-          ) : (
+          )}
+          {!tiktokUrl && isAdmin ? (
             <form
               action=""
               onSubmit={(e) => {
@@ -1146,6 +1225,33 @@ const PageCollectif = () => {
                 <Button message={<RiCloseFill />} />
               </div>
             </form>
+          ) : isAdmin && adminMode ? (
+            <form
+              action="nouveauLien"
+              onSubmit={(e) => {
+                updateColLien(e, tiktokId);
+              }}
+            >
+              <div className={`${mc.input}`}>
+                <label htmlFor="url">
+                  <BiLogoTiktok className={`${mc.sprites}`} />
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getUrl(e.target.value));
+                  }}
+                />
+                <Button message={<BsCheck />} />
+                <Button message={<RiCloseFill />} />
+              </div>
+            </form>
+          ) : (
+            <article>
+              <NavLink to={tiktokUrl}>
+                <BiLogoTiktok className={`${mc.sprites}`} />
+              </NavLink>
+            </article>
           )}
         </section>
       </main>

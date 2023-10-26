@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../header/header";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getArtisteByName,
@@ -21,6 +21,15 @@ import Modale from "../smallElts/modale/modale";
 import { fetchUser } from "../../redux/reducers/user.slice";
 import Button from "../smallElts/button/button";
 import mc from "./pageArtiste.module.scss";
+import { getUrl, postNewLien } from "../../redux/reducers/lien.slice";
+import { FaFacebookF, FaInstagram } from "react-icons/fa";
+import { BsCheck } from "react-icons/bs";
+import { RiCloseFill } from "react-icons/ri";
+import { BiLogoTiktok } from "react-icons/bi";
+import {
+  getLiensByArtiste,
+  getLiensByCollectif,
+} from "../../redux/reducers/liens.slice";
 
 const PageArtiste = () => {
   const dispatch = useDispatch();
@@ -31,12 +40,16 @@ const PageArtiste = () => {
   const [image, setImage] = useState({ file: null });
   const [photoAlt, setPhotoAlt] = useState("");
   const [previewURL, setPreviewURL] = useState("");
+  const [fbUrl, setFbUrl] = useState("");
+  const [instaUrl, setInstaUrl] = useState("");
+  const [tiktokUrl, setTiktokUrl] = useState("");
   const { imageData, loadingUpload, errorUpload } = useSelector(
     (state) => state.upload
   );
   const { alt } = useSelector((state) => state.photo);
   const { loadingUser, errorUser } = useSelector((state) => state.user);
   const user = useSelector((state) => state.user);
+  const { url } = useSelector((state) => state.lien);
   const [img, setImg] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const { nom, style, description, influences, loadingArtiste, errorArtiste } =
@@ -103,7 +116,46 @@ const PageArtiste = () => {
   useEffect(() => {
     dispatch(fetchUser({ token }));
   }, [dispatch, token]);
-
+  useEffect(() => {
+    const getArtisteUrls = async () => {
+      let error;
+      let status;
+      if (artiste) {
+        let artisteId = artiste.id;
+        const response = await dispatch(
+          getLiensByArtiste({ artisteId, token })
+        );
+        status = response.payload.status;
+        if (status === 200) {
+          const { data } = response.payload;
+          const fb = data.filter((url) => url.url.includes("facebook"));
+          const insta = data.filter((url) => url.url.includes("instagram"));
+          const tiktok = data.filter((url) => url.url.includes("tiktok"));
+          if (fb.length > 0) {
+            setFbUrl(fb[0].url);
+          }
+          if (insta.length > 0) {
+            setInstaUrl(insta[0].url);
+          }
+          if (tiktok.length > 0) {
+            setTiktokUrl(tiktok[0].url);
+          }
+        }
+        if (status >= 400) {
+          error = response.payload.error;
+          if (status === 404) {
+            console.log(error.message);
+            return;
+          }
+          setMessage(error.message);
+          toggleModal();
+        }
+      }
+    };
+    if (artiste && artiste.id) {
+      getArtisteUrls();
+    }
+  }, [artiste]);
   const handleUpdate = async () => {
     setAdminMode(true);
   };
@@ -123,6 +175,32 @@ const PageArtiste = () => {
         setMessage(e.message);
         toggleModal();
       }
+    }
+  };
+  const newLien = async (e) => {
+    e.preventDefault();
+    let status;
+    let error;
+    let artisteId = artiste.id;
+    const body = { url, artisteId };
+    const response = await dispatch(postNewLien({ body, token }));
+    status = response.payload.status;
+    if (status === 201) {
+      let message = `Lien ajouté avec succès`;
+      setMessage(message);
+      toggleModal();
+      setTimeout(() => {
+        location.reload();
+      }, 1200);
+    }
+    if (status === 404) {
+      console.log(`pas de liens trouvés pour ce collectif`);
+      return;
+    }
+    if (status >= 400) {
+      error = response.payload.error;
+      setMessage(error.message);
+      toggleModal();
     }
   };
   useEffect(() => {
@@ -281,6 +359,93 @@ const PageArtiste = () => {
         ) : (
           <h2>Quelque chose cloche...</h2>
         )}
+        <section>
+          <h2>Mes réseaux</h2>
+          {!fbUrl ? (
+            <form
+              action="nouveauLien"
+              onSubmit={(e) => {
+                newLien(e);
+              }}
+            >
+              <div className={`${mc.input}`}>
+                <label htmlFor="url">
+                  <FaFacebookF className={`${mc.sprites}`} />
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getUrl(e.target.value));
+                  }}
+                />
+                <Button message={<BsCheck />} />
+                <Button message={<RiCloseFill />} />
+              </div>
+            </form>
+          ) : (
+            <article>
+              <NavLink to={fbUrl}>
+                <FaFacebookF className={`${mc.sprites}`} />
+              </NavLink>
+            </article>
+          )}
+          {instaUrl ? (
+            <article>
+              <NavLink to={instaUrl}>
+                <FaInstagram className={`${mc.sprites}`} />
+              </NavLink>
+            </article>
+          ) : (
+            <form
+              action=""
+              onSubmit={(e) => {
+                newLien(e);
+              }}
+            >
+              <div className={`${mc.input}`}>
+                <label htmlFor="">
+                  <FaInstagram className={`${mc.sprites}`} />
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getUrl(e.target.value));
+                  }}
+                />
+                <Button message={<BsCheck />} />
+                <Button message={<RiCloseFill />} />
+              </div>
+            </form>
+          )}
+          {tiktokUrl ? (
+            <article>
+              <NavLink to={tiktokUrl}>
+                <BiLogoTiktok className={`${mc.sprites}`} />
+              </NavLink>
+            </article>
+          ) : (
+            <form
+              action=""
+              onSubmit={(e) => {
+                newLien(e);
+              }}
+            >
+              <div className={`${mc.input}`}>
+                <label htmlFor="">
+                  <BiLogoTiktok className={`${mc.sprites}`} />
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    dispatch(getUrl(e.target.value));
+                  }}
+                />
+                <Button message={<BsCheck />} />
+                <Button message={<RiCloseFill />} />
+              </div>
+            </form>
+          )}
+        </section>
       </main>
     </>
   );
