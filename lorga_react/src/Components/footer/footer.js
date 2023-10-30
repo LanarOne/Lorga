@@ -1,6 +1,4 @@
 import React from "react";
-import iconSet from "../../style/IcoMoon/selection.json";
-import IcomoonReact from "icomoon-react";
 import mc from "./footer.module.scss";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
 

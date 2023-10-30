@@ -16,6 +16,7 @@ export const DELETE_ART_COL = `artiste_collectif/deleteone/`;
 export const DELETE_BOISSON = `boisson/deleteone/`;
 export const DELETE_BOOKING = `booking/deletebooking/`;
 export const DELETE_COLLECTIF = `collectif/deleteone/`;
+export const DELETE_LIEN = `lien/deleteone/`;
 export const DELETE_PHOTO = `photo/deleteone/`;
 export const DELETE_SETLIST = `setlist/deletesetlist/`;
 export const GET_ADMIN_COLLECTIF_BY_USER_ID = `admin_collectif/readbyuserid/`;

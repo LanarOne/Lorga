@@ -30,7 +30,6 @@ const Booking = () => {
   if (!token) {
     window.location.href = "/login";
   }
-
   const toggleModale = () => {
     setIsOpen(!isOpen);
   };
@@ -61,7 +60,6 @@ const Booking = () => {
     e.preventDefault();
     let error;
     let status;
-
     try {
       const body = { date, time, description, nbr_invite, collectifId };
       const response = await dispatch(postNewBooking({ body, token, userId }));
@@ -84,6 +82,13 @@ const Booking = () => {
       let error;
       let status;
       if (user) {
+        if (user.roleId >= 6) {
+          let collectifId = parseInt(localStorage.getItem("collectifId"));
+          await dispatch(getCollectifId(collectifId));
+          await dispatch(getUserId(user.userId));
+          setIsCollectifAdmin(true);
+          return;
+        }
         await dispatch(getUserId(user.userId));
         if (user.collectifs.length > 0) {
           const response = await dispatch(
@@ -148,7 +153,7 @@ const Booking = () => {
             </div>
             <div>
               <label htmlFor="description">Description de la soirée : </label>
-              <input
+              <textarea
                 type="text"
                 onChange={(e) => {
                   dispatch(getDescription(e.target.value));

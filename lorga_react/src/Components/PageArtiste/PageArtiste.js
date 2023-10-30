@@ -194,7 +194,7 @@ const PageArtiste = () => {
       }, 1200);
     }
     if (status === 404) {
-      console.log(`pas de liens trouvés pour ce collectif`);
+      console.log(`pas de liens trouvés pour cet artiste`);
       return;
     }
     if (status >= 400) {

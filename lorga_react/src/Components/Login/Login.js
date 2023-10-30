@@ -38,13 +38,16 @@ const Login = () => {
     try {
       const body = { email, password };
       const response = await dispatch(postLogin({ body }));
+      console.log(response);
       const { status, message } = response.payload;
-      const isConfirmedUser = response.payload.result.data.confirmation;
-      if (status <= 201 && isConfirmedUser) {
-        localStorage.setItem("token", response.payload.result.token);
-        return response;
+      if (status <= 201) {
+        const isConfirmedUser = response.payload.result.data.confirmation;
+        if (isConfirmedUser) {
+          localStorage.setItem("token", response.payload.result.token);
+          return response;
+        }
       }
-      if (status >= 400 || !isConfirmedUser) {
+      if (status >= 400) {
         setAlertElt(<h2>{message}</h2>);
         toggleModal();
       }
