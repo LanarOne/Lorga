@@ -38,6 +38,7 @@ export const GET_LIENS_BY_ART = `lien/readbyartiste/`;
 export const GET_LIENS_BY_COL = `lien/readbycollectif/`;
 export const GET_ONE_BOISSON = `boisson/readonebyid/`;
 export const GET_PHOTO_BY_ID = `photo/readone/`;
+export const GET_SETLIST_BY_ARTISTE = `setlist/getbyartisteid/`;
 export const GET_SETLIST_BY_BOOKING = `setlist/getbybookingid/`;
 export const GET_UNCONFIRMED_ARTISTES = `artiste/readunconfirmedartistes`;
 export const GET_UNCONF_BOOKINGS = `booking/readunconfirmed`;

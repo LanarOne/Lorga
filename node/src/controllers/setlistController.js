@@ -102,7 +102,9 @@ const readSetlistByArtisteId = async (req, res) => {
   let result;
   try {
     const artisteId = parseInt(req.params.id);
+    console.log(artisteId);
     result = await SetlistDAO.ReadByArtisteId(artisteId);
+    console.log(result, `controller`);
     if (!result || result.length === 0) {
       return res
         .status(404)

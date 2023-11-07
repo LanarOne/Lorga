@@ -39,6 +39,7 @@ const ReadByArtisteId = async (artisteId) => {
   let result;
   try {
     result = await Setlist.findAll({ where: { artisteId } });
+    console.log(result, `DAO`);
     return result;
   } catch (e) {
     console.error(e.message);

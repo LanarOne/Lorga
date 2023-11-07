@@ -13,6 +13,21 @@ export const manageDate = () => {
   }
   return `${anneeEnCours}-${moisEnCours}-${dateDuJour}`;
 };
+
+export const dateEnFrancais = (date) => {
+  if (!(date instanceof Date)) {
+    date = new Date(date);
+  }
+  let dateDuJour = date.getDate();
+  let moisEnCours = date.getMonth() + 1;
+  let anneeEnCours = date.getFullYear();
+
+  let jourPadded = dateDuJour < 10 ? `0${dateDuJour}` : dateDuJour;
+  let moisPadded = moisEnCours < 10 ? `0${moisEnCours}` : moisEnCours;
+
+  return `${jourPadded}/${moisPadded}/${anneeEnCours}`;
+};
+
 export const manageDisplayDate = () => {
   return new Date().toDateString();
 };

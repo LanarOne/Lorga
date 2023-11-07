@@ -1,5 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { GET_SETLIST_BY_BOOKING } from "../../constants/constants";
+import {
+  GET_SETLIST_BY_ARTISTE,
+  GET_SETLIST_BY_BOOKING,
+} from "../../constants/constants";
 import { getRequest } from "../../api/api";
 
 export const getSetlistByBookingId = createAsyncThunk(
@@ -25,6 +28,27 @@ export const getSetlistByBookingId = createAsyncThunk(
     }
   }
 );
+
+export const getSetlistByArtId = createAsyncThunk(
+  "setlists/getbyArtId",
+  async ({ artisteId, token }, thunkAPI) => {
+    let status;
+    let error;
+    const url = `${GET_SETLIST_BY_ARTISTE}${artisteId}`;
+    const response = await getRequest(url, token);
+    status = response.status;
+    error = response.error;
+    if (status === 200) {
+      const { data } = response.result;
+      const { message } = response.result;
+      return thunkAPI.fulfillWithValue({ data, message, status });
+    }
+    if (status >= 400) {
+      const { message } = error;
+      return thunkAPI.rejectWithValue({ message, status });
+    }
+  }
+);
 export const setlistsSlice = createSlice({
   name: "setlists",
   initialState: { data: [], loadingSetlists: false, errorSetlist: null },
@@ -43,6 +67,24 @@ export const setlistsSlice = createSlice({
         }
       })
       .addCase(getSetlistByBookingId.rejected, (state, action) => {
+        if (state.loadingSetlists) {
+          state.errorSetlist = action.payload;
+          state.loadingSetlists = false;
+        }
+      });
+    builder
+      .addCase(getSetlistByArtId.pending, (state) => {
+        if (!state.loadingSetlists) {
+          state.loadingSetlists = true;
+        }
+      })
+      .addCase(getSetlistByArtId.fulfilled, (state, action) => {
+        if (state.loadingSetlists) {
+          state.data = action.payload;
+          state.loadingSetlists = false;
+        }
+      })
+      .addCase(getSetlistByArtId.rejected, (state, action) => {
         if (state.loadingSetlists) {
           state.errorSetlist = action.payload;
           state.loadingSetlists = false;

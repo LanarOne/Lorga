@@ -48,7 +48,7 @@ export const deleteLien = createAsyncThunk(
     status = response.status;
     error = response.error;
     if (status === 200) {
-      const { message } = response.result;
+      const message = response.result.data;
       return thunkAPI.fulfillWithValue({ message, status });
     }
     if (status >= 400) {

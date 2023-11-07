@@ -117,16 +117,14 @@ const PageCollectif = () => {
   };
   useEffect(() => {
     const artisteAddPending = () => {
-      if (user && collectif && user.artisteName) {
-        artistesRequests.map((artiste) => {
-          if (artiste.nom === user.artisteName) {
-            setIsNotPresent(false);
-          }
-        });
-      }
+      artistesRequests.map((artiste) => {
+        if (artiste.nom === user.artisteName) {
+          setIsNotPresent(false);
+        }
+      });
     };
     artisteAddPending();
-  }, [token, user, collectif]);
+  }, [user, collectif]);
   useEffect(() => {
     const getCollectif = async () => {
       let status;
@@ -450,7 +448,6 @@ const PageCollectif = () => {
     const body = { url, collectifId };
     const response = await dispatch(updateLien({ id, body, token }));
     status = response.payload.status;
-    console.log(response);
     if (status === 200) {
       setMessage(response.payload.message);
       toggleModal();
@@ -459,6 +456,7 @@ const PageCollectif = () => {
       }, 1000);
     }
     if (status >= 400) {
+      error = response.payload.error;
       let { message } = error;
       setMessage(message);
       toggleModal();
@@ -633,11 +631,17 @@ const PageCollectif = () => {
       setSelectedArtiste(null);
       setMessage(response.payload.message);
       toggleModal();
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
     }
     if (status >= 400) {
       setSelectedArtiste(null);
       setMessage(error.message);
       toggleModal();
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
     }
   };
   const handleSetlistDelete = async (e, id) => {
@@ -647,6 +651,9 @@ const PageCollectif = () => {
       let { message } = response.payload;
       setMessage(message);
       toggleModal();
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
     }
   };
   const handleEventDelete = async (e, id) => {
@@ -662,7 +669,6 @@ const PageCollectif = () => {
         arrayToDelete.map(async (toDelete) => {
           const id = parseInt(toDelete.setlistId);
           const deletion = await dispatch(deleteSetlist({ id, token }));
-          console.log(deletion);
         });
       }
 
@@ -672,11 +678,17 @@ const PageCollectif = () => {
         let message = response.payload.message;
         setMessage(message);
         toggleModal();
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
       }
       if (status >= 400) {
         let { error } = response.payload;
         setMessage(error.message);
         toggleModal();
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
       }
     } catch (e) {
       console.error(e.message);
@@ -690,7 +702,6 @@ const PageCollectif = () => {
     }
   };
   const handleLienDelete = async (e, id) => {
-    console.log(e);
     e.preventDefault();
     let status;
     let error;
@@ -700,12 +711,18 @@ const PageCollectif = () => {
       let { message } = response.payload;
       setMessage(message);
       toggleModal();
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
     }
     if (status >= 400) {
+      error = response.payload.error;
       let { message } = error;
       setMessage(message);
       toggleModal();
-      console.log(response);
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
     }
   };
   return (
@@ -819,7 +836,7 @@ const PageCollectif = () => {
           ) : isAdmin ? (
             <article>
               <div>
-                <img src={img} alt={collectif.description} />
+                <img src={img} alt={photoAlt} />
               </div>
               <div>
                 <h2>{collectif.nom}</h2>
@@ -832,6 +849,14 @@ const PageCollectif = () => {
                 message={`Changer mes informations`}
                 onClick={toggleAdminMode}
               />
+              {isNotPresent ? (
+                <Button
+                  message={"Demander à rentrer dans le collectif"}
+                  onClick={(e) => {
+                    handleAddRequest(e);
+                  }}
+                />
+              ) : null}
             </article>
           ) : collectif && img ? (
             <>
@@ -845,7 +870,7 @@ const PageCollectif = () => {
                   <p>{collectif.description}</p>
                   <p>{collectif.influences}</p>
                 </section>
-                {user && user.artisteName && isNotPresent ? (
+                {isNotPresent ? (
                   <Button
                     message={"Demander à rentrer dans le collectif"}
                     onClick={(e) => {
