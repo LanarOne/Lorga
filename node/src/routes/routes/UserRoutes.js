@@ -22,6 +22,12 @@ const userRoutes = (app, sm) => {
     sm,
     UserController.emailConfirmation
   );
+  router.put(
+    "/updatepassword/:id",
+    sm,
+    jwtMiddleware,
+    UserController.updatePassword
+  );
   router.delete("/delete/:id", sm, jwtMiddleware, UserController.deleteOne);
   router.post("/*", sm, wrongRoute.wrongPath);
   router.get("/*", sm, wrongRoute.wrongPath);

@@ -129,7 +129,9 @@ const Header = () => {
             ) : (
               <>
                 <p>Bienvenue</p>
-                <p>{user.username}</p>
+                <p>
+                  <NavLink to={"/user/profile"}>{user.username}</NavLink>
+                </p>
                 <Button
                   message={
                     <IcomoonReact

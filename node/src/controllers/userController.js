@@ -86,7 +86,7 @@ const signIn = async (req, res) => {
         .status(401)
         .json({ message: `Email ou mot de passe non valide` });
     }
-    if (user && isPasswordValid) {
+    if (isPasswordValid) {
       const token = jwtSign(user.id);
       return res.status(201).json({
         message: `Utilisateur ${user.username} connecté avec succès`,
@@ -94,7 +94,9 @@ const signIn = async (req, res) => {
         token,
       });
     } else {
-      return res.status(401).json({ message: `Impossible de se connecter` });
+      return res
+        .status(401)
+        .json({ message: `Email ou mot de passe non valide` });
     }
   } catch (error) {
     console.error(error.message);
@@ -194,7 +196,7 @@ const updateOne = async (req, res) => {
     const token = req.headers.authorization;
     const admin = await isAdmin(token);
 
-    if (admin === 1) {
+    if (!admin) {
       return res
         .status(401)
         .json({ message: `Vous n'êtes pas autorisé à accéder à ces données` });
@@ -260,6 +262,25 @@ const updateRoleId = async (req, res) => {
     return res.status(500).json({ message: `erreur interne`, data: error });
   }
 };
+
+const updatePassword = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const token = req.headers.authorization;
+    const admin = await isAdmin(token);
+    if (!admin) {
+      return res
+        .status(401)
+        .json({ message: `Vous n'êtes pas autorisé à modifier ces données` });
+    }
+    const password = await bcrypt.hash(req.body.password, 10);
+    const updating = await UserDAO.UpdatePassword(id, password);
+    console.log(updating);
+    return res.status(200).json({ message: `Mot de passe changé avec succès` });
+  } catch (error) {
+    return res.status(500).json({ message: `Erreur interne`, error });
+  }
+};
 const deleteOne = async (req, res) => {
   try {
     const id = req.params.id;
@@ -294,5 +315,6 @@ export const UserController = {
   getUser,
   updateOne,
   updateRoleId,
+  updatePassword,
   deleteOne,
 };

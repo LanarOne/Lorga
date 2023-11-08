@@ -245,7 +245,6 @@ export const emailConfirmation = createAsyncThunk(
       let body = {};
       const url = `${CONFIRM_USER}${confirmationToken}`;
       const response = await putRequest(url, body);
-      console.log(response);
       status = response.status;
       error = response.error;
       if (status === 200) {

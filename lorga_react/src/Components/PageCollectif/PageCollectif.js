@@ -849,7 +849,7 @@ const PageCollectif = () => {
                 message={`Changer mes informations`}
                 onClick={toggleAdminMode}
               />
-              {isNotPresent ? (
+              {user.artisteName && isNotPresent ? (
                 <Button
                   message={"Demander à rentrer dans le collectif"}
                   onClick={(e) => {

@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import user from "../models/User.js";
+import { where } from "sequelize";
 
 const Create = async (
   email,
@@ -147,6 +148,20 @@ const UpdateRoleId = async (id, data) => {
     return Error(error.message);
   }
 };
+
+const UpdatePassword = async (id, password) => {
+  let result;
+  try {
+    result = await User.findByPk(id);
+    if (!result || result.length === 0) {
+      return null;
+    }
+    const updated = await User.update({ password }, { where: { id } });
+    return updated;
+  } catch (error) {
+    return Error(error.message);
+  }
+};
 const DeleteUser = async (id) => {
   let result = null;
   let message = `Utilisateur supprimé de la base de donnée`;
@@ -170,5 +185,6 @@ export const UserDAO = {
   ReadUserByEmail,
   UpdateUser,
   UpdateRoleId,
+  UpdatePassword,
   DeleteUser,
 };

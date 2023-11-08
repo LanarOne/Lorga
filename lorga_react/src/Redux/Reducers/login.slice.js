@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { postRequest } from "../../api/api";
-import { LOGIN } from "../../constants/constants";
+import { getRequest, postRequest, putRequest } from "../../api/api";
+import { GET_USER_BY_ID, LOGIN, UPDATE_USER } from "../../constants/constants";
 
 export const postLogin = createAsyncThunk(
   "users/login",
@@ -20,6 +20,46 @@ export const postLogin = createAsyncThunk(
       }
     } catch (e) {
       throw e;
+    }
+  }
+);
+
+export const updatePassword = createAsyncThunk(
+  "user/updatepassword",
+  async ({ body, token }, thunkAPI) => {
+    let status;
+    let error;
+    const { oldPassword, newPassword, id } = body;
+    let url = `${GET_USER_BY_ID}${id}`;
+    const response = await getRequest(url, token);
+    status = response.status;
+    error = response.error;
+    if (status === 200) {
+      const { email } = response.result.data;
+      const password = oldPassword;
+      let body = { email, password };
+      const login = await postRequest(LOGIN, body);
+      const { token } = login.result;
+      if (token) {
+        const password = newPassword;
+        url = `${UPDATE_USER}${id}`;
+        const body = { password };
+        const updatePw = await putRequest(url, body, token);
+        status = updatePw.status;
+        error = updatePw.error;
+        if (status === 200) {
+          const result = updatePw.result;
+          return thunkAPI.fulfillWithValue({ result, status });
+        }
+        if (status >= 400 || error) {
+          let { message } = error;
+          return thunkAPI.rejectWithValue({ message, status });
+        }
+      }
+    }
+    if (status >= 400 || error) {
+      let { message } = error;
+      return thunkAPI.rejectWithValue({ message, status });
     }
   }
 );

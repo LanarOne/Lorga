@@ -53,4 +53,5 @@ export const PUT_COLLECTIF = `collectif/updateone/`;
 export const PUT_LIEN = `lien/updateone/`;
 export const PUT_PHOTO = `photo/updateone/`;
 export const PUT_USER = `users/updateroleid/`;
+export const UPDATE_USER = `users/updatepassword/`;
 export const SIGNUP = `users/signup`;
